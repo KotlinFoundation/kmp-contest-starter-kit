@@ -1,0 +1,216 @@
+platform :android do
+  desc "Build and upload Android app to Google Play"
+
+  root_dir = File.expand_path("..", __dir__)
+  gradle_file = File.read(File.join(root_dir, "androidApp/build.gradle.kts"))
+  package_name = gradle_file[/applicationId\s*=\s*"([^"]+)"/, 1]
+
+  if package_name.nil?
+    UI.user_error!("Could not detect applicationId from androidApp/build.gradle.kts")
+  end
+
+  UI.message("Detected package name: #{package_name}")
+
+  playstore_metadata_path = File.join(root_dir, "distribution/android/playstore_metadata")
+
+  ########################################################
+  # Lane: update Play Store metadata locally
+  ########################################################
+  lane :update_local_metadata_from_playstore do |options|
+    desc "Fetch the current Play Store metadata for your app and save it locally.\n" \
+         "Options:\n" \
+         "  :service_account - Path to the JSON key file for Google Play API (default: ~/credentials/google-service-app-publisher.json)"
+
+    service_account = options[:service_account] || File.expand_path("~/credentials/google-service-app-publisher.json")
+
+
+    # Delete existing metadata folder if it exists
+    if Dir.exist?(playstore_metadata_path)
+        UI.message("Deleting existing Play Store metadata at #{playstore_metadata_path}...")
+        FileUtils.rm_rf(playstore_metadata_path)
+    end
+
+    download_from_play_store(
+      package_name: package_name,
+      json_key: service_account,
+      metadata_path: playstore_metadata_path
+    )
+  end
+
+  ########################################################
+  # Lane: First-time safe build (generate keystore + build AAB)
+  ########################################################
+  lane :first_time_build do |options|
+
+    desc "Generate keystore (if missing) and build Android AAB for first-time Play Store upload.\n" \
+         "⚠️ This lane does NOT upload to Play Store. You must manually upload the generated AAB.\n" \
+         "Generated app-release.abb is saved in distribution/android folder.\n " \
+         "Options:\n" \
+         "  :first_name     - Name of developer (optional) for keystore\n" \
+         "  :organization   - Organization name (optional, defaults to applicationId) for keystore"
+
+    first_name = options[:first_name] || ""
+    organization = options[:organization] || package_name
+    keystore_props = File.join(root_dir, "distribution/android/keystore/keystore.properties")
+    aab_output_dir = File.join(root_dir, "distribution/android")
+    aab_output_path = File.join(aab_output_dir, "app-release.aab")
+
+    # Step 1: Ensure keystore exists
+    unless File.exist?(keystore_props)
+      UI.important("Keystore not found! Generating a new keystore...")
+      keystore_script = File.join(root_dir, "scripts/generate_android_keystore.sh")
+      sh("cd #{root_dir} && #{keystore_script} '#{first_name}' '#{organization}'")
+      UI.success("Keystore generated successfully!")
+    else
+      UI.message("Keystore found, skipping generation.")
+    end
+
+    # Step 2: Build AAB
+    UI.message("🏗 Building Android AAB...")
+    sh("cd #{root_dir} && ./gradlew :androidApp:bundleRelease")
+
+    # Step 3: Copy AAB to distribution/android
+    built_aab = File.join(root_dir, "androidApp/build/outputs/bundle/release/androidApp-release.aab")
+    UI.user_error!("No AAB found at #{built_aab}") unless File.exist?(built_aab)
+
+    FileUtils.mkdir_p(aab_output_dir)
+    FileUtils.cp(built_aab, aab_output_path)
+
+    UI.success("✅ AAB generated and copied to #{aab_output_path}")
+    UI.message("⚠️ First-time publish: upload this AAB manually to Google Play.")
+  end
+
+  ########################################################
+  # Lane: Normal publish to Play Store
+  ########################################################
+  lane :playstore_release do |options|
+    desc "Build and upload Android AAB to Google Play Store.\n" \
+            "Options:\n" \
+            "  :track          - Play Store track to upload (internal, alpha, beta, production). By default it uploads to internal track\n" \
+            "  :upload_metadata - Whether to upload metadata, title, description (default: false)\n" \
+            "  :upload_screenshots - Whether to upload screenshots (default: false)\n" \
+            "  :upload_images - Whether to upload logo, feature graphics (default: false)\n" \
+            "  :submit_for_review - Indicates that the changes in this edit will be sent for a review in Google Play Console UI (default: true)\n" \
+            "  :release_status  - Status of release (draft for internal track, completed for others)\n" \
+            "⚠️ Internal track always uses 'draft' to avoid errors with first-time apps."
+    service_account = options[:service_account] || File.expand_path("~/credentials/google-service-app-publisher.json")
+    track = options[:track] || "internal"
+    upload_metadata = options[:upload_metadata] || false
+    upload_screenshots = options[:upload_screenshots] || false
+    upload_images = options[:upload_images] || false
+
+    submit_for_review = options[:submit_for_review] || true
+    release_status = track == "internal" ? "draft" : (options[:release_status] || "completed")
+
+
+    # Build AAB
+    UI.message("🏗 Building Android AAB...")
+    sh("cd #{root_dir} && ./gradlew :androidApp:bundleRelease")
+
+    # Find generated AAB
+    aab_path = File.join(root_dir, "androidApp/build/outputs/bundle/release/androidApp-release.aab")
+    UI.user_error!("No AAB found at #{aab_path}") unless File.exist?(aab_path)
+
+    # Upload to Google Play
+    upload_to_play_store(
+      track: track,
+      package_name: package_name,
+      aab: aab_path,
+      json_key: service_account,
+      skip_upload_metadata: !upload_metadata,
+      skip_upload_images: !upload_images,
+      skip_upload_screenshots: !upload_screenshots,
+      skip_upload_changelogs: false,
+      metadata_path: playstore_metadata_path,
+      timeout: 600,
+      release_status: release_status,
+      changes_not_sent_for_review: !submit_for_review
+    )
+
+    UI.success("🎉 Android upload to Google Play Store complete!")
+  end
+end
+
+platform :ios do
+  desc "Build and upload iOS app to App Store"
+
+  root_dir = File.expand_path("..", __dir__)
+  output_dir = File.join(root_dir, "distribution/ios")
+  project_file = File.join(root_dir, "iosApp/iosApp.xcodeproj/project.pbxproj")
+  bundle_id = File.read(project_file)[/PRODUCT_BUNDLE_IDENTIFIER\s*=\s*([A-Za-z0-9\.-_]+);/, 1]
+  UI.user_error!("Could not find PRODUCT_BUNDLE_IDENTIFIER in project.pbxproj") if bundle_id.nil?
+  appstore_metadata_path = File.join(root_dir, "distribution/ios/appstore_metadata")
+  appstore_text_metadata_path = File.join(appstore_metadata_path, "texts")
+  appstore_screenshots_metadata_path = File.join(appstore_metadata_path, "screenshots")
+  api_key_path = File.expand_path("~/credentials/appstore-publisher.json")
+
+  lane :appstore_release do |options|
+
+    upload_metadata   = options[:upload_metadata]   || false
+    submit_for_review = options[:submit_for_review] || false
+    upload_screenshots = options[:upload_screenshots].nil? ? false : options[:upload_screenshots]
+
+    # Build IPA
+    build_app(
+      scheme: "iosApp",
+      project: "iosApp/iosApp.xcodeproj",
+      configuration: "Release",
+      export_method: "app-store",
+      silent: false,
+      output_name: "iosApp",
+      output_directory: output_dir,
+      xcargs: "-allowProvisioningUpdates"
+    )
+
+    ipa_path = File.join(output_dir, "iosApp.ipa")
+
+
+
+
+    # Upload to App Store
+    upload_to_app_store(
+      skip_metadata: !upload_metadata,
+      skip_screenshots: !upload_screenshots,
+      skip_app_version_update: false,
+      submit_for_review: submit_for_review,
+      metadata_path: appstore_text_metadata_path,
+      screenshots_path: appstore_screenshots_metadata_path,
+      api_key_path: api_key_path,
+      overwrite_screenshots: upload_screenshots,
+      precheck_include_in_app_purchases: false,
+      force: true,
+      ipa: ipa_path
+    )
+
+    UI.success("🎉 iOS upload to App Store complete!")
+  end
+
+
+  ########################################################
+  # Lane: update App Store metadata locally
+  ########################################################
+  lane :update_local_metadata_from_appstore do |options|
+    desc "Fetch the current App Store metadata for your app and save it locally.\n"
+
+     use_live_version = options.fetch(:use_live_version, true)
+
+     cmd = "fastlane deliver download_screenshots"
+     cmd += " --api_key_path #{api_key_path}"
+     cmd += " --app_identifier #{bundle_id}"
+     cmd += " --use_live_version #{use_live_version}"
+     cmd += " --force true"
+     cmd += " --screenshots_path #{appstore_screenshots_metadata_path}"
+     cmd += " --metadata_path #{appstore_text_metadata_path}"
+     sh(cmd)
+
+     cmd = "fastlane deliver download_metadata"
+     cmd += " --api_key_path #{api_key_path}"
+     cmd += " --app_identifier #{bundle_id}"
+     cmd += " --use_live_version #{use_live_version}"
+     cmd += " --force true"
+     cmd += " --screenshots_path #{appstore_screenshots_metadata_path}"
+     cmd += " --metadata_path #{appstore_text_metadata_path}"
+     sh(cmd)
+  end
+
+end

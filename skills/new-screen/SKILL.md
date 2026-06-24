@@ -1,0 +1,35 @@
+---
+name: new-screen
+description: Scaffold a new app screen (Screen + UiState + UiStateHolder) and wire it into navigation and DI. Use whenever the user asks for a new screen, page, or view in the mobile app — never hand-create these files.
+---
+
+# Add a new screen
+
+Run from `MobileApp/`:
+
+```bash
+./scripts/generate_screen.sh YourScreenName
+```
+
+The script is idempotent (safe to re-run). It generates
+`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/presentation/screens/yourscreenname/`:
+
+- `YourScreenNameScreen.kt` — dual-overload pattern (StateHolder entry point + pure composable for previews/tests)
+- `YourScreenNameUiState.kt` — UiState data class + UiEvent sealed interface
+- `YourScreenNameUiStateHolder.kt` — ViewModel-equivalent
+
+and wires everything end-to-end:
+
+- Route inserted into `presentation/navigation/Routes.kt`
+- `entry<YourScreenNameScreenRoute> { … }` stub + imports in `presentation/navigation/AppNavigation.kt`
+- `viewModelOf(::YourScreenNameUiStateHolder)` + import in `root/Di.kt`
+
+Insertion points in those three files are marked with
+`// Add new … below — generate_screen.sh inserts here.` comments — never remove or move those markers.
+
+## After running
+
+1. Edit the generated `entry<>` block in `AppNavigation.kt` to add the navigation callbacks the screen needs (`navigator.navigate(...)`, `navigator.goBack()`, ...).
+2. Implement the UI in the pure-composable overload; keep logic in the UiStateHolder.
+3. Feature folders contain **only** `*Screen.kt`, `*UiState.kt`, `*UiStateHolder.kt` — never a `*ScreenRoute.kt` (routes live in `Routes.kt`).
+4. Validate with the `run-quality-gates` skill.

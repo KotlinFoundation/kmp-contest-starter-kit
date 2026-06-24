@@ -1,0 +1,6 @@
+//Override any field values from BaseConfig that should be overriden in debug build
+
+#include "BaseConfig.xcconfig"  // Include base config
+
+//This value is provided by Google to test ads in debug build
+ADMOB_APP_ID=ca-app-pub-3940256099942544~1458002511

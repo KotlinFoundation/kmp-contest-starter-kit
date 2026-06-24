@@ -1,0 +1,60 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - 'main'
+
+defaults:
+  run:
+    working-directory: MobileApp
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    name: Lint, Test, Build
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-gradle
+        with:
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
+      - name: Write secrets to local.properties
+        run: |
+          echo "GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}" >> "local.properties"
+          echo "REVENUECAT_ANDROID_API_KEY=${{ secrets.REVENUECAT_ANDROID_API_KEY }}" >> "local.properties"
+          echo "REVENUECAT_IOS_API_KEY=${{ secrets.REVENUECAT_IOS_API_KEY }}" >> "local.properties"
+
+      - name: Spotless check (ktlint)
+        run: ./gradlew spotlessCheck
+
+      - name: Run shared module tests
+        run: ./gradlew :shared:jvmTest :shared:testAndroidHostTest
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            MobileApp/shared/build/reports/tests/
+            MobileApp/shared/build/test-results/
+          retention-days: 7
+
+      - name: Build Android debug APK
+        run: ./gradlew :androidApp:assembleDebug
+
+      - name: Upload Android debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apk
+          retention-days: 7
+          path: MobileApp/androidApp/build/outputs/apk/debug/**.apk

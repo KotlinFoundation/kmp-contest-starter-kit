@@ -1,0 +1,93 @@
+@file:OptIn(ExperimentalRoborazziApi::class)
+
+package com.kotlinfoundation.kmpstarterkit.screenshot
+
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.junit4.AndroidComposeTestRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
+import com.github.takahirom.roborazzi.InternalRoborazziApi
+import com.github.takahirom.roborazzi.RoborazziComposeOptions
+import com.github.takahirom.roborazzi.RoborazziComposePreviewTestCategory
+import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.composeTestRule
+import com.kotlinfoundation.kmpstarterkit.util.StoreScreenshot
+import org.junit.Rule
+import org.junit.Test
+import org.junit.experimental.categories.Category
+import org.junit.runner.RunWith
+import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import sergio.sastre.composable.preview.scanner.android.AndroidComposablePreviewScanner
+import sergio.sastre.composable.preview.scanner.android.AndroidPreviewInfo
+import sergio.sastre.composable.preview.scanner.core.preview.ComposablePreview
+import sergio.sastre.composable.preview.scanner.core.preview.getAnnotation
+
+/**
+ * Regression screenshot tests — snapshots every `@Preview` under [PACKAGE_ROOT]
+ * EXCEPT those tagged with [StoreScreenshot] (those are storefront assets handled
+ * by [StoreScreenshotGeneratorTest]).
+ *
+ * - Local refresh: `./gradlew :shared:recordRoborazziAndroidHostTest`.
+ * - PR check: `./gradlew :shared:verifyRoborazziAndroidHostTest`.
+ *
+ * Goldens land under `shared/src/androidHostTest/snapshots/`. The `@Preview` import
+ * MUST be `androidx.compose.ui.tooling.preview.Preview` — the deprecated JetBrains
+ * one is not discovered.
+ */
+@OptIn(InternalRoborazziApi::class)
+@RunWith(ParameterizedRobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(application = android.app.Application::class, manifest = Config.NONE, sdk = [34])
+class PreviewScreenshotTest(
+    private val preview: ComposablePreview<AndroidPreviewInfo>,
+) {
+    @get:Rule
+    val composeRule: AndroidComposeTestRule<ActivityScenarioRule<ComponentActivity>, ComponentActivity> =
+        createAndroidComposeRule()
+
+    @Category(RoborazziComposePreviewTestCategory::class)
+    @Test
+    fun snapshot() {
+        @Suppress("UNCHECKED_CAST")
+        val ruleForOptions =
+            composeRule as
+                AndroidComposeTestRule<ActivityScenarioRule<out ComponentActivity>, *>
+        val composeOptions =
+            RoborazziComposeOptions {
+                composeTestRule(ruleForOptions)
+            }
+        preview.captureRoboImage(
+            filePath = "src/androidHostTest/snapshots/${preview.declaringClass}_${preview.methodName}.png",
+            roborazziComposeOptions = composeOptions,
+        )
+    }
+
+    companion object {
+        private const val PACKAGE_ROOT = "com.kotlinfoundation.kmpstarterkit"
+        private const val GENERATE_STOREFRONT_FLAG = "generateStoreScreenshots"
+
+        @JvmStatic
+        @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
+        fun previews(): List<ComposablePreview<AndroidPreviewInfo>> {
+            val isRoborazziTask =
+                System.getProperty("roborazzi.test.record") == "true" ||
+                    System.getProperty("roborazzi.test.verify") == "true" ||
+                    System.getProperty("roborazzi.test.compare") == "true"
+            if (!isRoborazziTask) return emptyList()
+
+            // When the storefront generator runs (`./scripts/generate_store_screenshots.sh`),
+            // skip the regression set so only @StoreScreenshot-tagged previews render.
+            if (System.getProperty(GENERATE_STOREFRONT_FLAG) == "true") return emptyList()
+
+            return AndroidComposablePreviewScanner()
+                .scanPackageTrees(PACKAGE_ROOT)
+                .includePrivatePreviews()
+                .includeAnnotationInfoForAllOf(StoreScreenshot::class.java)
+                .getPreviews()
+                .filter { it.getAnnotation<StoreScreenshot>() == null }
+        }
+    }
+}

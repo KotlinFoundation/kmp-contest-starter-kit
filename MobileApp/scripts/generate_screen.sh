@@ -1,0 +1,250 @@
+#!/usr/bin/env bash
+#
+# Scaffold a new screen and wire it into navigation + DI.
+#
+# Generates:
+#   shared/src/commonMain/kotlin/<base>/presentation/screens/<lower>/
+#     ├── <Name>Screen.kt
+#     ├── <Name>UiState.kt          (also contains UiEvent)
+#     └── <Name>UiStateHolder.kt
+#
+# Patches (idempotent — safe to re-run):
+#   presentation/navigation/Routes.kt        adds `data object <Name>ScreenRoute : ScreenRoute`
+#   presentation/navigation/AppNavigation.kt adds an `entry<>` block + screen/holder imports
+#   root/Di.kt                               adds `viewModelOf(::<Name>UiStateHolder)` + import
+#
+# Usage (run from MobileApp/):
+#   ./scripts/generate_screen.sh ScreenName
+
+set -e
+
+SCREEN_NAME=$1
+
+if [ -z "$SCREEN_NAME" ]; then
+  echo "Usage: ./scripts/generate_screen.sh ScreenName"
+  exit 1
+fi
+
+# Capitalize the first letter, leave the rest alone.
+SCREEN_BASE="$(printf '%s' "${SCREEN_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${SCREEN_NAME:1}"
+
+BASE_PACKAGE="com.kotlinfoundation.kmpstarterkit"
+BASE_PATH=$(echo "$BASE_PACKAGE" | tr '.' '/')
+
+LOWER_NAME=$(echo "$SCREEN_BASE" | tr '[:upper:]' '[:lower:]')
+
+SCREEN_CLASS="${SCREEN_BASE}Screen"
+UI_STATE_CLASS="${SCREEN_BASE}UiState"
+UI_EVENT_CLASS="${SCREEN_BASE}UiEvent"
+HOLDER_CLASS="${SCREEN_BASE}UiStateHolder"
+ROUTE_CLASS="${SCREEN_BASE}ScreenRoute"
+
+SCREENS_PACKAGE="$BASE_PACKAGE.presentation.screens.$LOWER_NAME"
+
+SCREEN_DIR="shared/src/commonMain/kotlin/$BASE_PATH/presentation/screens/$LOWER_NAME"
+ROUTES_FILE="shared/src/commonMain/kotlin/$BASE_PATH/presentation/navigation/Routes.kt"
+APPNAV_FILE="shared/src/commonMain/kotlin/$BASE_PATH/presentation/navigation/AppNavigation.kt"
+DI_FILE="shared/src/commonMain/kotlin/$BASE_PATH/root/Di.kt"
+
+mkdir -p "$SCREEN_DIR"
+
+UI_STATE_FILE="$SCREEN_DIR/${UI_STATE_CLASS}.kt"
+HOLDER_FILE="$SCREEN_DIR/${HOLDER_CLASS}.kt"
+SCREEN_FILE="$SCREEN_DIR/${SCREEN_CLASS}.kt"
+
+################################
+# 1. UiState + UiEvent
+################################
+if [ -f "$UI_STATE_FILE" ]; then
+  echo "Skipping (already exists): $UI_STATE_FILE"
+else
+  cat > "$UI_STATE_FILE" <<EOF
+package $SCREENS_PACKAGE
+
+class $UI_STATE_CLASS()
+
+sealed class $UI_EVENT_CLASS {
+    data object OnClick : $UI_EVENT_CLASS()
+}
+EOF
+  echo "Created: $UI_STATE_FILE"
+fi
+
+################################
+# 2. UiStateHolder
+################################
+if [ -f "$HOLDER_FILE" ]; then
+  echo "Skipping (already exists): $HOLDER_FILE"
+else
+  cat > "$HOLDER_FILE" <<EOF
+package $SCREENS_PACKAGE
+
+import $BASE_PACKAGE.util.UiStateHolder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+class $HOLDER_CLASS() : UiStateHolder() {
+    private val _uiState = MutableStateFlow($UI_STATE_CLASS())
+    val uiState: StateFlow<$UI_STATE_CLASS> = _uiState.asStateFlow()
+
+    fun onUiEvent(event: $UI_EVENT_CLASS) {
+        when (event) {
+            $UI_EVENT_CLASS.OnClick -> TODO()
+        }
+    }
+}
+EOF
+  echo "Created: $HOLDER_FILE"
+fi
+
+################################
+# 3. Screen
+################################
+if [ -f "$SCREEN_FILE" ]; then
+  echo "Skipping (already exists): $SCREEN_FILE"
+else
+  cat > "$SCREEN_FILE" <<EOF
+package $SCREENS_PACKAGE
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kotlinfoundation.kmpstarterkit.designsystem.components.ScreenWithToolbar
+import com.kotlinfoundation.kmpstarterkit.designsystem.theme.AppTheme
+
+@Composable
+fun $SCREEN_CLASS(
+    modifier: Modifier = Modifier,
+    uiStateHolder: $HOLDER_CLASS,
+) {
+    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+
+    $SCREEN_CLASS(
+        modifier = modifier.fillMaxSize(),
+        uiState = uiState,
+        onUiEvent = uiStateHolder::onUiEvent
+    )
+}
+
+@Composable
+fun $SCREEN_CLASS(
+    modifier: Modifier = Modifier,
+    uiState: $UI_STATE_CLASS,
+    onUiEvent: ($UI_EVENT_CLASS) -> Unit
+) {
+    ScreenWithToolbar(
+        modifier = modifier,
+        isScrollableContent = true, // Set to false if content itself has scrollable content such as LazyColumn
+        title = "$SCREEN_CLASS",
+        includeBottomInsets = true // Set to false if bottom nav is visible
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.sectionSpacing)) {
+            Text("$SCREEN_CLASS")
+        }
+    }
+}
+EOF
+  echo "Created: $SCREEN_FILE"
+fi
+
+################################
+# 4. Routes.kt — append route definition
+################################
+if [ -f "$ROUTES_FILE" ]; then
+  if grep -q "data object $ROUTE_CLASS " "$ROUTES_FILE" || \
+     grep -q "data class $ROUTE_CLASS(" "$ROUTES_FILE"; then
+    echo "Skipping route in Routes.kt (already present): $ROUTE_CLASS"
+  elif ! grep -q "// Add new routes below" "$ROUTES_FILE"; then
+    echo "⚠️ Marker '// Add new routes below' missing in Routes.kt — add it before re-running."
+  else
+    # Insert route declaration in reverse so the final order reads top-to-bottom.
+    sed -i '' "/\/\/ Add new routes below/i\\
+data object $ROUTE_CLASS : ScreenRoute\\
+
+" "$ROUTES_FILE"
+    sed -i '' "/data object $ROUTE_CLASS/i\\
+@SerialName(\"$SCREEN_BASE\")
+" "$ROUTES_FILE"
+    sed -i '' "/@SerialName(\"$SCREEN_BASE\")/i\\
+@Serializable
+" "$ROUTES_FILE"
+    echo "Updated: $ROUTES_FILE"
+  fi
+else
+  echo "⚠️ Warning: $ROUTES_FILE not found — skipping route registration."
+fi
+
+################################
+# 5. AppNavigation.kt — imports + entry block
+################################
+if [ -f "$APPNAV_FILE" ]; then
+  # Imports (idempotent)
+  if ! grep -q "^import $SCREENS_PACKAGE.$SCREEN_CLASS$" "$APPNAV_FILE"; then
+    sed -i '' "/^package /a\\
+import $SCREENS_PACKAGE.$SCREEN_CLASS
+" "$APPNAV_FILE"
+  fi
+  if ! grep -q "^import $SCREENS_PACKAGE.$HOLDER_CLASS$" "$APPNAV_FILE"; then
+    sed -i '' "/^package /a\\
+import $SCREENS_PACKAGE.$HOLDER_CLASS
+" "$APPNAV_FILE"
+  fi
+
+  # Entry block (idempotent)
+  if grep -q "entry<$ROUTE_CLASS>" "$APPNAV_FILE"; then
+    echo "Skipping entry in AppNavigation.kt (already present): entry<$ROUTE_CLASS>"
+  elif ! grep -q "// Add new screen entries below" "$APPNAV_FILE"; then
+    echo "⚠️ Marker '// Add new screen entries below' missing in AppNavigation.kt — add it before re-running."
+  else
+    # Insert lines bottom-up (each /i\\ goes right before the previous insert).
+    sed -i '' "/\/\/ Add new screen entries below/i\\
+    }\\
+
+" "$APPNAV_FILE"
+    sed -i '' "/\/\/ Add new screen entries below/i\\
+        $SCREEN_CLASS(uiStateHolder = holder)
+" "$APPNAV_FILE"
+    sed -i '' "/\/\/ Add new screen entries below/i\\
+        val holder = uiStateHolder<$HOLDER_CLASS>()
+" "$APPNAV_FILE"
+    sed -i '' "/\/\/ Add new screen entries below/i\\
+    entry<$ROUTE_CLASS> {
+" "$APPNAV_FILE"
+    echo "Updated: $APPNAV_FILE"
+  fi
+else
+  echo "⚠️ Warning: $APPNAV_FILE not found — skipping nav entry."
+fi
+
+################################
+# 6. Di.kt — import + viewModelOf
+################################
+if [ -f "$DI_FILE" ]; then
+  if ! grep -q "^import $SCREENS_PACKAGE.$HOLDER_CLASS$" "$DI_FILE"; then
+    sed -i '' "/^package /a\\
+import $SCREENS_PACKAGE.$HOLDER_CLASS
+" "$DI_FILE"
+  fi
+
+  if grep -q "viewModelOf(::$HOLDER_CLASS)" "$DI_FILE"; then
+    echo "Skipping DI registration (already present): $HOLDER_CLASS"
+  elif ! grep -q "// Add new view models below" "$DI_FILE"; then
+    echo "⚠️ Marker '// Add new view models below' missing in Di.kt — add it before re-running."
+  else
+    sed -i '' "/\/\/ Add new view models below/i\\
+    viewModelOf(::$HOLDER_CLASS)
+" "$DI_FILE"
+    echo "Updated: $DI_FILE"
+  fi
+else
+  echo "⚠️ Warning: $DI_FILE not found — skipping DI registration."
+fi
+
+echo "✅ Screen $SCREEN_BASE generated and wired up."
+echo "   You probably want to customise navigation callbacks in the entry<> block — see AppNavigation.kt."

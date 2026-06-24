@@ -1,0 +1,456 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+:root {
+    /* Main Colors */
+    --primary: #4A148C; 
+    --onPrimary: #FFFFFF; 
+    
+    /* Complementary Secondary Color */
+    --secondary: #2C6B85; 
+    --onSecondary: #FFFFFF; 
+    
+    /* Hero Section */
+    --heroBg: #212121; 
+    --onHeroBg: #FFFFFF;
+    
+    /* Background and Text Colors */
+    --background: #F5F5F5;
+    --onBackground: #333333; 
+    
+    /* Footer */
+    --footerBg: #121212; 
+    --onFooterBg: #FFFFFF; 
+
+}
+
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.75;
+    color: var(--onBackground);
+    background: var(--background);
+    margin: 0;
+    padding: 0;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Typography */
+h1, h2, h3 {
+    color: var(--onBackground);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+}
+
+p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--onBackground);
+    margin-bottom: 1.2rem;
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh;
+    padding: 50px 10%;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: var(--onPrimary);
+    text-align: start;
+    animation: fadeInUp 1s ease-out forwards;
+
+}
+
+
+/* Logo Container */
+.hero .logo-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-direction: row; /* Adjust for horizontal layout */
+}
+
+/* Logo Image */
+.hero .logo-container .logo {
+    max-width: 80px;
+    height: auto;
+    margin-right: 15px; /* Space between logo and app name */
+    animation: fadeInUp 1s ease-out;
+
+}
+
+/* App Name */
+.hero .logo-container .app-name {
+    font-size: 3rem;
+    font-weight: 800;
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-content {
+    max-width: 600px;
+    text-align: start;
+}
+
+.hero-image img {
+    width: 100%;
+    max-width: 400px;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--onPrimary);
+    animation: slideInLeft 1s ease-out;
+
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--onPrimary);
+    animation: slideInRight 1s ease-out;
+
+}
+
+
+
+.hero .cta-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: start;
+}
+
+.hero .cta-buttons img {
+    height: 60px;
+    transition: transform 0.3s ease;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.cta-buttons img {
+    height: 50px;
+    transition: transform 0.3s ease;
+}
+
+.cta-buttons img:hover {
+    transform: scale(1.1);
+}
+
+/* Sections */
+.section {
+    padding: 40px 5%;
+    text-align: center;
+    background-color: var(--background);
+    animation: fadeInUp 1.5s ease-out 1s forwards;
+}
+
+.section.variation2 {
+    background-color: var(--secondary);
+}
+.section.variation2 h2 {
+    color: var(--onSecondary);
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    color: var(--primary);
+}
+
+.section p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--onBackground);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 1s ease-out forwards;
+
+}
+.card p {
+    color: var(--secondary);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.8rem;
+    color: var(--primary);
+}
+
+/* Call-to-Action Section */
+.cta {
+    background: var(--primary);
+    color: var(--onPrimary);
+    padding: 50px 10%;
+    border-radius: 20px;
+    margin: 40px auto;
+    max-width: 70%;
+    text-align: center;
+    animation: fadeInUp 1.5s ease-out 1.5s forwards;
+
+}
+
+
+.cta h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--onPrimary);
+
+}
+
+.cta p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: var(--onPrimary);
+}
+
+/* Footer */
+footer {
+    background: var(--footerBg);
+    color: var(--onFooterBg);
+    padding: 20px 10%;
+    text-align: center;
+    font-size: 0.9rem;
+    animation: fadeInUp 1.5s ease-out 1.3s forwards;
+
+}
+
+footer a {
+    color: var(--onFooterBg);
+    margin: 0 8px;
+    text-decoration: none;
+    font-weight: 500;
+}
+footer a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+footer p {
+    color: var(--onFooterBg);
+}
+
+
+ /* Keyframe Animations */
+ @keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive Design */
+
+
+@media (max-width: 1300px) {
+    .hero-image img {
+        max-width: 300px;;
+    }
+}
+
+@media (max-width: 1200px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        align-items: center; /* Center content horizontally */
+        justify-content: center; 
+    }
+    .hero-image img {
+        margin-top: 20px;
+    }
+    .hero-content {
+        text-align: center; /* Center text content */
+    }
+    .hero .cta-buttons {
+        justify-content: center; /* Center CTA buttons */
+    }
+
+    .hero .logo-container {
+        justify-content: center; /* Center the logo container horizontally */
+    }
+
+}
+
+
+
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        align-items: center; /* Center content horizontally */
+        justify-content: center; 
+        padding: 50px 5%;
+    }
+    .hero-content {
+        text-align: center; /* Center text content */
+    }
+    .hero .cta-buttons {
+        justify-content: center; /* Center CTA buttons */
+    }
+
+    .hero .logo-container {
+        justify-content: center; /* Center the logo container horizontally */
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero .logo-container .logo {
+        max-width: 60px; /* Adjust logo size for tablet */
+    }
+
+    .hero .logo-container .app-name {
+        font-size: 2.5rem; /* Adjust app name size for tablet */
+    }
+
+    .cta-buttons img {
+        height: 45px; /* Adjust CTA button size */
+    }
+
+
+    .section h2 {
+        font-size: 1.75rem;
+    }
+
+    .cta h2 {
+        font-size: 1.8rem;
+    }
+
+    .cta-buttons img {
+        height: 35px; /* Adjust CTA button size for mobile */
+    }
+
+    .cta {
+        padding: 30px 7%;
+        max-width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .hero {
+        flex-direction: column;
+        padding: 40px 5%;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero .logo-container .logo {
+        max-width: 50px; /* Adjust logo size for mobile */
+    }
+
+    .hero .logo-container .app-name {
+        font-size: 2rem; /* Adjust app name size for mobile */
+    }
+
+    .cta-buttons img {
+        height: 30px; /* Adjust CTA button size for mobile */
+    }
+
+    .hero .cta-buttons img {
+        height: 40px; /* Adjust CTA button size for mobile */
+    }
+
+
+    .section {
+        padding: 10px;
+    }
+
+    .cta {
+        padding: 20px 4%;
+        max-width: 90%;
+    }
+
+    .cta h2 {
+        font-size: 1.6rem;
+    }
+
+    .cta p {
+        font-size: 0.95rem;
+    }
+}

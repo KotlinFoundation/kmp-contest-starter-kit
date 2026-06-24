@@ -1,0 +1,34 @@
+
+*.iml
+.gradle
+.idea
+.kotlin
+.DS_Store
+build
+*/build
+captures
+.externalNativeBuild
+.cxx
+local.properties
+xcuserdata/
+Pods/
+*.jks
+*yarn.lock
+
+# Android distribution
+distribution/android/keystore/keystore.jks
+distribution/android/*.aab
+distribution/android/*.apk
+distribution/android/keystore/keystore.properties
+distribution/android/google-service-app-publisher.json
+
+# iOS distribution
+distribution/ios/*.ipa
+distribution/ios/*.zip
+distribution/ios/*.p8
+distribution/ios/appstore-publisher.json
+
+# Gradle-generated SwiftPM integration work dir (regenerated on each iOS build).
+# Canonical SwiftPM artifacts are committed under iosApp/ (Package.resolved +
+# KotlinMultiplatformLinkedPackage); this is transient build output.
+.swiftpm-locks/
