@@ -44,11 +44,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun GalleryScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: GalleryUiStateHolder,
+    viewModel: GalleryViewModel,
     onNavigateToResult: (id: String) -> Unit = {},
     onNavigateToHome: () -> Unit = {},
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     GalleryScreen(
         modifier = modifier.fillMaxSize(),
@@ -57,7 +57,7 @@ fun GalleryScreen(
             when (event) {
                 is GalleryUiEvent.OnClickItem -> onNavigateToResult(event.item.id)
                 GalleryUiEvent.OnClickGenerate -> onNavigateToHome()
-                else -> uiStateHolder.onUiEvent(event)
+                else -> viewModel.onUiEvent(event)
             }
         },
     )

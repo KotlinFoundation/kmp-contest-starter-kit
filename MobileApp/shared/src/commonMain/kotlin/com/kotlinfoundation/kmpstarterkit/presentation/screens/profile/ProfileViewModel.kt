@@ -1,11 +1,11 @@
 package com.kotlinfoundation.kmpstarterkit.presentation.screens.profile
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kotlinfoundation.kmpstarterkit.auth.api.AuthRecentLoginRequiredException
 import com.kotlinfoundation.kmpstarterkit.data.repository.UserRepository
 import com.kotlinfoundation.kmpstarterkit.domain.exceptions.UnAuthorizedException
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
 import com.kotlinfoundation.kmpstarterkit.util.logging.AppLogger
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ProfileUiStateHolder(private val userRepository: UserRepository) : UiStateHolder() {
+class ProfileViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val currentUserFlow = userRepository.currentUser
         .onEach { result ->
@@ -34,7 +34,7 @@ class ProfileUiStateHolder(private val userRepository: UserRepository) : UiState
     val uiState: StateFlow<ProfileUiState> =
         combine(_uiState, currentUserFlow) { updatedUiState, _ -> updatedUiState }
             .stateIn(
-                uiStateHolderScope,
+                viewModelScope,
                 SharingStarted.Lazily,
                 ProfileUiState(isLoading = true),
             )
@@ -43,11 +43,11 @@ class ProfileUiStateHolder(private val userRepository: UserRepository) : UiState
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun onDismissDeleteUserConfirmationDialog() = uiStateHolderScope.launch {
+    fun onDismissDeleteUserConfirmationDialog() = viewModelScope.launch {
         _uiState.update { it.copy(deleteUserDialogShown = false) }
     }
 
-    fun onConfirmDeleteAccount() = uiStateHolderScope.launch {
+    fun onConfirmDeleteAccount() = viewModelScope.launch {
         _uiState.update { it.copy(deleteUserDialogShown = false, isLoading = true) }
         userRepository.deleteAccount()
             .onSuccess {
@@ -64,7 +64,7 @@ class ProfileUiStateHolder(private val userRepository: UserRepository) : UiState
             }
     }
 
-    fun onUiEvent(event: ProfileScreenUiEvent) = uiStateHolderScope.launch {
+    fun onUiEvent(event: ProfileScreenUiEvent) = viewModelScope.launch {
         when (event) {
             ProfileScreenUiEvent.OnClickDeleteAccount -> {
                 _uiState.update { it.copy(deleteUserDialogShown = true) }

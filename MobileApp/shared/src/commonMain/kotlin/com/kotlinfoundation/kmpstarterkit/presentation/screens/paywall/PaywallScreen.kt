@@ -21,16 +21,16 @@ import com.kotlinfoundation.kmpstarterkit.util.extensions.asFormattedDate
 @Composable
 fun PaywallScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: PaywallUiStateHolder,
+    viewModel: PaywallViewModel,
     onDismiss: () -> Unit,
     onSignInRequired: () -> Unit,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     if (uiState.signInActionRequired) {
         LaunchedEffect(uiState.signInActionRequired) {
             onSignInRequired()
-            uiStateHolder.onSignInActionHandled()
+            viewModel.onSignInActionHandled()
         }
     }
 
@@ -49,7 +49,7 @@ fun PaywallScreen(
             expirationDate = subscription.expirationDateInMillis?.asFormattedDate(),
             onContinue = {
                 onDismiss()
-                uiStateHolder.onSuccessfulPurchaseHandled()
+                viewModel.onSuccessfulPurchaseHandled()
             },
         )
         return
@@ -59,14 +59,14 @@ fun PaywallScreen(
         AppDialog(
             type = DialogType.ERROR,
             text = uiState.errorMessage?.value,
-            onConfirm = { uiStateHolder.onMessageShown() },
+            onConfirm = { viewModel.onMessageShown() },
         )
     }
 
     PaywallScreen(
         modifier = modifier.fillMaxSize().background(AppTheme.colors.background),
         uiState = uiState,
-        onUiEvent = uiStateHolder::onUiEvent,
+        onUiEvent = viewModel::onUiEvent,
         onDismiss = onDismiss,
     )
 }

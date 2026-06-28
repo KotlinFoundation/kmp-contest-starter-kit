@@ -49,11 +49,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: ProfileUiStateHolder,
+    viewModel: ProfileViewModel,
     onSignInRequired: () -> Unit,
     onNavigateToBack: () -> Unit,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     if (uiState.signInActionRequired) {
         LaunchedEffect(uiState) {
@@ -62,8 +62,8 @@ fun ProfileScreen(
     }
     if (uiState.deleteUserDialogShown) {
         DeleteUserConfirmation(
-            onConfirm = uiStateHolder::onConfirmDeleteAccount,
-            onDismiss = uiStateHolder::onDismissDeleteUserConfirmationDialog,
+            onConfirm = viewModel::onConfirmDeleteAccount,
+            onDismiss = viewModel::onDismissDeleteUserConfirmationDialog,
         )
     }
 
@@ -71,7 +71,7 @@ fun ProfileScreen(
         AppDialog(
             type = DialogType.ERROR,
             text = uiState.errorMessage,
-            onConfirm = { uiStateHolder.onErrorMessageShown() },
+            onConfirm = { viewModel.onErrorMessageShown() },
         )
     }
     if (uiState.isLoading) {
@@ -90,7 +90,7 @@ fun ProfileScreen(
                 ProfileScreen(
                     modifier = Modifier.fillMaxSize(),
                     currentUser = it,
-                    onUiEvent = uiStateHolder::onUiEvent,
+                    onUiEvent = viewModel::onUiEvent,
                 )
             }
         }

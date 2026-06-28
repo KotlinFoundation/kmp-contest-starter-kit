@@ -71,13 +71,13 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: HomeUiStateHolder,
+    viewModel: HomeViewModel,
     onPremiumRequired: () -> Unit,
     onMoreCreditsNeeded: () -> Unit,
     onAuthRequired: () -> Unit,
     onGenerationResult: (GenerationOutput) -> Unit,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showConfetti by remember { mutableStateOf(false) }
 
     // Push notifications (FCM via kmpnotifier) need the runtime permission on Android 13+ / iOS.
@@ -90,21 +90,21 @@ fun HomeScreen(
     LaunchedEffect(uiState.isPremiumRequired) {
         if (uiState.isPremiumRequired) {
             onPremiumRequired()
-            uiStateHolder.onPremiumRequiredHandled()
+            viewModel.onPremiumRequiredHandled()
         }
     }
 
     LaunchedEffect(uiState.isMoreCreditsRequired) {
         if (uiState.isMoreCreditsRequired) {
             onMoreCreditsNeeded()
-            uiStateHolder.onMoreCreditsRequiredHandled()
+            viewModel.onMoreCreditsRequiredHandled()
         }
     }
 
     LaunchedEffect(uiState.isAuthRequired) {
         if (uiState.isAuthRequired) {
             onAuthRequired()
-            uiStateHolder.onAuthRequiredHandled()
+            viewModel.onAuthRequiredHandled()
         }
     }
 
@@ -113,7 +113,7 @@ fun HomeScreen(
             showConfetti = true
             delay(100)
             onGenerationResult(generatedResult)
-            uiStateHolder.onGenerationResultHandled()
+            viewModel.onGenerationResultHandled()
             showConfetti = false
         }
     }
@@ -128,7 +128,7 @@ fun HomeScreen(
     HomeScreen(
         modifier = modifier.fillMaxSize(),
         uiState = uiState,
-        onUiEvent = uiStateHolder::onUiEvent,
+        onUiEvent = viewModel::onUiEvent,
     )
 
     AnimatedVisibility(visible = showConfetti, enter = scaleIn() + fadeIn(), exit = fadeOut()) {

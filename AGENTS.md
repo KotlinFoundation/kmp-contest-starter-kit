@@ -33,7 +33,7 @@ MobileApp/
 │   │       ├── data/source/local/   # Room 3 @Database + @Entity + @Dao + DatabaseModule (Koin)
 │   │       └── presentation/
 │   │           ├── navigation/  # Routes.kt, NavigationState.kt, Navigator.kt, AppNavigation.kt
-│   │           ├── screens/     # Per-feature folders: <feature>/{*Screen,*UiState,*UiStateHolder}.kt
+│   │           ├── screens/     # Per-feature folders: <feature>/{*Screen,*UiState,*ViewModel}.kt
 │   │           ├── components/  # Shared composables
 │   │           └── theme/       # Colors, typography, theme
 │   ├── src/androidMain/     # Android platform impls (Firebase, AdMob, DatabaseProvider, etc.)
@@ -123,7 +123,7 @@ All Gradle commands run from `MobileApp/`.
 - **iOS tests**: Do NOT run unless explicitly required.
 
 ### Test layout
-- Unit / Flow / state-holder tests: `shared/src/commonTest/kotlin/`. Use `kotlinx-coroutines-test` for `runTest` + `StandardTestDispatcher`/`UnconfinedTestDispatcher`. No Turbine — collect `Flow` emissions via `launch { flow.toList(emissions) }` if needed.
+- Unit / Flow / ViewModel tests: `shared/src/commonTest/kotlin/`. Use `kotlinx-coroutines-test` for `runTest` + `StandardTestDispatcher`/`UnconfinedTestDispatcher`. No Turbine — collect `Flow` emissions via `launch { flow.toList(emissions) }` if needed.
 - Compose UI tests: `shared/src/commonTest/screentest/` (multiplatform via `runComposeUiTest`) for tests runnable on both JVM and Android host, or `shared/src/jvmTest/` for JVM-only Compose UI tests.
 - Screenshot tests (optional, local only — NOT a PR gate, goldens are not committed): Roborazzi auto-generates a parameterized Robolectric test from the `roborazzi { generateComposePreviewRobolectricTests { … } }` block in `shared/build.gradle.kts`. Record baselines with `./gradlew :shared:recordRoborazziAndroidHostTest`, compare with `./gradlew :shared:verifyRoborazziAndroidHostTest`.
 
@@ -140,7 +140,7 @@ Always use `androidx.compose.ui.tooling.preview.Preview`, NOT `org.jetbrains.com
 
 ### Layer Overview
 ```
-Presentation (screens, UiStateHolders, components)
+Presentation (screens, ViewModels, components)
     ↓ depends on
 Domain (models, exceptions, use cases only when justified)
     ↓ depends on
@@ -198,15 +198,15 @@ suspend fun getJobs(page: Int, limit: Int): Result<List<Job>> =
 - Organize by feature: `presentation/screens/<feature>/`
 - Shared components: `presentation/components/`
 
-**UiStateHolder pattern** (ViewModel equivalent):
+**ViewModel pattern:**
 ```kotlin
-class HomeUiStateHolder(
+class HomeViewModel(
     private val repository: Repository
-) : UiStateHolder() {
+) : ViewModel() {
     val uiState: StateFlow<HomeUiState> = combine(
         repository.dataFlow,
     ) { data -> HomeUiState(/* map */) }
-        .stateIn(uiStateHolderScope, SharingStarted.Eagerly, HomeUiState())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState())
 
     fun onUiEvent(event: HomeUiEvent) {
         when (event) { /* handle */ }
@@ -216,11 +216,11 @@ class HomeUiStateHolder(
 
 **Screen composable dual-overload pattern:**
 ```kotlin
-// Entry point with StateHolder
+// Entry point with ViewModel
 @Composable
-fun HomeScreen(uiStateHolder: HomeUiStateHolder, onNavigate: (dest) -> Unit) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
-    HomeScreen(uiState = uiState, onUiEvent = uiStateHolder::onUiEvent, onNavigate = onNavigate)
+fun HomeScreen(viewModel: HomeViewModel, onNavigate: (dest) -> Unit) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    HomeScreen(uiState = uiState, onUiEvent = viewModel::onUiEvent, onNavigate = onNavigate)
 }
 
 // Pure composable for testing/previews
@@ -250,7 +250,7 @@ sealed interface HomeUiEvent {
 - Platform modules: `androidMain/di/`, `iosMain/di/` using `expect`/`actual`
 - Scoping:
   - `singleOf()` → repositories, network clients, databases, app-wide services
-  - `factoryOf()` / `viewModelOf()` → UiStateHolders, validators, screen-scoped services
+  - `factoryOf()` / `viewModelOf()` → ViewModels, validators, screen-scoped services
   - `bind` → only when multiple implementations exist
 - Initialization: `root/AppInitializer.kt` is the bootstrap — `startKoin { … modules(appModules) … }` (loaded from `Di.kt`) plus one-time startup side effects (logging, analytics, notifications, billing, ads, anonymous sign-in). Each platform entry point calls `AppInitializer.initialize { }` once.
 
@@ -304,7 +304,7 @@ Each platform uses its **native** launch screen — no library.
 - `LocalNavigator: Navigator` composition local for navigation access from any screen.
 - Top-level (tab) entries use `noAnimationMetadata` so tab switches are instant; pushes use the default forward animation.
 - ViewModels are scoped per `NavEntry` via `rememberViewModelStoreNavEntryDecorator` (no separate "navigator-scoped" helper).
-- Feature folders under `presentation/screens/<feature>/` contain **only** `*Screen.kt`, `*UiState.kt`, `*UiStateHolder.kt` — never a `*ScreenRoute.kt`.
+- Feature folders under `presentation/screens/<feature>/` contain **only** `*Screen.kt`, `*UiState.kt`, `*ViewModel.kt` — never a `*ScreenRoute.kt`.
 
 ### Agent Skills
 Reusable, agent-agnostic skills live in **`skills/<name>/SKILL.md`** (open Agent Skills format; `.claude/skills` symlinks there for Claude Code). Read the matching skill before doing the task — they wrap the scaffolding scripts and quality gates with the project-specific rules:
@@ -326,10 +326,10 @@ Reusable, agent-agnostic skills live in **`skills/<name>/SKILL.md`** (open Agent
 ./scripts/generate_screen.sh YourScreenName
 ```
 
-It generates `*Screen.kt`, `*UiState.kt`, `*UiStateHolder.kt` under `presentation/screens/yourscreenname/` **and** wires the screen up end-to-end:
+It generates `*Screen.kt`, `*UiState.kt`, `*ViewModel.kt` under `presentation/screens/yourscreenname/` **and** wires the screen up end-to-end:
 - Inserts the route into `presentation/navigation/Routes.kt`
 - Inserts an `entry<YourScreenNameScreenRoute> { … }` stub + imports into `presentation/navigation/AppNavigation.kt`
-- Inserts `viewModelOf(::YourScreenNameUiStateHolder)` + import into `root/Di.kt`
+- Inserts `viewModelOf(::YourScreenNameViewModel)` + import into `root/Di.kt`
 
 The script is idempotent (safe to re-run). Insertion points in the three target files are marked with `// Add new … below — generate_screen.sh inserts here.` comments — leave those alone. After running, edit the generated `entry<>` block in `AppNavigation.kt` to add navigation callbacks the screen needs.
 
@@ -403,7 +403,7 @@ Location: `shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/prese
 Three-piece architecture that keeps Compose screens display-only:
 
 - **`PaywallScreen.kt`** — thin router. Owns the success-view overlay and error dialog, then dispatches to `SubscriptionPaywallScreen` or `CreditPackPaywallScreen` based on `PaywallUiState.mode`. Does **not** wrap in `ScreenWithToolbar` — each child screen owns its own toolbar so we don't double-pad horizontally.
-- **`PaywallUiStateHolder.kt`** — lifecycle only: fetch packages, default-selection, buy / restore / success / error. Delegates all formatting to the mapper.
+- **`PaywallViewModel.kt`** — lifecycle only: fetch packages, default-selection, buy / restore / success / error. Delegates all formatting to the mapper.
 - **`PaywallUiStateMapper.kt`** — pure, stateless. Public entry points: `map(rawPackages, selectedId, mode) → MappedPaywall` and `pickDefaultSelection(rawPackages, mode) → PurchasePackageId?`. Both subscription and credit-pack flows share the same `MappedPaywall { packages, ctaText, aboveCtaText, belowCtaText }` shape. Inject via `singleOf(::PaywallUiStateMapper)` (already wired in `presentationModule`). Unit-test it without Koin/coroutines.
 - **`PaywallUiState.kt`** — `PaywallUiState`, `PaywallPackageUiState`, `PaywallUiEvent`, `PaywallMode { SUBSCRIPTION, CREDIT_PACK }`. Footer copy uses position-named fields (`aboveCtaText` / `belowCtaText`) — clearer than `reassuranceText` / `disclosureText`.
 - **`PaywallPreviewData.kt`** — `internal object` with `subscriptionState(trialAvailable)`, `paidIntroSubscriptionState()`, `creditPackState()`, and package builders. Display fixtures only — they bypass the mapper so `@Preview` doesn't depend on string resources or billing logic.
@@ -495,7 +495,7 @@ In-depth patterns with code examples for each architectural layer:
 - `api_services.md` — Ktor client, DTO conventions, testing with MockEngine
 - `repository.md` — BackgroundExecutor patterns, correct/incorrect examples
 - `domain.md` — Model design, exceptions, mapping, boundaries
-- `presentation_layer.md` — UiStateHolder, screen architecture, component design
+- `presentation_layer.md` — ViewModel, screen architecture, component design
 - `dependency_injection.md` — Koin module organization, scoping, platform modules
 - `coroutines.md` — Scopes, dispatchers, structured concurrency, testing
 - `utility_organization.md` — Extension functions, platform abstraction, singleton patterns

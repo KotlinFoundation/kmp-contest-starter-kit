@@ -18,15 +18,15 @@ import com.kotlinfoundation.kmpstarterkit.data.source.remote.apiservices.ai.Open
 import com.kotlinfoundation.kmpstarterkit.data.source.remote.apiservices.ai.ReplicateApiService
 import com.kotlinfoundation.kmpstarterkit.domain.model.credit.creditSystemConfig
 import com.kotlinfoundation.kmpstarterkit.domain.usecase.AiGenerationProvider
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.account.AccountUiStateHolder
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.creditbalance.CreditBalanceUiStateHolder
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.gallery.GalleryUiStateHolder
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.generationresult.GenerationResultUiStateHolder
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.home.HomeUiStateHolder
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.onboarding.OnBoardingUiStateHolder
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall.PaywallUiStateHolder
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.profile.ProfileUiStateHolder
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.subscriptions.SubscriptionsUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.account.AccountViewModel
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.creditbalance.CreditBalanceViewModel
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.gallery.GalleryViewModel
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.generationresult.GenerationResultViewModel
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.home.HomeViewModel
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.onboarding.OnBoardingViewModel
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall.PaywallViewModel
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.profile.ProfileViewModel
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.subscriptions.SubscriptionsViewModel
 import com.kotlinfoundation.kmpstarterkit.subscription.api.SubscriptionProvider
 import com.kotlinfoundation.kmpstarterkit.subscription.api.SubscriptionProviderFactory
 import com.kotlinfoundation.kmpstarterkit.subscription.api.SubscriptionProviderUi
@@ -49,7 +49,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Koin module graph for the shared app. [AppInitializer] loads [appModules] at startup.
  * Layered by concern: [domainModule] (pure, empty), [dataModule] (infra + repositories),
- * [presentationModule] (UiStateHolders), plus the per-target expect/actual `platformModule`.
+ * [presentationModule] (ViewModels), plus the per-target expect/actual `platformModule`.
  */
 
 // Empty by design — the domain layer is pure (models/exceptions), nothing to inject.
@@ -100,14 +100,14 @@ private val dataModule = module {
     initializeCreditSystem()
 }
 
-// UiStateHolders (ViewModels), scoped per NavEntry. PaywallUiStateHolder takes a placementId param.
+// ViewModels, scoped per NavEntry. PaywallViewModel takes a placementId param.
 private val presentationModule = module {
-    viewModelOf(::OnBoardingUiStateHolder)
-    viewModelOf(::HomeUiStateHolder)
-    viewModelOf(::GalleryUiStateHolder)
-    viewModelOf(::ProfileUiStateHolder)
+    viewModelOf(::OnBoardingViewModel)
+    viewModelOf(::HomeViewModel)
+    viewModelOf(::GalleryViewModel)
+    viewModelOf(::ProfileViewModel)
     viewModel { (placementId: String?) ->
-        PaywallUiStateHolder(
+        PaywallViewModel(
             placementId = placementId,
             subscriptionRepository = get(),
             creditRepository = get(),
@@ -115,10 +115,10 @@ private val presentationModule = module {
             featureFlagManager = get(),
         )
     }
-    viewModelOf(::AccountUiStateHolder)
-    viewModelOf(::SubscriptionsUiStateHolder)
-    viewModelOf(::GenerationResultUiStateHolder)
-    viewModelOf(::CreditBalanceUiStateHolder)
+    viewModelOf(::AccountViewModel)
+    viewModelOf(::SubscriptionsViewModel)
+    viewModelOf(::GenerationResultViewModel)
+    viewModelOf(::CreditBalanceViewModel)
 
     // Add new view models below — generate_screen.sh inserts here.
 }

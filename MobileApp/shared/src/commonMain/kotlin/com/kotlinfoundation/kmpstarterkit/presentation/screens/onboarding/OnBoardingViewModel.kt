@@ -1,17 +1,17 @@
 package com.kotlinfoundation.kmpstarterkit.presentation.screens.onboarding
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kotlinfoundation.kmpstarterkit.data.source.preferences.UserPreferences
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class OnBoardingUiStateHolder(
+class OnBoardingViewModel(
     private val userPreferences: UserPreferences,
-) : UiStateHolder() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(OnBoardingUiState(isLoading = true))
     val uiState: StateFlow<OnBoardingUiState> = _uiState.asStateFlow()
 
@@ -19,7 +19,7 @@ class OnBoardingUiStateHolder(
         checkIfOnBoardIsShown()
     }
 
-    private fun checkIfOnBoardIsShown() = uiStateHolderScope.launch {
+    private fun checkIfOnBoardIsShown() = viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }
         if (userPreferences.getBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN)) {
             _uiState.update { it.copy(onBoardIsShown = true) }
@@ -28,7 +28,7 @@ class OnBoardingUiStateHolder(
         }
     }
 
-    fun onUiEvent(event: OnBoardingUiEvent) = uiStateHolderScope.launch {
+    fun onUiEvent(event: OnBoardingUiEvent) = viewModelScope.launch {
         when (event) {
             OnBoardingUiEvent.OnClickStart -> {
                 onBoardShown()
@@ -40,7 +40,7 @@ class OnBoardingUiStateHolder(
         }
     }
 
-    fun onPaywallEventHandled() = uiStateHolderScope.launch {
+    fun onPaywallEventHandled() = viewModelScope.launch {
         _uiState.update { it.copy(isPremiumRequired = false) }
         onBoardShown()
     }

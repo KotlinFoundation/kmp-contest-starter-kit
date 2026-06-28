@@ -65,7 +65,7 @@ class PaywallUiStateMapper {
 
     /**
      * Slice of [PaywallUiState] that the mapper owns. Whatever isn't returned
-     * here (loading, errors, success state, etc.) is managed by the holder.
+     * here (loading, errors, success state, etc.) is managed by the view model.
      */
     data class MappedPaywall(
         val packages: List<PaywallPackageUiState>,

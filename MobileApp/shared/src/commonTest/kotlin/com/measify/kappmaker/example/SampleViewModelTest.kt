@@ -2,8 +2,8 @@
 
 package com.kotlinfoundation.kmpstarterkit.example
 
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,17 +23,17 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * Demonstrates how to test a [UiStateHolder] that exposes a `StateFlow`.
+ * Demonstrates how to test a `ViewModel` that exposes a `StateFlow`.
  *
- * Because `UiStateHolder` extends `androidx.lifecycle.ViewModel`, its `viewModelScope`
- * runs on `Dispatchers.Main`. Tests must override Main with a `TestDispatcher` via
+ * Because a `ViewModel`'s `viewModelScope` runs on `Dispatchers.Main`, tests must
+ * override Main with a `TestDispatcher` via
  * `Dispatchers.setMain(...)` and reset it after each test.
  *
  * Flow assertions use plain `kotlinx-coroutines-test` — collect emissions into a list
  * via a launched coroutine on an `UnconfinedTestDispatcher`, then advance the scheduler
  * until idle. No external library (e.g. Turbine) is needed.
  */
-class SampleUiStateHolderTest {
+class SampleViewModelTest {
     private val mainDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -48,15 +48,15 @@ class SampleUiStateHolderTest {
 
     @Test
     fun `incrementing emits initial state then updated state`() = runTest {
-        val holder = SampleCounterUiStateHolder()
+        val viewModel = SampleCounterViewModel()
         val emissions = mutableListOf<SampleCounterUiState>()
         val collectorJob =
             launch(UnconfinedTestDispatcher(testScheduler)) {
-                holder.uiState.toList(emissions)
+                viewModel.uiState.toList(emissions)
             }
 
-        holder.onUiEvent(SampleCounterUiEvent.Increment)
-        holder.onUiEvent(SampleCounterUiEvent.Increment)
+        viewModel.onUiEvent(SampleCounterUiEvent.Increment)
+        viewModel.onUiEvent(SampleCounterUiEvent.Increment)
         advanceUntilIdle()
 
         assertEquals(SampleCounterUiState(count = 0), emissions.first())
@@ -70,12 +70,12 @@ class SampleUiStateHolderTest {
         data object Increment : SampleCounterUiEvent
     }
 
-    private class SampleCounterUiStateHolder : UiStateHolder() {
+    private class SampleCounterViewModel : ViewModel() {
         private val _uiState = MutableStateFlow(SampleCounterUiState())
         val uiState: StateFlow<SampleCounterUiState> = _uiState.asStateFlow()
 
         @Suppress("unused")
-        private val keepScope = uiStateHolderScope // touch the field so the import isn't pruned
+        private val keepScope = viewModelScope // touch the field so the import isn't pruned
 
         fun onUiEvent(event: SampleCounterUiEvent) {
             when (event) {

@@ -39,10 +39,10 @@ val dataModule = module {
 
 // PresentationModule.kt
 val presentationModule = module {
-    // UiStateHolders with factory scope for screen lifecycle
-    factoryOf(::HomeUiStateHolder)
-    factoryOf(::PaywallUiStateHolder)
-    factoryOf(::OnboardingUiStateHolder)
+    // ViewModels with factory scope for screen lifecycle
+    factoryOf(::HomeViewModel)
+    factoryOf(::PaywallViewModel)
+    factoryOf(::OnboardingViewModel)
 }
 
 // UtilModule.kt
@@ -90,13 +90,13 @@ singleOf(::DatabaseInstance)
 
 // Factory for stateless services and UI components
 factoryOf(::DataValidator)
-factoryOf(::HomeUiStateHolder)
+factoryOf(::HomeViewModel)
 factoryOf(::PaymentProcessor)
 ```
 
 ### Scope Guidelines
 - **Single**: Repositories, network clients, databases, application-wide services
-- **Factory**: UiStateHolders, validators, processors, screen-scoped services
+- **Factory**: ViewModels, validators, processors, screen-scoped services
 - **Scoped**: Use sparingly, only for specific lifecycle requirements
 
 ## Interface Binding
@@ -256,6 +256,6 @@ val platformModule = module {
 
 ## Alignment with Architecture
 - Repositories and services use singleton scope for state consistency
-- UiStateHolders use factory scope for proper lifecycle management
+- ViewModels use factory scope for proper lifecycle management
 - Platform abstractions follow expect/actual patterns
 - Cross-cutting concerns (logging, analytics) use multiple binding patterns

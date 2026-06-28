@@ -29,11 +29,11 @@ enum class OnBoardingScreenStyle {
 fun OnBoardingScreen(
     modifier: Modifier = Modifier,
     style: OnBoardingScreenStyle,
-    uiStateHolder: OnBoardingUiStateHolder,
+    viewModel: OnBoardingViewModel,
     onNavigateMain: () -> Unit,
     onNavigatePaywall: () -> Unit,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     if (uiState.onBoardIsShown) {
         LaunchedEffect(uiState.onBoardIsShown) {
@@ -44,7 +44,7 @@ fun OnBoardingScreen(
     if (uiState.isPremiumRequired) {
         LaunchedEffect(uiState.isPremiumRequired) {
             onNavigatePaywall()
-            uiStateHolder.onPaywallEventHandled()
+            viewModel.onPaywallEventHandled()
         }
     }
 
@@ -62,7 +62,7 @@ fun OnBoardingScreen(
                     OnBoardingScreenVariation1(
                         modifier = Modifier.fillMaxSize(),
                         uiState = uiState,
-                        onUiEvent = uiStateHolder::onUiEvent,
+                        onUiEvent = viewModel::onUiEvent,
                     )
                 }
 
@@ -70,7 +70,7 @@ fun OnBoardingScreen(
                     OnBoardingScreenVariation2(
                         modifier = Modifier.fillMaxSize(),
                         uiState = uiState,
-                        onUiEvent = uiStateHolder::onUiEvent,
+                        onUiEvent = viewModel::onUiEvent,
                     )
                 }
             }

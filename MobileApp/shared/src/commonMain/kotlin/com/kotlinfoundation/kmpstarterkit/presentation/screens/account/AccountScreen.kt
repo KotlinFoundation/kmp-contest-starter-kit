@@ -58,19 +58,19 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun AccountScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: AccountUiStateHolder,
+    viewModel: AccountViewModel,
     onNavigateHelpAndSupport: () -> Unit,
     onNavigatePaywall: () -> Unit,
     onNavigateSignIn: () -> Unit,
     onNavigateProfile: () -> Unit,
     onNavigateSubscriptions: () -> Unit,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     if (uiState.isLogoutDialogVisible) {
         LogoutModalBottomSheet(
-            onConfirm = { uiStateHolder.onUiEvent(AccountUiEvent.OnLogoutConfirmClick) },
-            onDismiss = { uiStateHolder.onUiEvent(AccountUiEvent.OnLogoutDialogDismiss) },
+            onConfirm = { viewModel.onUiEvent(AccountUiEvent.OnLogoutConfirmClick) },
+            onDismiss = { viewModel.onUiEvent(AccountUiEvent.OnLogoutDialogDismiss) },
         )
     }
 
@@ -85,7 +85,7 @@ fun AccountScreen(
                     when (it.item.textRes) {
                         Res.string.help_and_support -> onNavigateHelpAndSupport()
                         Res.string.subscriptions -> onNavigateSubscriptions()
-                        else -> uiStateHolder.onUiEvent(it)
+                        else -> viewModel.onUiEvent(it)
                     }
                 }
 
@@ -101,7 +101,7 @@ fun AccountScreen(
                     onNavigateProfile()
                 }
 
-                else -> uiStateHolder.onUiEvent(it)
+                else -> viewModel.onUiEvent(it)
             }
         },
     )

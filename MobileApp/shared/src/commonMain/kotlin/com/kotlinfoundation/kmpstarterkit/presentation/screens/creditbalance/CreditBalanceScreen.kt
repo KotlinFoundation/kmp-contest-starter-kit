@@ -38,23 +38,23 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CreditBalanceScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: CreditBalanceUiStateHolder,
+    viewModel: CreditBalanceViewModel,
     onPurchaseRequired: (placementId: String?) -> Unit,
     onClickBack: () -> Unit,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.isPremiumRequired) {
         if (uiState.isPremiumRequired) {
             onPurchaseRequired(null)
-            uiStateHolder.onPremiumRequiredHandled()
+            viewModel.onPremiumRequiredHandled()
         }
     }
 
     LaunchedEffect(uiState.isMoreCreditRequired) {
         if (uiState.isMoreCreditRequired) {
             onPurchaseRequired(Constants.PAYWALL_PLACEMENT_CREDITS_PACK)
-            uiStateHolder.onMoreCreditRequiredHandled()
+            viewModel.onMoreCreditRequiredHandled()
         }
     }
 
@@ -69,7 +69,7 @@ fun CreditBalanceScreen(
         CreditBalanceScreen(
             modifier = Modifier.fillMaxSize(),
             uiState = uiState,
-            onUiEvent = uiStateHolder::onUiEvent,
+            onUiEvent = viewModel::onUiEvent,
         )
     }
 }

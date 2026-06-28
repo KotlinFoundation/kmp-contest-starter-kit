@@ -1,5 +1,7 @@
 package com.kotlinfoundation.kmpstarterkit.presentation.screens.generationresult
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kotlinfoundation.kmpstarterkit.data.repository.GenerationRepository
 import com.kotlinfoundation.kmpstarterkit.generated.resources.Res
 import com.kotlinfoundation.kmpstarterkit.generated.resources.ai_content_report_submitted_msg
@@ -7,23 +9,21 @@ import com.kotlinfoundation.kmpstarterkit.generated.resources.msg_save_failure
 import com.kotlinfoundation.kmpstarterkit.generated.resources.msg_save_success
 import com.kotlinfoundation.kmpstarterkit.root.AppGlobalUiState
 import com.kotlinfoundation.kmpstarterkit.util.UiMessage
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
 import com.kotlinfoundation.kmpstarterkit.util.analytics.Analytics
 import com.kotlinfoundation.kmpstarterkit.util.file.FileManager
 import com.kotlinfoundation.kmpstarterkit.util.logging.AppLogger
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class GenerationResultUiStateHolder(
+class GenerationResultViewModel(
     private val id: String,
     private val generationRepository: GenerationRepository,
     private val fileManager: FileManager,
     private val analytics: Analytics,
-) : UiStateHolder() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(GenerationResultUiState())
     val uiState: StateFlow<GenerationResultUiState> = _uiState.asStateFlow()
 
@@ -31,7 +31,7 @@ class GenerationResultUiStateHolder(
         loadInitialData()
     }
 
-    fun onUiEvent(event: GenerationResultUiEvent) = uiStateHolderScope.launch {
+    fun onUiEvent(event: GenerationResultUiEvent) = viewModelScope.launch {
         when (event) {
             GenerationResultUiEvent.OnClickDownload -> saveFileToGallery()
 
@@ -72,7 +72,7 @@ class GenerationResultUiStateHolder(
         fileManager.shareFile(filePath)
     }
 
-    private fun loadInitialData() = uiStateHolderScope.launch {
+    private fun loadInitialData() = viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }
         val result = generationRepository.getGenerationOutputById(id = id)
         result.onSuccess { generatedOutput ->
