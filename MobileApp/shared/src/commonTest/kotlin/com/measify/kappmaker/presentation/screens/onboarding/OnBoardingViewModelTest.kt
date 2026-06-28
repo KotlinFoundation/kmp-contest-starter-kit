@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class OnBoardingUiStateHolderTest {
+class OnBoardingViewModelTest {
     private val mainDispatcher = StandardTestDispatcher()
     private lateinit var userPreferences: FakeUserPreferences
 
@@ -34,10 +34,10 @@ class OnBoardingUiStateHolderTest {
 
     @Test
     fun `first launch shows onboarding`() = runTest(mainDispatcher) {
-        val holder = OnBoardingUiStateHolder(userPreferences)
+        val viewModel = OnBoardingViewModel(userPreferences)
         advanceUntilIdle()
 
-        val state = holder.uiState.value
+        val state = viewModel.uiState.value
         assertFalse(state.onBoardIsShown)
         assertFalse(state.isLoading)
     }
@@ -46,37 +46,37 @@ class OnBoardingUiStateHolderTest {
     fun `returning user skips onboarding`() = runTest(mainDispatcher) {
         userPreferences.putBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN, true)
 
-        val holder = OnBoardingUiStateHolder(userPreferences)
+        val viewModel = OnBoardingViewModel(userPreferences)
         advanceUntilIdle()
 
-        assertTrue(holder.uiState.value.onBoardIsShown)
+        assertTrue(viewModel.uiState.value.onBoardIsShown)
     }
 
     @Test
     fun `clicking start persists the flag and completes onboarding`() = runTest(mainDispatcher) {
-        val holder = OnBoardingUiStateHolder(userPreferences)
+        val viewModel = OnBoardingViewModel(userPreferences)
         advanceUntilIdle()
 
-        holder.onUiEvent(OnBoardingUiEvent.OnClickStart)
+        viewModel.onUiEvent(OnBoardingUiEvent.OnClickStart)
         advanceUntilIdle()
 
-        assertTrue(holder.uiState.value.onBoardIsShown)
+        assertTrue(viewModel.uiState.value.onBoardIsShown)
         assertTrue(userPreferences.getBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN))
     }
 
     @Test
     fun `premium CTA raises the paywall flag and paywall handling completes onboarding`() = runTest(mainDispatcher) {
-        val holder = OnBoardingUiStateHolder(userPreferences)
+        val viewModel = OnBoardingViewModel(userPreferences)
         advanceUntilIdle()
 
-        holder.onUiEvent(OnBoardingUiEvent.OnClickGetPremiumAccess)
+        viewModel.onUiEvent(OnBoardingUiEvent.OnClickGetPremiumAccess)
         advanceUntilIdle()
-        assertTrue(holder.uiState.value.isPremiumRequired)
+        assertTrue(viewModel.uiState.value.isPremiumRequired)
 
-        holder.onPaywallEventHandled()
+        viewModel.onPaywallEventHandled()
         advanceUntilIdle()
 
-        val state = holder.uiState.value
+        val state = viewModel.uiState.value
         assertFalse(state.isPremiumRequired)
         assertTrue(state.onBoardIsShown)
         assertEquals(true, userPreferences.getBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN))

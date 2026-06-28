@@ -1,9 +1,9 @@
 package com.kotlinfoundation.kmpstarterkit.presentation.screens.creditbalance
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kotlinfoundation.kmpstarterkit.data.repository.CreditRepository
 import com.kotlinfoundation.kmpstarterkit.data.repository.SubscriptionRepository
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CreditBalanceUiStateHolder(
+class CreditBalanceViewModel(
     private val creditRepository: CreditRepository,
     private val subscriptionRepository: SubscriptionRepository,
-) : UiStateHolder() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(CreditBalanceUiState())
     val uiState: StateFlow<CreditBalanceUiState> = _uiState.asStateFlow()
 
@@ -34,7 +34,7 @@ class CreditBalanceUiStateHolder(
                     )
                 }
             }
-            .launchIn(uiStateHolderScope)
+            .launchIn(viewModelScope)
 
         subscriptionRepository.currentSubscriptionFlow
             .onEach { subscription ->
@@ -44,7 +44,7 @@ class CreditBalanceUiStateHolder(
                     )
                 }
             }
-            .launchIn(uiStateHolderScope)
+            .launchIn(viewModelScope)
 
         creditRepository.getRecentTransactionsFlow()
             .onEach { lastTransactions ->
@@ -52,10 +52,10 @@ class CreditBalanceUiStateHolder(
                     currentUiState.copy(lastTransactions = lastTransactions)
                 }
             }
-            .launchIn(uiStateHolderScope)
+            .launchIn(viewModelScope)
     }
 
-    fun onUiEvent(event: CreditBalanceUiEvent) = uiStateHolderScope.launch {
+    fun onUiEvent(event: CreditBalanceUiEvent) = viewModelScope.launch {
         when (event) {
             CreditBalanceUiEvent.UpgradeToPremium -> {
                 _uiState.update { it.copy(isPremiumRequired = true) }

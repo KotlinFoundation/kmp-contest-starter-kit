@@ -1,5 +1,7 @@
 package com.kotlinfoundation.kmpstarterkit.presentation.screens.home
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kotlinfoundation.kmpstarterkit.data.repository.CreditRepository
 import com.kotlinfoundation.kmpstarterkit.data.repository.GenerationRepository
 import com.kotlinfoundation.kmpstarterkit.designsystem.components.addorchosefilecontainer.FileItemUiState
@@ -14,10 +16,8 @@ import com.kotlinfoundation.kmpstarterkit.generated.resources.home_error_file_si
 import com.kotlinfoundation.kmpstarterkit.root.AppGlobalUiState
 import com.kotlinfoundation.kmpstarterkit.util.Constants
 import com.kotlinfoundation.kmpstarterkit.util.UiMessage
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
 import com.kotlinfoundation.kmpstarterkit.util.file.FileManager
 import com.kotlinfoundation.kmpstarterkit.util.file.absolutePathCommon
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.size
@@ -28,11 +28,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class HomeUiStateHolder(
+class HomeViewModel(
     private val generationRepository: GenerationRepository,
     private val creditRepository: CreditRepository,
     private val fileManager: FileManager,
-) : UiStateHolder() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -78,13 +78,13 @@ class HomeUiStateHolder(
         _uiState.update { it.copy(isAuthRequired = false) }
     }
 
-    private fun observeCreditBalance() = uiStateHolderScope.launch {
+    private fun observeCreditBalance() = viewModelScope.launch {
         creditRepository.balance.collectLatest { creditBalance ->
             _uiState.update { it.copy(creditBalance = creditBalance) }
         }
     }
 
-    private fun saveFileLocallyAndUpdateState(file: PlatformFile?) = uiStateHolderScope.launch {
+    private fun saveFileLocallyAndUpdateState(file: PlatformFile?) = viewModelScope.launch {
         if (file == null) return@launch
 
         if (file.size() > Constants.MAX_FILE_UPLOAD_SIZE) {
@@ -136,7 +136,7 @@ class HomeUiStateHolder(
         }
     }
 
-    private fun generate() = uiStateHolderScope.launch {
+    private fun generate() = viewModelScope.launch {
         _uiState.update { it.copy(isGenerationInProgress = true) }
         generationRepository.generate(_uiState.value.buildGenerationInput())
             .onSuccess { generationOutput ->

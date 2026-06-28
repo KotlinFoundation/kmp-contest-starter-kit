@@ -16,7 +16,7 @@ import com.kotlinfoundation.kmpstarterkit.designsystem.components.modals.AppDial
 import com.kotlinfoundation.kmpstarterkit.designsystem.components.modals.DialogType
 import com.kotlinfoundation.kmpstarterkit.presentation.components.premium.PremiumFeatureFactory
 import com.kotlinfoundation.kmpstarterkit.presentation.components.premium.SuccessfulPurchaseView
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall.PaywallUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall.PaywallViewModel
 import com.kotlinfoundation.kmpstarterkit.subscription.api.SubscriptionProviderUi
 import com.kotlinfoundation.kmpstarterkit.util.extensions.asFormattedDate
 import org.koin.compose.koinInject
@@ -25,10 +25,10 @@ import org.koin.compose.koinInject
 fun RemotePaywallScreen(
     onDismiss: () -> Unit,
     onSignInRequired: () -> Unit,
-    uiStateHolder: PaywallUiStateHolder,
+    viewModel: PaywallViewModel,
 ) {
     val subscriptionProviderUi = koinInject<SubscriptionProviderUi>()
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isPaywallVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -44,7 +44,7 @@ fun RemotePaywallScreen(
     LaunchedEffect(uiState.signInActionRequired) {
         if (uiState.signInActionRequired) {
             onSignInRequired()
-            uiStateHolder.onSignInActionHandled()
+            viewModel.onSignInActionHandled()
         }
     }
 
@@ -53,7 +53,7 @@ fun RemotePaywallScreen(
             type = DialogType.ERROR,
             text = uiState.errorMessage?.value,
             onConfirm = {
-                uiStateHolder.onMessageShown()
+                viewModel.onMessageShown()
                 onDismiss()
             },
         )
@@ -68,7 +68,7 @@ fun RemotePaywallScreen(
             expirationDate = subscription.expirationDateInMillis?.asFormattedDate(),
             onContinue = {
                 onDismiss()
-                uiStateHolder.onSuccessfulPurchaseHandled()
+                viewModel.onSuccessfulPurchaseHandled()
             },
         )
     }
@@ -76,7 +76,7 @@ fun RemotePaywallScreen(
     if (isPaywallVisible) {
         key(uiState.currentPlacementId) {
             subscriptionProviderUi.RemotePaywall(
-                listener = uiStateHolder.remotePaywallPurchaseEventsListener,
+                listener = viewModel.remotePaywallPurchaseEventsListener,
                 placementId = uiState.currentPlacementId,
             )
         }

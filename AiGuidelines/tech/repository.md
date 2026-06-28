@@ -82,9 +82,9 @@ When using concrete classes, inject directly without interface binding:
 singleOf(::JobRepository)
 
 // In consumer class
-class HomeUiStateHolder(
+class HomeViewModel(
     private val jobRepository: JobRepository
-) : UiStateHolder()
+) : ViewModel()
 ```
 
 ### Interface Injection (when needed)
@@ -95,9 +95,9 @@ Only when multiple implementations exist:
 singleOf(::RemoteJobRepository) bind JobRepository::class
 
 // In consumer class
-class HomeUiStateHolder(
+class HomeViewModel(
     private val jobRepository: JobRepository
-) : UiStateHolder()
+) : ViewModel()
 ```
 
 ## BackgroundExecutor Usage

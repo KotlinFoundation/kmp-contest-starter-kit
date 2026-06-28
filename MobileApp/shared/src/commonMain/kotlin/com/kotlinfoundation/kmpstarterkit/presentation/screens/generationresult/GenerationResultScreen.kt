@@ -35,15 +35,15 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun GenerationResultScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: GenerationResultUiStateHolder,
+    viewModel: GenerationResultViewModel,
     onNavigateToBack: () -> Unit,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     GenerationResultScreen(
         modifier = modifier.fillMaxSize(),
         uiState = uiState,
-        onUiEvent = uiStateHolder::onUiEvent,
+        onUiEvent = viewModel::onUiEvent,
         onNavigateToBack = onNavigateToBack,
     )
 }

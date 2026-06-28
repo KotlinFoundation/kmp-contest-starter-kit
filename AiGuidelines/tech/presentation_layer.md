@@ -4,20 +4,20 @@ Purpose: Establish consistent patterns for UI architecture, state management, an
 
 ## Location and Structure
 - All presentation code under `composeApp/src/commonMain/kotlin/com/<org>/<app>/presentation/`
-- Organize by feature: `presentation/screens/<feature>/` (e.g., `home/`, `paywall/`, `onboarding/`) — each folder contains only `*Screen.kt`, `*UiState.kt`, `*UiStateHolder.kt`
+- Organize by feature: `presentation/screens/<feature>/` (e.g., `home/`, `paywall/`, `onboarding/`) — each folder contains only `*Screen.kt`, `*UiState.kt`, `*ViewModel.kt`
 - Shared components: `presentation/components/` with sub-packages for related components
 - Navigation: `presentation/navigation/` holds `Routes.kt` (sealed `ScreenRoute` hierarchy), `Navigator`, `NavigationState`, and `AppNavigation` — feature folders do **not** contain a `*ScreenRoute.kt`
 
 ## Screen Architecture Pattern
 
-### UiStateHolder Pattern
-Use UiStateHolder is a viewmodel for complex screens with business logic:
+### ViewModel Pattern
+Use a ViewModel for complex screens with business logic:
 
 ```kotlin
-class HomeUiStateHolder(
+class HomeViewModel(
     private val repository: Repository,
     private val applicationScope: ApplicationScope
-) : UiStateHolder() {
+) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = combine(
         repository.dataFlow,
@@ -40,18 +40,18 @@ class HomeUiStateHolder(
 Follow function overloading pattern for flexibility:
 
 ```kotlin
-// Main entry point with StateHolder
+// Main entry point with ViewModel
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: HomeUiStateHolder,
+    viewModel: HomeViewModel,
     onNavigate: (destination) -> Unit
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     HomeScreen(
         modifier = modifier,
         uiState = uiState,
-        onUiEvent = uiStateHolder::onUiEvent,
+        onUiEvent = viewModel::onUiEvent,
         onNavigate = onNavigate
     )
 }

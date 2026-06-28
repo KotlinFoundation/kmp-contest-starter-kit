@@ -1,5 +1,7 @@
 package com.kotlinfoundation.kmpstarterkit.presentation.screens.account
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kotlinfoundation.kmpstarterkit.data.repository.SubscriptionRepository
 import com.kotlinfoundation.kmpstarterkit.data.repository.UserRepository
 import com.kotlinfoundation.kmpstarterkit.designsystem.components.SettingsItemUiState
@@ -13,8 +15,6 @@ import com.kotlinfoundation.kmpstarterkit.generated.resources.help_and_support
 import com.kotlinfoundation.kmpstarterkit.generated.resources.logout
 import com.kotlinfoundation.kmpstarterkit.generated.resources.subscriptions
 import com.kotlinfoundation.kmpstarterkit.util.Constants
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
@@ -23,10 +23,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AccountUiStateHolder(
+class AccountViewModel(
     private val userRepository: UserRepository,
     private val subscriptionRepository: SubscriptionRepository,
-) : UiStateHolder() {
+) : ViewModel() {
 
     private val allSettingsItemList: List<SettingsItemUiState> = buildList {
         add(
@@ -72,9 +72,9 @@ class AccountUiStateHolder(
                 },
                 showUpgradePremiumBanner = currentSubscription.isFree,
             )
-        }.stateIn(uiStateHolderScope, WhileSubscribed(5000), _uiState.value)
+        }.stateIn(viewModelScope, WhileSubscribed(5000), _uiState.value)
 
-    fun onUiEvent(event: AccountUiEvent) = uiStateHolderScope.launch {
+    fun onUiEvent(event: AccountUiEvent) = viewModelScope.launch {
         when (event) {
             AccountUiEvent.OnLogoutConfirmClick -> {
                 userRepository.logOut()

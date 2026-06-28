@@ -41,11 +41,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SubscriptionsScreen(
     modifier: Modifier = Modifier,
-    uiStateHolder: SubscriptionsUiStateHolder,
+    viewModel: SubscriptionsViewModel,
     onNavigatePaywall: () -> Unit,
     onClickBack: () -> Unit,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     if (uiState.isLoading) {
         LoadingProgress(mode = LoadingProgressMode.FULLSCREEN)
@@ -61,7 +61,7 @@ fun SubscriptionsScreen(
             SubscriptionsScreen(
                 modifier = Modifier.fillMaxSize(),
                 uiState = uiState,
-                onUiEvent = uiStateHolder::onUiEvent,
+                onUiEvent = viewModel::onUiEvent,
                 onClickUpgradePremium = { onNavigatePaywall() },
             )
         }

@@ -1,5 +1,7 @@
 package com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kotlinfoundation.kmpstarterkit.data.repository.CreditRepository
 import com.kotlinfoundation.kmpstarterkit.data.repository.SubscriptionRepository
 import com.kotlinfoundation.kmpstarterkit.data.repository.UserRepository
@@ -17,11 +19,9 @@ import com.kotlinfoundation.kmpstarterkit.subscription.api.SubscriptionProviderU
 import com.kotlinfoundation.kmpstarterkit.util.Constants
 import com.kotlinfoundation.kmpstarterkit.util.Constants.CREDIT_PACK_PRODUCT_ID_PREFIX
 import com.kotlinfoundation.kmpstarterkit.util.UiMessage
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
 import com.kotlinfoundation.kmpstarterkit.util.extensions.isCreditPackProductId
 import com.kotlinfoundation.kmpstarterkit.util.extensions.parseCreditAmountFromProductId
 import com.kotlinfoundation.kmpstarterkit.util.logging.AppLogger
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,14 +29,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PaywallUiStateHolder(
+class PaywallViewModel(
     private val placementId: String?,
     private val subscriptionRepository: SubscriptionRepository,
     private val creditRepository: CreditRepository,
     private val userRepository: UserRepository,
     private val featureFlagManager: FeatureFlagManager,
     private val mapper: PaywallUiStateMapper = PaywallUiStateMapper(),
-) : UiStateHolder() {
+) : ViewModel() {
     private val mode: PaywallMode =
         if (placementId == Constants.PAYWALL_PLACEMENT_CREDITS_PACK) {
             PaywallMode.CREDIT_PACK
@@ -105,11 +105,11 @@ class PaywallUiStateHolder(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun onSuccessfulPurchaseHandled() = uiStateHolderScope.launch {
+    fun onSuccessfulPurchaseHandled() = viewModelScope.launch {
         _uiState.update { it.copy(successfulSubscription = null) }
     }
 
-    fun onSignInActionHandled() = uiStateHolderScope.launch {
+    fun onSignInActionHandled() = viewModelScope.launch {
         _uiState.update { it.copy(signInActionRequired = false) }
     }
 
@@ -131,7 +131,7 @@ class PaywallUiStateHolder(
         }
     }
 
-    private fun fetchPackages() = uiStateHolderScope.launch {
+    private fun fetchPackages() = viewModelScope.launch {
         _uiState.update {
             it.copy(
                 isLoading = true,
@@ -181,7 +181,7 @@ class PaywallUiStateHolder(
         }
     }
 
-    private fun restorePayment() = uiStateHolderScope.launch {
+    private fun restorePayment() = viewModelScope.launch {
         if (userCanDoPaymentAction().not()) {
             AppGlobalUiState.showUiMessage(UiMessage.Resource(Res.string.paywall_msg_sign_in_required))
             _uiState.update { it.copy(signInActionRequired = true) }
@@ -193,7 +193,7 @@ class PaywallUiStateHolder(
             .onFailure { error -> failedRestore(error) }
     }
 
-    private fun buyPackage() = uiStateHolderScope.launch {
+    private fun buyPackage() = viewModelScope.launch {
         if (userCanDoPaymentAction().not()) {
             AppGlobalUiState.showUiMessage(UiMessage.Resource(Res.string.paywall_msg_sign_in_required))
             _uiState.update { it.copy(signInActionRequired = true) }
@@ -214,7 +214,7 @@ class PaywallUiStateHolder(
     private fun successfulPurchase(
         subscriptionProviderUser: SubscriptionProviderUser,
         productIds: List<String>,
-    ) = uiStateHolderScope.launch {
+    ) = viewModelScope.launch {
         AppLogger.d("Successful payment, onPurchaseCompleted")
         _uiState.update { it.copy(isLoading = true) }
         val productId = productIds.firstOrNull()
@@ -238,7 +238,7 @@ class PaywallUiStateHolder(
         }
     }
 
-    private fun successfulRestore(subscriptionProviderUser: SubscriptionProviderUser) = uiStateHolderScope.launch {
+    private fun successfulRestore(subscriptionProviderUser: SubscriptionProviderUser) = viewModelScope.launch {
         AppLogger.d("Successful restoring purchase: $subscriptionProviderUser")
         _uiState.update { it.copy(isLoading = true) }
         val premiumSubscription =
@@ -251,7 +251,7 @@ class PaywallUiStateHolder(
         }
     }
 
-    private fun failedPurchase(error: Throwable) = uiStateHolderScope.launch {
+    private fun failedPurchase(error: Throwable) = viewModelScope.launch {
         AppLogger.e("There was an error with purchase: $error")
         _uiState.update {
             it.copy(
@@ -261,7 +261,7 @@ class PaywallUiStateHolder(
         }
     }
 
-    private fun failedRestore(error: Throwable) = uiStateHolderScope.launch {
+    private fun failedRestore(error: Throwable) = viewModelScope.launch {
         AppLogger.e("Error restoring purchases: $error")
         _uiState.update { state ->
             state.copy(

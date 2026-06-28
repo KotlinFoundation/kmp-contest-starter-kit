@@ -32,31 +32,31 @@ import com.kotlinfoundation.kmpstarterkit.generated.resources.bottom_nav_label_g
 import com.kotlinfoundation.kmpstarterkit.generated.resources.bottom_nav_label_home
 import com.kotlinfoundation.kmpstarterkit.generated.resources.bottom_nav_label_profile
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.account.AccountScreen
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.account.AccountUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.account.AccountViewModel
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.creditbalance.CreditBalanceScreen
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.creditbalance.CreditBalanceUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.creditbalance.CreditBalanceViewModel
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.gallery.GalleryScreen
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.gallery.GalleryUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.gallery.GalleryViewModel
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.generationresult.GenerationResultScreen
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.generationresult.GenerationResultUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.generationresult.GenerationResultViewModel
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.helpandsupport.HelpAndSupportScreen
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.home.HomeScreen
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.home.HomeUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.home.HomeViewModel
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.onboarding.OnBoardingScreen
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.onboarding.OnBoardingScreenStyle
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.onboarding.OnBoardingUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.onboarding.OnBoardingViewModel
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall.PaywallScreen
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall.PaywallUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall.PaywallViewModel
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.paywall.remotepaywall.RemotePaywallScreen
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.profile.ProfileScreen
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.profile.ProfileUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.profile.ProfileViewModel
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.signin.SignInScreen
 import com.kotlinfoundation.kmpstarterkit.presentation.screens.subscriptions.SubscriptionsScreen
-import com.kotlinfoundation.kmpstarterkit.presentation.screens.subscriptions.SubscriptionsUiStateHolder
+import com.kotlinfoundation.kmpstarterkit.presentation.screens.subscriptions.SubscriptionsViewModel
 import com.kotlinfoundation.kmpstarterkit.util.Constants
 import com.kotlinfoundation.kmpstarterkit.util.extensions.isKeyboardOpen
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolder
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 /** Access the [Navigator] from any screen without threading it through every composable. */
@@ -131,14 +131,14 @@ fun AppNavigation() {
 }
 
 // Maps each route to its screen. Every `entry<X>` wires the screen's navigation callbacks to the
-// Navigator; ViewModels are obtained per-entry via uiStateHolder<…>().
+// Navigator; ViewModels are obtained per-entry via koinViewModel<…>().
 private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
     // ── Top-level (no animation when switching tabs) ────────────────────────────
 
     entry<HomeScreenRoute>(metadata = noAnimationMetadata) {
-        val holder = uiStateHolder<HomeUiStateHolder>()
+        val viewModel = koinViewModel<HomeViewModel>()
         HomeScreen(
-            uiStateHolder = holder,
+            viewModel = viewModel,
             onPremiumRequired = { navigator.navigate(PaywallScreenRoute()) },
             onMoreCreditsNeeded = { navigator.navigate(CreditBalanceScreenRoute) },
             onAuthRequired = { navigator.navigate(SignInScreenRoute()) },
@@ -149,18 +149,18 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
     }
 
     entry<GalleryScreenRoute>(metadata = noAnimationMetadata) {
-        val holder = uiStateHolder<GalleryUiStateHolder>()
+        val viewModel = koinViewModel<GalleryViewModel>()
         GalleryScreen(
-            uiStateHolder = holder,
+            viewModel = viewModel,
             onNavigateToResult = { id -> navigator.navigate(GenerationResultScreenRoute(id = id)) },
             onNavigateToHome = { navigator.navigate(HomeScreenRoute) },
         )
     }
 
     entry<AccountScreenRoute>(metadata = noAnimationMetadata) {
-        val holder = uiStateHolder<AccountUiStateHolder>()
+        val viewModel = koinViewModel<AccountViewModel>()
         AccountScreen(
-            uiStateHolder = holder,
+            viewModel = viewModel,
             onNavigateHelpAndSupport = { navigator.navigate(HelpAndSupportScreenRoute) },
             onNavigatePaywall = { navigator.navigate(PaywallScreenRoute()) },
             onNavigateSignIn = { navigator.navigate(SignInScreenRoute()) },
@@ -172,10 +172,10 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
     // ── Pushed destinations ─────────────────────────────────────────────────────
 
     entry<OnBoardingScreenRoute> {
-        val holder = uiStateHolder<OnBoardingUiStateHolder>()
+        val viewModel = koinViewModel<OnBoardingViewModel>()
         OnBoardingScreen(
             style = OnBoardingScreenStyle.STYLE1,
-            uiStateHolder = holder,
+            viewModel = viewModel,
             onNavigateMain = { navigator.goBack() },
             onNavigatePaywall = {
                 navigator.navigate(
@@ -186,9 +186,9 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
     }
 
     entry<ProfileScreenRoute> {
-        val holder = uiStateHolder<ProfileUiStateHolder>()
+        val viewModel = koinViewModel<ProfileViewModel>()
         ProfileScreen(
-            uiStateHolder = holder,
+            viewModel = viewModel,
             onSignInRequired = { navigator.replace(SignInScreenRoute()) },
             onNavigateToBack = { navigator.goBack() },
         )
@@ -203,9 +203,9 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
     }
 
     entry<SubscriptionsScreenRoute> {
-        val holder = uiStateHolder<SubscriptionsUiStateHolder>()
+        val viewModel = koinViewModel<SubscriptionsViewModel>()
         SubscriptionsScreen(
-            uiStateHolder = holder,
+            viewModel = viewModel,
             onClickBack = { navigator.goBack() },
             onNavigatePaywall = { navigator.navigate(PaywallScreenRoute()) },
         )
@@ -216,9 +216,9 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
     }
 
     entry<CreditBalanceScreenRoute> {
-        val holder = uiStateHolder<CreditBalanceUiStateHolder>()
+        val viewModel = koinViewModel<CreditBalanceViewModel>()
         CreditBalanceScreen(
-            uiStateHolder = holder,
+            viewModel = viewModel,
             onPurchaseRequired = { placementId ->
                 navigator.navigate(PaywallScreenRoute(placementId = placementId))
             },
@@ -227,10 +227,10 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
     }
 
     entry<GenerationResultScreenRoute> { key ->
-        val holder =
-            uiStateHolder<GenerationResultUiStateHolder>(parameters = { parametersOf(key.id) })
+        val viewModel =
+            koinViewModel<GenerationResultViewModel>(parameters = { parametersOf(key.id) })
         GenerationResultScreen(
-            uiStateHolder = holder,
+            viewModel = viewModel,
             onNavigateToBack = { navigator.goBack() },
         )
     }
@@ -238,15 +238,15 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
     // SHOW_REMOTE_PAYWALL flag picks the provider's hosted paywall UI vs. the app's custom one.
     entry<PaywallScreenRoute> { key ->
         val featureFlagManager = koinInject<FeatureFlagManager>()
-        val holder = uiStateHolder<PaywallUiStateHolder>(
+        val viewModel = koinViewModel<PaywallViewModel>(
             parameters = { parametersOf(key.placementId) },
         )
         if (featureFlagManager.getBoolean(FeatureFlagManager.Keys.SHOW_REMOTE_PAYWALL)) {
             Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
                 RemotePaywallScreen(
-                    uiStateHolder = holder,
+                    viewModel = viewModel,
                     onDismiss = {
-                        holder.onPaywallDismissActionHandled()
+                        viewModel.onPaywallDismissActionHandled()
                         navigator.goBack()
                     },
                     onSignInRequired = { navigator.navigate(SignInScreenRoute()) },
@@ -254,9 +254,9 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
             }
         } else {
             PaywallScreen(
-                uiStateHolder = holder,
+                viewModel = viewModel,
                 onDismiss = {
-                    holder.onPaywallDismissActionHandled()
+                    viewModel.onPaywallDismissActionHandled()
                     navigator.goBack()
                 },
                 onSignInRequired = { navigator.navigate(SignInScreenRoute()) },

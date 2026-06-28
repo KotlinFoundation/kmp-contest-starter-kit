@@ -6,12 +6,12 @@
 #   shared/src/commonMain/kotlin/<base>/presentation/screens/<lower>/
 #     ├── <Name>Screen.kt
 #     ├── <Name>UiState.kt          (also contains UiEvent)
-#     └── <Name>UiStateHolder.kt
+#     └── <Name>ViewModel.kt
 #
 # Patches (idempotent — safe to re-run):
 #   presentation/navigation/Routes.kt        adds `data object <Name>ScreenRoute : ScreenRoute`
-#   presentation/navigation/AppNavigation.kt adds an `entry<>` block + screen/holder imports
-#   root/Di.kt                               adds `viewModelOf(::<Name>UiStateHolder)` + import
+#   presentation/navigation/AppNavigation.kt adds an `entry<>` block + screen/view-model imports
+#   root/Di.kt                               adds `viewModelOf(::<Name>ViewModel)` + import
 #
 # Usage (run from MobileApp/):
 #   ./scripts/generate_screen.sh ScreenName
@@ -36,7 +36,7 @@ LOWER_NAME=$(echo "$SCREEN_BASE" | tr '[:upper:]' '[:lower:]')
 SCREEN_CLASS="${SCREEN_BASE}Screen"
 UI_STATE_CLASS="${SCREEN_BASE}UiState"
 UI_EVENT_CLASS="${SCREEN_BASE}UiEvent"
-HOLDER_CLASS="${SCREEN_BASE}UiStateHolder"
+VIEWMODEL_CLASS="${SCREEN_BASE}ViewModel"
 ROUTE_CLASS="${SCREEN_BASE}ScreenRoute"
 
 SCREENS_PACKAGE="$BASE_PACKAGE.presentation.screens.$LOWER_NAME"
@@ -49,7 +49,7 @@ DI_FILE="shared/src/commonMain/kotlin/$BASE_PATH/root/Di.kt"
 mkdir -p "$SCREEN_DIR"
 
 UI_STATE_FILE="$SCREEN_DIR/${UI_STATE_CLASS}.kt"
-HOLDER_FILE="$SCREEN_DIR/${HOLDER_CLASS}.kt"
+VIEWMODEL_FILE="$SCREEN_DIR/${VIEWMODEL_CLASS}.kt"
 SCREEN_FILE="$SCREEN_DIR/${SCREEN_CLASS}.kt"
 
 ################################
@@ -71,20 +71,20 @@ EOF
 fi
 
 ################################
-# 2. UiStateHolder
+# 2. ViewModel
 ################################
-if [ -f "$HOLDER_FILE" ]; then
-  echo "Skipping (already exists): $HOLDER_FILE"
+if [ -f "$VIEWMODEL_FILE" ]; then
+  echo "Skipping (already exists): $VIEWMODEL_FILE"
 else
-  cat > "$HOLDER_FILE" <<EOF
+  cat > "$VIEWMODEL_FILE" <<EOF
 package $SCREENS_PACKAGE
 
-import $BASE_PACKAGE.util.UiStateHolder
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class $HOLDER_CLASS() : UiStateHolder() {
+class $VIEWMODEL_CLASS() : ViewModel() {
     private val _uiState = MutableStateFlow($UI_STATE_CLASS())
     val uiState: StateFlow<$UI_STATE_CLASS> = _uiState.asStateFlow()
 
@@ -95,7 +95,7 @@ class $HOLDER_CLASS() : UiStateHolder() {
     }
 }
 EOF
-  echo "Created: $HOLDER_FILE"
+  echo "Created: $VIEWMODEL_FILE"
 fi
 
 ################################
@@ -121,14 +121,14 @@ import com.kotlinfoundation.kmpstarterkit.designsystem.theme.AppTheme
 @Composable
 fun $SCREEN_CLASS(
     modifier: Modifier = Modifier,
-    uiStateHolder: $HOLDER_CLASS,
+    viewModel: $VIEWMODEL_CLASS,
 ) {
-    val uiState by uiStateHolder.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     $SCREEN_CLASS(
         modifier = modifier.fillMaxSize(),
         uiState = uiState,
-        onUiEvent = uiStateHolder::onUiEvent
+        onUiEvent = viewModel::onUiEvent
     )
 }
 
@@ -190,9 +190,9 @@ if [ -f "$APPNAV_FILE" ]; then
 import $SCREENS_PACKAGE.$SCREEN_CLASS
 " "$APPNAV_FILE"
   fi
-  if ! grep -q "^import $SCREENS_PACKAGE.$HOLDER_CLASS$" "$APPNAV_FILE"; then
+  if ! grep -q "^import $SCREENS_PACKAGE.$VIEWMODEL_CLASS$" "$APPNAV_FILE"; then
     sed -i '' "/^package /a\\
-import $SCREENS_PACKAGE.$HOLDER_CLASS
+import $SCREENS_PACKAGE.$VIEWMODEL_CLASS
 " "$APPNAV_FILE"
   fi
 
@@ -208,10 +208,10 @@ import $SCREENS_PACKAGE.$HOLDER_CLASS
 
 " "$APPNAV_FILE"
     sed -i '' "/\/\/ Add new screen entries below/i\\
-        $SCREEN_CLASS(uiStateHolder = holder)
+        $SCREEN_CLASS(viewModel = viewModel)
 " "$APPNAV_FILE"
     sed -i '' "/\/\/ Add new screen entries below/i\\
-        val holder = uiStateHolder<$HOLDER_CLASS>()
+        val viewModel = koinViewModel<$VIEWMODEL_CLASS>()
 " "$APPNAV_FILE"
     sed -i '' "/\/\/ Add new screen entries below/i\\
     entry<$ROUTE_CLASS> {
@@ -226,19 +226,19 @@ fi
 # 6. Di.kt — import + viewModelOf
 ################################
 if [ -f "$DI_FILE" ]; then
-  if ! grep -q "^import $SCREENS_PACKAGE.$HOLDER_CLASS$" "$DI_FILE"; then
+  if ! grep -q "^import $SCREENS_PACKAGE.$VIEWMODEL_CLASS$" "$DI_FILE"; then
     sed -i '' "/^package /a\\
-import $SCREENS_PACKAGE.$HOLDER_CLASS
+import $SCREENS_PACKAGE.$VIEWMODEL_CLASS
 " "$DI_FILE"
   fi
 
-  if grep -q "viewModelOf(::$HOLDER_CLASS)" "$DI_FILE"; then
-    echo "Skipping DI registration (already present): $HOLDER_CLASS"
+  if grep -q "viewModelOf(::$VIEWMODEL_CLASS)" "$DI_FILE"; then
+    echo "Skipping DI registration (already present): $VIEWMODEL_CLASS"
   elif ! grep -q "// Add new view models below" "$DI_FILE"; then
     echo "⚠️ Marker '// Add new view models below' missing in Di.kt — add it before re-running."
   else
     sed -i '' "/\/\/ Add new view models below/i\\
-    viewModelOf(::$HOLDER_CLASS)
+    viewModelOf(::$VIEWMODEL_CLASS)
 " "$DI_FILE"
     echo "Updated: $DI_FILE"
   fi

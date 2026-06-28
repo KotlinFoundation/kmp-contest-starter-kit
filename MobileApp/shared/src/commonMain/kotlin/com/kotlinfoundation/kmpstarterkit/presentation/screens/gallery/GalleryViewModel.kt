@@ -1,16 +1,16 @@
 package com.kotlinfoundation.kmpstarterkit.presentation.screens.gallery
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kotlinfoundation.kmpstarterkit.data.repository.GenerationRepository
-import com.kotlinfoundation.kmpstarterkit.util.UiStateHolder
 import com.kotlinfoundation.kmpstarterkit.util.logging.AppLogger
-import com.kotlinfoundation.kmpstarterkit.util.uiStateHolderScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 
-class GalleryUiStateHolder(generationRepository: GenerationRepository) : UiStateHolder() {
+class GalleryViewModel(generationRepository: GenerationRepository) : ViewModel() {
     val uiState: StateFlow<GalleryUiState> = generationRepository.observeAllGenerationOutput()
         .onEach { result ->
             if (result.isFailure) {
@@ -21,7 +21,7 @@ class GalleryUiStateHolder(generationRepository: GenerationRepository) : UiState
             val list = result.getOrNull() ?: emptyList()
             GalleryUiState(generations = list, isLoading = false)
         }.stateIn(
-            uiStateHolderScope,
+            viewModelScope,
             SharingStarted.WhileSubscribed(5000),
             GalleryUiState(isLoading = true),
         )

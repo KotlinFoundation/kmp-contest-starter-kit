@@ -107,7 +107,7 @@ Generate boilerplate for a new screen and wire it into navigation + DI in one st
 ```bash
 ./scripts/generate_screen.sh YourScreenName
 ```
-The script creates `*Screen.kt`, `*UiState.kt`, `*UiStateHolder.kt`, registers the route, inserts the `entry<>` block in `AppNavigation.kt`, and adds `viewModelOf(::YourScreenNameUiStateHolder)` to `root/Di.kt`.
+The script creates `*Screen.kt`, `*UiState.kt`, `*ViewModel.kt`, registers the route, inserts the `entry<>` block in `AppNavigation.kt`, and adds `viewModelOf(::YourScreenNameViewModel)` to `root/Di.kt`.
 
 ## Refactor Package / App ID
 
