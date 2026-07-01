@@ -47,6 +47,7 @@ guide's `progress-template.md` into your repo to track where you are.
 | Skill | Use when |
 |---|---|
 | [run-the-app](run-the-app/SKILL.md) | Building/running the app on Android, Desktop, Web, or iOS for the first time |
+| [refactor-package](refactor-package/SKILL.md) | Renaming the package / applicationId / bundle ID / display name (rebrand) |
 | [new-screen](new-screen/SKILL.md) | Adding a screen (scaffolds UI + route + DI wiring) |
 | [new-local-model](new-local-model/SKILL.md) | Storing a model locally (Room entity + DAO + DI) |
 | [add-api-service](add-api-service/SKILL.md) | Making a network request (DTOs → API service → repository → ViewModel) |
@@ -67,7 +68,6 @@ guide's `progress-template.md` into your repo to track where you are.
 
 | Skill | Use when |
 |---|---|
-| [refactor-package](refactor-package/SKILL.md) | Renaming the package / applicationId / bundle ID / display name (rebrand) |
 | [generate-app-icons](generate-app-icons/SKILL.md) | Setting/replacing the app + launcher icons |
 | [bump-version](bump-version/SKILL.md) | Bumping versionCode / versionName for a release |
 | [setup-signing](setup-signing/SKILL.md) | Release signing + moving keys out of the app into CI secrets |

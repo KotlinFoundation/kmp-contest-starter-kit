@@ -85,6 +85,8 @@ For more details, visit the [full documentation](https://docs.kappmaker.com).
 | **MobileApp** | See [MobileApp/README.md](MobileApp/README.md) for setup, build commands, and architecture |
 | **Web** | Firebase Hosting static site + Node.js Cloud Functions |
 
+> **New here? Follow the developer journey.** The [`skills/`](skills/README.md) folder is a phase-by-phase path from a cloned template to a shipped, earning app: **getting-started** (run it locally) → **integrations** → **publishing** → **monetization** → **growth**. Each guide is a checklist you can follow with an AI agent *or* by hand — real commands, paths, and console steps, no external docs needed.
+
 ### Prerequisites
 
 - JDK 17+
@@ -113,7 +115,7 @@ This project is set up to be AI-ready out of the box — coding agents (Claude C
 - **`AiGuidelines/agents/`** — Specialized role prompts (product designer, UI/UX, paywall, onboarding, etc.)
 - **`AiGuidelines/creative/`** — Animation patterns & easter egg inspiration
 - **`AiGuidelines/project/`** — Product requirements & user flow documentation
-- **`skills/`** — Agent-agnostic skills in the open `SKILL.md` format (new screen, new local model, new module, store screenshots, version bump, quality gates). Claude Code discovers them via the `.claude/skills` symlink; other agents via the Skills section in `AGENTS.md`
+- **`skills/`** — A phase-by-phase **developer journey** as agent-agnostic skills (open `SKILL.md` format): five guides — getting-started → integrations → publishing → monetization → growth — plus the one-job task skills they compose (run the app, new screen/model, Firebase, auth, signing, subscriptions, ads, notifications, …). Each is followable by an AI agent or by hand. Index: [`skills/README.md`](skills/README.md). Claude Code discovers them via the `.claude/skills` symlink; other agents via the Skills section in `AGENTS.md` (Gemini/Cursor/Copilot pointer files included)
 - **Build & test workflows** — All quality gates an agent needs are documented in `AGENTS.md` (Spotless, JVM/Android tests, debug build) and enforced in `.github/workflows/pr_checks.yml`
 - **Scaffolding scripts** — `MobileApp/scripts/generate_screen.sh` and `MobileApp/scripts/make_local.sh` keep agent-generated code consistent with project conventions
 

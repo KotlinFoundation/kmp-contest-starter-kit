@@ -324,9 +324,9 @@ Two layers:
 | 5 · Growth | `skills/growth/` | Analytics/Crashlytics/RemoteConfig, push, onboarding, virality loops |
 
 **Task skills** (grouped by phase):
-- **P1** `run-the-app`, `new-screen`, `new-local-model`, `add-api-service`, `save-preferences`, `add-permission`, `new-module`
+- **P1** `run-the-app`, `refactor-package`, `new-screen`, `new-local-model`, `add-api-service`, `save-preferences`, `add-permission`, `new-module`
 - **P2** `configure-environment`, `setup-firebase`, `enable-auth`, `integrate-web-proxy`
-- **P3** `refactor-package`, `generate-app-icons`, `bump-version`, `setup-signing`, `store-screenshots`, `setup-appstore-connect`, `setup-google-play`, `publish-release`
+- **P3** `generate-app-icons`, `bump-version`, `setup-signing`, `store-screenshots`, `setup-appstore-connect`, `setup-google-play`, `publish-release`
 - **P4** `design-paywall`, `setup-subscriptions`, `enable-credits`, `enable-ads`
 - **P5** `setup-analytics`, `enable-notifications`, `design-onboarding`, `add-virality-loop`
 - **Cross-phase** `run-quality-gates`
