@@ -1,0 +1,8 @@
+This project uses vendor-neutral Agent Skills.
+
+Before doing a task, check whether a skill covers it. The full index — a 5-phase
+developer journey (guides) plus one-job task skills — is in skills/README.md.
+Read the matching skills/<name>/SKILL.md and follow it; the steps are exact
+(commands, file paths, console URLs) and work manually or agent-driven.
+
+Project conventions and the same skills index also live in AGENTS.md.

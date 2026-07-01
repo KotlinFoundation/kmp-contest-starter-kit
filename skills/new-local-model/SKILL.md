@@ -28,3 +28,7 @@ Insertion points are marked `// Add new ... — make_local.sh inserts here.` —
 3. Rules: use `androidx.room3.*` imports (never `androidx.room.*`); DAO functions must be `suspend` or return `Flow<T>`; repositories inject DAOs directly (no LocalDataSource abstraction).
 4. DAO tests go in `shared/src/jvmTest/` using `Room.inMemoryDatabaseBuilder<AppDatabase>().setDriver(BundledSQLiteDriver())` — see `ExampleDaoTest.kt` for the pattern.
 5. Validate with the `run-quality-gates` skill.
+
+---
+
+*Phase 1 · First Run building block — part of the [getting-started](../getting-started/SKILL.md) guide.*

@@ -21,3 +21,7 @@ The script updates the Android `versionCode`/`versionName` (in `androidApp/build
 
 1. Show the user the resulting versions (the script prints them).
 2. Releases are tag-driven: pushing a `*-android` tag triggers `.github/workflows/publish_android_playstore.yml`, a `*-ios` tag triggers `publish_ios_appstore.yml`. Don't push tags unless the user asks for a release.
+
+---
+
+*Phase 3 · Publication — part of the [publishing](../publishing/SKILL.md) guide.*

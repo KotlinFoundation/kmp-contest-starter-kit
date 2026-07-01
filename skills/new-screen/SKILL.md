@@ -33,3 +33,7 @@ Insertion points in those three files are marked with
 2. Implement the UI in the pure-composable overload; keep logic in the ViewModel.
 3. Feature folders contain **only** `*Screen.kt`, `*UiState.kt`, `*ViewModel.kt` — never a `*ScreenRoute.kt` (routes live in `Routes.kt`).
 4. Validate with the `run-quality-gates` skill.
+
+---
+
+*Phase 1 · First Run building block — part of the [getting-started](../getting-started/SKILL.md) guide.*
