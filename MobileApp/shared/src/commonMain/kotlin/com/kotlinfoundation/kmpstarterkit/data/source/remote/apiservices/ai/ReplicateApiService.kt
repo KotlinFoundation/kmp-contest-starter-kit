@@ -16,9 +16,6 @@ import io.ktor.utils.io.core.Input
  * A service class for interacting with the Replicate API.
  * You can check different models on Replicate from [here](https://replicate.com/explore).
  *
- * You will need to have access to KMPStarterKit server side
- * Firebase code as well in order to use this (Check https://kappmaker.com/#pricing)
- *
  */
 class ReplicateApiService(val httpClient: HttpClient) {
 

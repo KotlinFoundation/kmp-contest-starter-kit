@@ -50,7 +50,7 @@ class AppUtilImpl : AppUtil {
     }
 
     private fun getWebsiteOrStoreLink(): String {
-        return "https://kappmaker.com" // TODO Update url
+        return "https://kotlinfoundation.org" // TODO Update url
     }
 
     private fun encode(text: String): String = URLEncoder.encode(text, Charsets.UTF_8)
