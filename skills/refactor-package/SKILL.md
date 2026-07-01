@@ -30,3 +30,7 @@ Run from `MobileApp/`:
 
 1. Re-sync Gradle and rebuild (`./gradlew :androidApp:assembleDebug`) — see [run-quality-gates](../run-quality-gates/SKILL.md).
 2. If the app uses Firebase, replace `androidApp/google-services.json` and `iosApp/iosApp/GoogleService-Info.plist` with configs downloaded for the **new** app id (the script only rewrites the old id string inside the existing placeholders).
+
+---
+
+*Used for the Phase 1 rebrand in the [getting-started](../getting-started/SKILL.md) guide, and again in the Phase 3 [publishing](../publishing/SKILL.md) guide.*

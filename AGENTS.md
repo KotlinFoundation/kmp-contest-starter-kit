@@ -307,17 +307,29 @@ Each platform uses its **native** launch screen — no library.
 - Feature folders under `presentation/screens/<feature>/` contain **only** `*Screen.kt`, `*UiState.kt`, `*ViewModel.kt` — never a `*ScreenRoute.kt`.
 
 ### Agent Skills
-Reusable, agent-agnostic skills live in **`skills/<name>/SKILL.md`** (open Agent Skills format; `.claude/skills` symlinks there for Claude Code). Read the matching skill before doing the task — they wrap the scaffolding scripts and quality gates with the project-specific rules:
+Reusable, agent-agnostic skills live in **`skills/<name>/SKILL.md`** (open Agent Skills format; `.claude/skills` symlinks there for Claude Code). Read the matching skill before doing the task — they encode the project-specific steps (commands, file paths, console URLs) so you need neither the docs nor any external CLI. Full index + descriptions: [`skills/README.md`](skills/README.md).
 
-| Skill | Use when |
-|---|---|
-| `skills/refactor-package/` | Renaming the app package / applicationId / bundle ID / display name |
-| `skills/new-screen/` | Adding a new screen |
-| `skills/new-local-model/` | Adding a locally-stored (Room) model |
-| `skills/new-module/` | Adding a Gradle KMP module |
-| `skills/store-screenshots/` | Generating store screenshots |
-| `skills/bump-version/` | Bumping app version for release |
-| `skills/run-quality-gates/` | Validating changes before commit/PR |
+Two layers:
+- **Guides** — one per phase of the developer journey. Each is an ordered checklist whose steps are tagged **Agent Action** / **User Action** / **Validation**; stop at each **User Action** and wait for the developer. Copy the guide's `progress-template.md` to track progress.
+- **Task skills** — one job each, usable standalone; the guides call them by name.
+
+**Developer journey (walk the guides in order):**
+
+| Phase | Guide | Goal |
+|---|---|---|
+| 1 · First Run | `skills/getting-started/` | App running locally on your own device, rebranded, driven purely locally (screen, Room, preference, network call, permission) — no cloud |
+| 2 · Integrations | `skills/integrations/` | Firebase + auth + web-proxy backend wired; real remote calls work |
+| 3 · Publication | `skills/publishing/` | Icons, release signing (keys in CI not the app), store listings, first build in review |
+| 4 · Monetization | `skills/monetization/` | Subscriptions + credit-pack IAPs + paywall + ads |
+| 5 · Growth | `skills/growth/` | Analytics/Crashlytics/RemoteConfig, push, onboarding, virality loops |
+
+**Task skills** (grouped by phase):
+- **P1** `run-the-app`, `new-screen`, `new-local-model`, `add-api-service`, `save-preferences`, `add-permission`, `new-module`
+- **P2** `configure-environment`, `setup-firebase`, `enable-auth`, `integrate-web-proxy`
+- **P3** `refactor-package`, `generate-app-icons`, `bump-version`, `setup-signing`, `store-screenshots`, `setup-appstore-connect`, `setup-google-play`, `publish-release`
+- **P4** `design-paywall`, `setup-subscriptions`, `enable-credits`, `enable-ads`
+- **P5** `setup-analytics`, `enable-notifications`, `design-onboarding`, `add-virality-loop`
+- **Cross-phase** `run-quality-gates`
 
 ### Screen Generation
 **Whenever the user asks for a new screen, run this from `MobileApp/`** instead of hand-creating files:

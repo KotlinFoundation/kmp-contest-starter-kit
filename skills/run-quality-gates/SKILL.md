@@ -24,3 +24,7 @@ Rules:
 - Do NOT run iOS builds/tests for routine validation — they are slow. Only when the change is iOS-specific or the user asks.
 - Web check when web code changed: `./gradlew :shared:compileKotlinWasmJs :shared:compileKotlinJs`.
 - Quick iOS-code compile check without a full build: `./gradlew :shared:compileAppleMainKotlinMetadata`.
+
+---
+
+*Cross-phase — every guide's validation steps call this skill.*

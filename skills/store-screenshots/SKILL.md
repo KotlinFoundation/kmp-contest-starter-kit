@@ -33,3 +33,7 @@ Rules:
 - Leave `device =` unset unless the user explicitly asks for a specific device (the default is `StoreDevice.IPHONE_6_5`).
 - `@StoreScreenshot` previews are excluded from regression screenshot tests and only render when the script sets `-PgenerateStoreScreenshots=true` — don't try to run them via the normal test tasks.
 - The annotation + `StoreDevice` enum live at `shared/src/commonMain/.../util/StoreScreenshot.kt`.
+
+---
+
+*Phase 3 · Publication — part of the [publishing](../publishing/SKILL.md) guide.*

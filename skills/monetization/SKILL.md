@@ -1,0 +1,94 @@
+---
+name: monetization
+description: >-
+  PHASE 4 GUIDE — turn the published KMPStarterKit app into a revenue app: subscriptions +
+  credit-pack IAPs (Adapty default, or RevenueCat), a wired paywall, and AdMob ads. Orchestrates
+  the atomic skills design-paywall, setup-subscriptions, enable-credits, and enable-ads.
+  Use when the developer wants to monetize / add monetization / get to revenue / set up
+  subscriptions, in-app purchases, paywall, credits, or ads on the KMP contest starter kit
+  (aliases: monetization / monetize the KMP contest starter kit).
+---
+
+# Phase 4 — Monetization (get to revenue)
+
+This is the **blueprint orchestrator** for turning a published app into a revenue app. It composes
+four atomic skills into one ordered flow. Work the checklist top-to-bottom; do not skip ahead.
+
+## Goal
+
+A shipping app that can take money: subscriptions **and** credit-pack in-app purchases (through
+**Adapty** — the default — or **RevenueCat**), a paywall wired to a real offer, and AdMob ads
+enabled where they fit. The exit gate is a **completed sandbox/test purchase that unlocks premium**.
+
+## Prerequisite
+
+Store presence must already exist — the **App Store Connect** app record and the **Google Play
+Console** app must be created (that's the `publishing` phase). Real subscription/IAP products are
+created **inside those store consoles**, so you cannot finish this phase without them. If the stores
+don't exist yet, send the developer back to `publishing` first.
+
+## STOP rule
+
+When the next unchecked item is a **User Action**, stop and wait for the developer to confirm
+they've done it before continuing. Never fabricate product IDs, entitlements, or dashboard state.
+
+## Progress tracking
+
+Copy `skills/monetization/progress-template.md` into the working area at the start and tick items as
+you go. Each line is labelled with who owns it (Agent / User).
+
+## Ordered checklist
+
+### 1. Design the offer
+
+- [ ] **Agent Action** — Run the **`design-paywall`** skill. This hands the developer the paywall
+      designer role prompt and the `paywall.md` fill-in template so they author the offer
+      architecture (primary model, prices, trial framing, credit packs) *before* any product is
+      created. Products are shaped by the offer, so this comes first.
+- [ ] **User Action** — Fill in the `TAILOR PER APP` blanks in `AiGuidelines/project/paywall.md`
+      (primary model, monthly/annual/lifetime prices, trial length, credit-pack sizes).
+- [ ] **Validation** — `AiGuidelines/project/paywall.md` has no remaining `TAILOR PER APP` markers.
+
+### 2. Set up subscriptions
+
+- [ ] **Agent Action** — Run the **`setup-subscriptions`** skill: confirm/select the provider via
+      `SUBSCRIPTION_PROVIDER` in `MobileApp/gradle.properties`, and confirm the paywall entitlement
+      key (`Constants.PAYWALL_PREMIUM_ACCESS`, default `"Premium"`).
+- [ ] **User Action** — Put the provider's Android + iOS SDK keys in `MobileApp/local.properties`
+      (`SUBSCRIPTION_PROVIDER_ANDROID_API_KEY`, `SUBSCRIPTION_PROVIDER_IOS_API_KEY`).
+- [ ] **User Action** — Create the subscription products in **App Store Connect** and **Google Play
+      Console** with cross-platform-aligned product IDs (the prices from step 1).
+- [ ] **User Action** — In the **provider dashboard** (Adapty or RevenueCat), link those store
+      products, map them to the `Premium` entitlement / access level, and configure the paywall
+      placement(s).
+- [ ] **Validation** — `./gradlew :androidApp:assembleDebug` builds; the subscription paywall shows
+      real products fetched from the provider.
+
+### 3. Enable credit packs
+
+- [ ] **Agent Action** — Run the **`enable-credits`** skill: configure the credit DSL in
+      `root/Di.kt` (`initializeCreditSystem`) and wire credit-pack purchases to credit grants.
+- [ ] **User Action** — Create the credit-pack products as **consumable** IAPs in ASC + Play, and
+      register them under the credit-pack placement in the provider dashboard.
+- [ ] **Validation** — The credit-pack paywall (`PaywallMode.CREDIT_PACK`) shows the packs and a
+      successful purchase calls `creditRepository.addCredits(...)`.
+
+### 4. Enable ads
+
+- [ ] **Agent Action** — Run the **`enable-ads`** skill: flip `IS_ADS_ENABLED` and place
+      banner/interstitial/rewarded ads where they fit the UX.
+- [ ] **User Action** — Create the AdMob app + ad units and paste the IDs into
+      `MobileApp/local.properties` (+ iOS app id into `BaseConfig.xcconfig`).
+- [ ] **User Action** — Update the store **data-safety / privacy** declarations for advertising IDs.
+- [ ] **Validation** — Test ads render in a debug build (Google test ad IDs during development).
+
+## Exit gate
+
+**A sandbox / test purchase completes and unlocks premium** — the paywall dismisses (subscription)
+or credits are added (credit pack). Validate this on at least one platform before declaring the
+phase done.
+
+## Next phase
+
+Once revenue plumbing works end-to-end, move on to the **`growth`** phase (analytics, retention,
+virality — see `AiGuidelines/project/virality_loops.md`).
