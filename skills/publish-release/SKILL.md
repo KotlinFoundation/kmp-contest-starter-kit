@@ -67,7 +67,7 @@ fastlane ios appstore_release submit_for_review:true # auto-submit for review
 It archives the `iosApp` scheme (Release), exports to `distribution/ios/iosApp.ipa`, and
 uploads via the ASC API key (Fastlane `pilot`/`deliver` under the hood). If Xcode warns
 about SwiftPM linkage, follow the linkage-package steps in
-`Documentation/docs/production/iOS.md` (and CLAUDE.md → iOS SwiftPM) before archiving.
+`Documentation/docs/production/iOS.md` (and `AGENTS.md` → iOS SwiftPM) before archiving.
 
 ## CI path (tag-driven)
 

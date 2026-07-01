@@ -55,7 +55,7 @@ The offer flows into the existing paywall layer at
     for durations).
   - `strings.xml` here is plain XML, not Android aapt — do **not** backslash-escape apostrophes; use the
     typographic `'` (U+2019) to match existing copy. Format args stay `%1$s` / `%1$d`.
-- To add a **brand-new placement** (beyond subscription / credit-pack), see CLAUDE.md → *Paywall Layer*:
+- To add a **brand-new placement** (beyond subscription / credit-pack), see `AGENTS.md` → *Paywall Layer*:
   add a `Constants.PAYWALL_PLACEMENT_*`, a `PaywallMode` entry, mapper branches, a `PaywallScreen`
   route, and a new `paywall_<prefix>_*` string group.
 

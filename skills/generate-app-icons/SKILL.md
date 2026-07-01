@@ -82,7 +82,7 @@ sizes (rendered px = size × scale):
 
 ## Splash logo (separate from the launcher icon)
 
-Publishing branding also touches the native splash screens (see CLAUDE.md → *Splash
+Publishing branding also touches the native splash screens (see `AGENTS.md` → *Splash
 Screen*). The splash uses the **brand logo shown uncut**, not the masked launcher icon:
 
 - iOS splash logo → `iosApp/iosApp/Assets.xcassets/ic_logo.imageset/ic_logo.png` (single

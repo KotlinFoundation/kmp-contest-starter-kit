@@ -4,9 +4,21 @@ Vendor-neutral skills for AI coding agents (Claude Code, Codex, Gemini CLI, Curs
 Each skill is a `<name>/SKILL.md` file in the open [Agent Skills](https://agentskills.io) format:
 YAML frontmatter (`name`, `description`) followed by step-by-step instructions.
 
-- Agents with native skill support discover these automatically (`.claude/skills` symlinks here for Claude Code).
-- Agents without native support: read the skill file referenced from the **Skills** section of [AGENTS.md](../AGENTS.md) before doing the matching task.
-- **No AI? Walk them by hand.** Every step is written to be followed manually — real commands, real file paths, real console URLs. The skills encode everything you need; you should not have to read external docs to get from a cloned template to a shipped, earning app.
+The skills are **vendor-neutral** — plain Markdown with real commands, file paths, and console
+URLs; no assistant-specific syntax. Any agent that reads them can run them. Only *discovery* differs
+per tool, so the repo ships a pointer file for each:
+
+| Agent | How it finds the skills |
+|---|---|
+| Claude Code | Auto-discovered — `.claude/skills` symlinks to this folder |
+| Codex | Reads [`AGENTS.md`](../AGENTS.md) (Skills section → this index) |
+| Gemini CLI | Reads `GEMINI.md` (symlinked to `AGENTS.md`) |
+| Cursor | Reads `.cursorrules` (points here) |
+| GitHub Copilot | Reads `.github/copilot-instructions.md` (points here) |
+| Any other / no AI | Open this index and read the matching `SKILL.md` — every step is followable by hand |
+
+**No AI? Walk them manually.** The skills encode everything you need; you should not have to read
+external docs to get from a cloned template to a shipped, earning app.
 
 ## Two layers
 
