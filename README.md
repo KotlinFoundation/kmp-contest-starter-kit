@@ -121,4 +121,4 @@ This project is set up to be AI-ready out of the box — coding agents (Claude C
 
 ## License
 
-Released under the [MIT License](LICENSE) — Copyright (c) 2026 Mirzamehdi Karimov & Measify Kft.
+Released under the [MIT License](LICENSE) — Copyright (c) 2026 KotlinFoundation.

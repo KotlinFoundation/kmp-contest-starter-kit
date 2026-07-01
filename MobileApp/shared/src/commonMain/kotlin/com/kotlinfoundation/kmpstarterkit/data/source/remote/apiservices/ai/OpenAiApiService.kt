@@ -12,10 +12,6 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 
-/**
- * You will need to have access to KMPStarterKit server side Firebase code
- * as well in order to use this (Check https://kappmaker.com/#pricing)
- */
 class OpenAiApiService(private val httpClient: HttpClient) {
 
     /**

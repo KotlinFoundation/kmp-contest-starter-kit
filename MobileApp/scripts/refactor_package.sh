@@ -265,7 +265,7 @@ update_gradle_files() {
   done
 }
 
-# Custom Gradle tasks are grouped under the package's last segment (e.g. group = "kappmaker").
+# Custom Gradle tasks are grouped under the package's last segment (e.g. group = "kotlinfoundation").
 # Rename that label to the new last segment. Only the exact `group = "<old-last>"` assignment is
 # touched — the bare segment is too generic (also the brand name) to replace globally.
 update_task_group() {
@@ -339,7 +339,7 @@ update_app_name() {
 }
 
 # Docs, agent guidelines, and script header comments reference the package both as a dotted id
-# (`com.measify.kappmaker`) and as a slashed path (`com/measify/kappmaker`, e.g. example file
+# (`com.kotlinfoundation.kmpstarterkit`) and as a slashed path (`com/kotlinfoundation/kmpstarterkit`, e.g. example file
 # locations). Source files only use the dotted form; these prose/comment files use both, so update
 # both. Full-rename mode only — in skip mode the package (and its paths) stay put.
 update_doc_references() {
