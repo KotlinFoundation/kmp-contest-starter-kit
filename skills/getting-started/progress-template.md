@@ -1,8 +1,15 @@
-# Phase 1 progress — First Run (LOCAL-ONLY)
+# Phase 1 Progress — First Run (LOCAL-ONLY)
 
-Copy this file into your repo (e.g. `PROGRESS.md`) and tick items as you go. Full instructions are in
-the `getting-started` skill. Role labels: **User** = human-only, **Agent** = AI/dev can do it,
-**Validation** = a gate. Stop at any unchecked **User** item and wait for confirmation.
+> [!NOTE]
+> **Setup Instruction:** Copy this template file to the root of your repository and rename it to **`PROGRESS_P1_GETTING_STARTED.md`**.
+> Use this file to tick items as you go. Full instructions are in the `getting-started` skill.
+>
+> **Role Labels:**
+> - **User:** Human-only actions.
+> - **Agent:** AI/developer can execute (edit code, run gradle, etc.).
+> - **Validation:** A verification gate.
+>
+> *STOP RULE:* Stop at any unchecked **User** item and wait for confirmation before proceeding.
 
 ## A. Prerequisites & first run
 - [ ] **User** — Install JDK 17+ and Android Studio (Android SDK). macOS/iOS: install Xcode.

@@ -1,7 +1,15 @@
-# Phase 3 — Publishing progress
+# Phase 3 Progress — Publishing
 
-Copy this file and tick items as you go. Role labels: **[Agent]** you do it, **[User]** the developer
-does it in a console / Xcode, **[Validate]** prove it works.
+> [!NOTE]
+> **Setup Instruction:** Copy this template file to the root of your repository and rename it to **`PROGRESS_P3_PUBLISHING.md`**.
+> Use this file to tick items as you go. Full instructions are in the `publishing` skill.
+>
+> **Role Labels:**
+> - **[User]:** Developer does it in a console / Xcode / developer portal.
+> - **[Agent]:** AI/developer can execute directly (edit build files, generate assets, run scripts).
+> - **[Validate]:** A verification gate.
+>
+> *STOP RULE:* Stop at any unchecked **[User]** item and wait for confirmation before proceeding.
 
 ## 1. Lock final app identity — `refactor-package`
 - [ ] **[Agent]** App id / bundle id / display name are final (`./scripts/refactor_package.sh …`, or already done)

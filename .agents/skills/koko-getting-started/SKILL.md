@@ -20,6 +20,11 @@ To work effectively with this monorepo, we recommend the Two-Window Approach in 
     * **Features**: Compose Previews, Android/iOS/Desktop/Web targets, and mobile-specific debugging.
     * **Getting Started**: Open the `MobileApp/` directory in a new Android Studio window and type "Run @koko-skills" to load [**koko-skills**](../../../MobileApp/.agents/skills/koko-skills/SKILL.md) — environment setup plus the full index of mobile development skills.
 
+> [!IMPORTANT]
+> **CRITICAL AGENT INSTRUCTION**: Whenever a developer says "please proceed with koko-getting-started", "getting started", or asks to start Phase 1, the agent's very first step and response MUST explicitly instruct the developer to open a new Android Studio window for the `MobileApp/` directory. The agent must state this clearly:
+> *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open the `MobileApp/` directory (at the repository root) in a new window and type 'Run @koko-skills' there to get the mobile environment loaded!"*
+
+
 ---
 
 ## 🚀 Skill Discovery

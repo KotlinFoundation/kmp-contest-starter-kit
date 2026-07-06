@@ -1,7 +1,15 @@
-# Phase 2 — Integrations progress
+# Phase 2 Progress — Integrations
 
-Copy this file and tick items as you go. Role labels: **[Agent]** you do it, **[User]** the developer
-does it in a browser/console, **[Validate]** prove it works.
+> [!NOTE]
+> **Setup Instruction:** Copy this template file to the root of your repository and rename it to **`PROGRESS_P2_INTEGRATIONS.md`**.
+> Use this file to tick items as you go. Full instructions are in the `integrations` skill.
+>
+> **Role Labels:**
+> - **[User]:** Developer does it in a browser/console.
+> - **[Agent]:** AI/developer can execute directly (edit code, write configurations).
+> - **[Validate]:** A verification gate.
+>
+> *STOP RULE:* Stop at any unchecked **[User]** item and wait for confirmation before proceeding.
 
 ## 1. Key catalog — `configure-environment`
 - [ ] **[Agent]** Walk through `local.properties` keys, `gradle.properties` `SUBSCRIPTION_PROVIDER`, `Constants.kt` fields
