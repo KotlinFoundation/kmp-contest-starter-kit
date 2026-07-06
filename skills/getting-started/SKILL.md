@@ -23,7 +23,7 @@ permission. Prove the loop end-to-end before adding any cloud services.
 > [!IMPORTANT]
 > **CRITICAL AGENT INSTRUCTION (TWO-WINDOW TRANSITION)**:
 > If this skill is executed from the **Root Window**, the very first step is to instruct the developer to open a new Android Studio window pointing to the `MobileApp/` directory:
-> *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open `/Users/mattdyor/koko/MobileApp` in a new window and type 'Run @koko-mobileapp-getting-started' there to load the client environment and begin building the local loop!"*
+> *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open the `MobileApp/` directory (at the repository root) in a new window and type 'Run @koko-mobileapp-getting-started' there to load the client environment and begin building the local loop!"*
 
 > **STOP rule:** When the next unchecked item is a **User Action**, stop and wait for the developer to confirm they've done it before continuing. Never fabricate device state or credentials.
 

@@ -1,4 +1,14 @@
-# Monetization progress
+# Phase 4 Progress — Monetization
+
+> [!NOTE]
+> **Setup Instruction:** Copy this template file to the root of your repository and rename it to **`PROGRESS_P4_MONETIZATION.md`**.
+> Use this file to tick items as you go. Full instructions are in the `monetization` skill.
+>
+> **Role Labels:**
+> - **(User):** Developer does it in a store / provider console.
+> - **(Agent):** AI/developer can execute directly (edit gradle/config, run scripts).
+>
+> *STOP RULE:* Stop at any unchecked **(User)** item and wait for confirmation before proceeding.
 
 ## 1. Design the offer
 - [ ] (Agent) Run `design-paywall` — hand over designer prompt + paywall template
