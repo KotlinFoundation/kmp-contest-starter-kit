@@ -18,7 +18,7 @@ To work effectively with this monorepo, we recommend the Two-Window Approach in 
 2. **Window 2 (new window): Mobile Application (`MobileApp/`)**
     * **Purpose**: Active development of the Kotlin Multiplatform app.
     * **Features**: Compose Previews, Android/iOS/Desktop/Web targets, and mobile-specific debugging.
-    * **Getting Started**: In a new Android Studio window on the `MobileApp\` directory and type "Run @koko-mobileapp-getting-started" and this will load [**koko-mobileapp-getting-started**](../../../MobileApp/.agents/skills/koko-mobileapp-getting-started/SKILL.md)
+    * **Getting Started**: Open the `MobileApp/` directory in a new Android Studio window and type "Run @koko-skills" to load [**koko-skills**](../../../MobileApp/.agents/skills/koko-skills/SKILL.md) — environment setup plus the full index of mobile development skills.
 
 ---
 
@@ -28,7 +28,7 @@ This monorepo uses skills in the root level `skills` directory. A summary of ava
 
 ### 📱 Mobile Development
 For all mobile-specific tasks (UI, Data, Navigation, Monetization, etc.), use:
-- [**koko-mobileapp-getting-started**](../../../MobileApp/.agents/skills/koko-mobileapp-getting-started/SKILL.md)
+- [**koko-skills**](../../../MobileApp/.agents/skills/koko-skills/SKILL.md)
 
 ### 🌐 Web & Backend
 Once the KMP app is ready (the getting started skill mentioned above is complete), start working on the `integrations` skill in this window to complete tasks related to Firebase Hosting, Cloud Functions, etc. 
