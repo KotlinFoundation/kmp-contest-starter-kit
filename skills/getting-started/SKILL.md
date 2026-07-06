@@ -13,14 +13,19 @@ permission. Prove the loop end-to-end before adding any cloud services.
 - Firebase (Analytics, Messaging, Crashlytics, RemoteConfig), authentication, backend / web-proxy → the **`integrations`** guide.
 - App Store / Play Store, signing for release, subscriptions/monetization → the **`publishing`** guide.
 
-## STOP rule
+## Two-Window Flow & STOP rule
 
-> When the next unchecked item is a **User Action**, stop and wait for the developer to confirm they've
-> done it before continuing. Never fabricate device state or credentials.
+> **Two-Window Developer Flow:**
+> This repository uses an elegant Two-Window setup for seamless multi-environment management:
+> 1. **Root Window:** Opened at the repository root. This window manages root-level configurations, the Node.js backend proxy (`Web/`), and Phase 2 (`integrations`) and Phase 3 (`publishing`) progress.
+> 2. **MobileApp Window:** Opened at the `MobileApp/` directory. This window isolates the Android/iOS/Desktop/Web client environment and drives Phase 1 development.
 
 > [!IMPORTANT]
-> **CRITICAL AGENT INSTRUCTION**: The very first step of getting started with this repo is to instruct the developer to open a new Android Studio window pointing to the `MobileApp/` directory. You must explicitly request this before suggesting or starting any plan:
-> *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open `/Users/mattdyor/koko/MobileApp` in a new window and type 'Run @koko-skills' there to get the mobile environment loaded!"*
+> **CRITICAL AGENT INSTRUCTION (TWO-WINDOW TRANSITION)**:
+> If this skill is executed from the **Root Window**, the very first step is to instruct the developer to open a new Android Studio window pointing to the `MobileApp/` directory:
+> *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open `/Users/mattdyor/koko/MobileApp` in a new window and type 'Run @koko-mobileapp-getting-started' there to load the client environment and begin building the local loop!"*
+
+> **STOP rule:** When the next unchecked item is a **User Action**, stop and wait for the developer to confirm they've done it before continuing. Never fabricate device state or credentials.
 
 ## Role labels
 
@@ -71,7 +76,6 @@ permission. Prove the loop end-to-end before adding any cloud services.
 
 > **App launches on at least one platform and shows the Home screen; quality gates pass.**
 
-Once green, move on to the **`integrations`** guide (Firebase, auth, backend/web-proxy), then
-**`publishing`**.
+Once green, switch back to the **Root Window** to proceed to the **`integrations`** guide (Firebase, auth, backend/web-proxy), then **`publishing`**.
 
-Track your progress by copying `progress-template.md` (next to this file) into your repo.
+Progress is tracked in `PROGRESS_P1_GETTING_STARTED.md` at the root folder.
