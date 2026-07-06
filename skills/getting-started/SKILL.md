@@ -18,6 +18,10 @@ permission. Prove the loop end-to-end before adding any cloud services.
 > When the next unchecked item is a **User Action**, stop and wait for the developer to confirm they've
 > done it before continuing. Never fabricate device state or credentials.
 
+> [!IMPORTANT]
+> **CRITICAL AGENT INSTRUCTION**: The very first step of getting started with this repo is to instruct the developer to open a new Android Studio window pointing to the `MobileApp/` directory. You must explicitly request this before suggesting or starting any plan:
+> *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open `/Users/mattdyor/koko/MobileApp` in a new window and type 'Run @koko-skills' there to get the mobile environment loaded!"*
+
 ## Role labels
 
 - **Agent Action** — an AI agent (or dev) can do it directly: edit code, run a script/gradle.
