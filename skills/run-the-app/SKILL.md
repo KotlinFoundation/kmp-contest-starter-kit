@@ -16,6 +16,7 @@ All gradle commands run from `MobileApp/`.
   sdk.dir=/Users/you/Library/Android/sdk
   ```
   Without this, any Android task fails immediately with "SDK location not found".
+- **JetBrains Kotlin Multiplatform plugin** in Android Studio (`Settings → Plugins → Marketplace →` search "Kotlin Multiplatform", install, restart). This is what surfaces the non-Android run targets — without it Android Studio shows only the **Android** target.
 - iOS also needs Xcode (macOS only).
 
 ## Run per platform
