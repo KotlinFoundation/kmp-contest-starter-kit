@@ -79,3 +79,28 @@ permission. Prove the loop end-to-end before adding any cloud services.
 Once green, switch back to the **Root Window** to proceed to the **`integrations`** guide (Firebase, auth, backend/web-proxy), then **`publishing`**.
 
 Progress is tracked in `PROGRESS_P1_GETTING_STARTED.md` at the root folder.
+
+---
+
+## Troubleshooting
+
+Environment/setup snags that can block the first build or the Phase-2 backend deploy:
+
+- **`Several environment variables and/or system properties contain different paths to the Android
+  Preferences folder`** (Gradle sync / AGP fails) — both `ANDROID_PREFS_ROOT` and `ANDROID_USER_HOME`
+  are set to different paths (seen in some sandboxes/CI images). Keep one:
+
+  ```bash
+  unset ANDROID_PREFS_ROOT
+  ```
+
+- **`command not found: firebase`** (Phase 2) — the Firebase CLI isn't installed. Install it:
+  `curl -sL https://firebase.tools | bash` (no Node needed) or `npm install -g firebase-tools`.
+  See `integrate-web-proxy`.
+
+- **`firebase deploy --only functions` fails with `403` / Secret Manager** — the Secret Manager API
+  isn't enabled for the project. Enable it, then re-deploy. See `integrate-web-proxy` step 1.
+
+- **`Failed to make request to generateUploadUrl`** on a brand-new project — no default Cloud
+  Storage bucket yet. Firebase Console → **Storage → Get Started** (pick a region), then re-deploy.
+  See `setup-firebase`.
