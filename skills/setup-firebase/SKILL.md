@@ -58,7 +58,20 @@ Firebase Console → **Authentication → Sign-in method → Anonymous → Enabl
 anonymously on first launch (`signInAnonymouslyIfNecessary()`), and the Cloud Functions gate on a
 Firebase ID token, so this is required even before social sign-in.
 
-## 6. Validate — Validation
+## 6. Set the default resource location — User Action
+
+Firebase Console → **Storage → Get Started** → accept rules → pick a region.
+
+> **This is not an app feature** — the app doesn't use Cloud Storage. It's a one-time
+> Cloud Functions *deploy* prerequisite: `firebase deploy --only functions` uploads its source
+> bundle to a GCS staging bucket, and a brand-new project that has never opened Storage/Firestore
+> has no default resource location set, so that bucket can't be created — the first deploy
+> (`integrate-web-proxy`) then fails with `Failed to make request to generateUploadUrl`. Clicking
+> **Storage → Get Started** is just the simplest way to set the default location and avoid that.
+> The region is **permanent** — pick the one closest to your users. Skip this if you're not
+> deploying the Cloud Functions backend.
+
+## 7. Validate — Validation
 
 With the real `google-services.json` in place, from `MobileApp/`:
 

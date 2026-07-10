@@ -13,7 +13,8 @@ uniform envelope. Requires a Blaze-plan Firebase project (`setup-firebase`) and 
 
 ## What's in `Web/functions`
 
-- `index.js` — exports the enabled functions (`replicate*`, `openAi*`); comment a line to disable one.
+- `index.js` — exports the enabled functions (`replicate*`, `openAi*`), gated by `AI_PROVIDERS`
+  (see "Deploy a single provider" below). Runs on the **Node 22** runtime (`functions/package.json`).
 - `api/openai.js` — `openAiCreateTextCompletion`, `openAiCreateImage` (secret `OPENAI_API_KEY`).
 - `api/replicate.js` — `replicateCreatePrediction`, `replicateCreateModelPrediction`,
   `replicateGetPredictionStatus`, `replicateCancelPrediction` (secret `REPLICATE_API_KEY`).
@@ -36,19 +37,43 @@ Every function returns the same JSON shape (`utils/utils.js` → `sendApiRespons
 
 Model your response DTO on this envelope with a nested `data` payload.
 
+## Prerequisites — install the Firebase CLI
+
+You need the `firebase` CLI on your PATH. If a command below fails with `command not found: firebase`:
+
+- **macOS / Linux, no Node required (fastest):**
+
+  ```bash
+  curl -sL https://firebase.tools | bash
+  ```
+
+- **If you already use Node.js / npm:**
+
+  ```bash
+  npm install -g firebase-tools
+  ```
+
+The functions target the **Node 22** runtime; if you deploy from a machine with your own Node,
+install an active LTS (Node 20 or 22) to avoid old-runtime and modern-engine crashes.
+
 ## 1. Store API keys in Secret Manager — User Action
 
 1. Get keys: OpenAI (https://platform.openai.com/), Replicate (https://replicate.com/).
-2. Enable + open Secret Manager:
+2. **Enable the Secret Manager API** for the Firebase project (Cloud Functions can't read secrets
+   until it's on) — open the API-library page and click **Enable**:
+   `https://console.cloud.google.com/apis/library/secretmanager.googleapis.com?project=YOUR_PROJECT_ID`
+   (replace `YOUR_PROJECT_ID`). Then open the Secret Manager console:
    https://console.cloud.google.com/security/secret-manager (select the Firebase project).
-3. **Create secret** with the **exact** name `OPENAI_API_KEY`, paste the key. Repeat for
-   `REPLICATE_API_KEY`. (Names must match `defineSecret(...)` in `api/*.js`.)
+3. **Create secret** with the **exact** name `REPLICATE_API_KEY` (the default provider), paste the
+   key. Add `OPENAI_API_KEY` too only if you enable OpenAI. (Names must match `defineSecret(...)` in
+   `api/*.js`.) Create the secrets **before** deploying — the deploy binds them, and creating them
+   first avoids interactive prompts. Only create the secret(s) for the provider(s) you enable
+   (see "Which providers deploy" under step 2).
 4. Grant the functions' service account access to each secret.
 
 ## 2. Deploy — User Action
 
-Install the standard Firebase CLI if needed (`npm install -g firebase-tools`), then from the `Web/`
-directory:
+From the `Web/` directory:
 
 ```bash
 firebase login
@@ -58,9 +83,17 @@ firebase deploy --only functions
 The deploy prints the base URL, shaped
 `https://REGION-PROJECT_ID.cloudfunctions.net` (default region `us-central1`). Copy it.
 
-> To disable an endpoint before deploy, comment out its `exports.<fn>` line in
-> `Web/functions/index.js`. To allow unauthenticated calls on an endpoint (dev/testing only), set
-> `requireAuth: false` in that function's `Validation.validateAll(...)` call.
+> **Which providers deploy** — by default (no `.env`) **only Replicate** is deployed, so you only
+> need `REPLICATE_API_KEY` and the first deploy just works. To use OpenAI instead, or both, copy
+> `Web/functions/.env.example` to `Web/functions/.env` and set `AI_PROVIDERS` (e.g.
+> `AI_PROVIDERS=openai` or `AI_PROVIDERS=replicate,openai`). Only the listed providers' endpoints
+> deploy, so only **their** secrets need to exist in Secret Manager. To allow unauthenticated calls
+> on an endpoint (dev/testing only), set `requireAuth: false` in that function's
+> `Validation.validateAll(...)` call.
+
+> **First deploy on a brand-new project fails?** Two common one-time causes: the Secret Manager
+> API isn't enabled (step 1), or the project has no default Cloud Storage bucket yet — see the
+> Storage-bucket step in `setup-firebase`. Enable both in the console, then re-run the deploy.
 
 ## 3. Point the app at the URL — User Action / Agent Action
 
