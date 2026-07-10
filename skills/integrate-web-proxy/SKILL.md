@@ -37,24 +37,20 @@ Every function returns the same JSON shape (`utils/utils.js` → `sendApiRespons
 
 Model your response DTO on this envelope with a nested `data` payload.
 
-## Prerequisites — install the Firebase CLI
+## Prerequisites
 
-You need the `firebase` CLI on your PATH. If a command below fails with `command not found: firebase`:
+- **Blaze plan** — Cloud Functions require the Firebase project to be on the **Blaze
+  (pay-as-you-go)** plan (`setup-firebase` step 2: Project Overview → Usage and billing → Modify
+  plan → Blaze). Deploys fail on the free Spark plan. Generous free tier — set a budget alert.
+- **Default resource location** — a brand-new project needs one set before the first functions
+  deploy (`setup-firebase`: Storage → Get Started), or the deploy fails with `generateUploadUrl`.
+- **Firebase CLI** on your PATH. If a command below fails with `command not found: firebase`:
 
-- **macOS / Linux, no Node required (fastest):**
+  - macOS / Linux, no Node required (fastest): `curl -sL https://firebase.tools | bash`
+  - If you already use Node.js / npm: `npm install -g firebase-tools`
 
-  ```bash
-  curl -sL https://firebase.tools | bash
-  ```
-
-- **If you already use Node.js / npm:**
-
-  ```bash
-  npm install -g firebase-tools
-  ```
-
-The functions target the **Node 22** runtime; if you deploy from a machine with your own Node,
-install an active LTS (Node 20 or 22) to avoid old-runtime and modern-engine crashes.
+  The functions target the **Node 22** runtime; if you deploy from a machine with your own Node,
+  install an active LTS (Node 20 or 22) to avoid old-runtime and modern-engine crashes.
 
 ## 1. Store API keys in Secret Manager — User Action
 
