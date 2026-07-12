@@ -409,6 +409,17 @@ Two interchangeable billing backends live under `libs/subscription/` behind the
   `Constants`.**
 - Switching providers = change the gradle property only (plus the provider's API keys in
   `local.properties`). Both `ADAPTY` and `REVENUECAT` builds must compile.
+- **Mock provider (zero-config demo).** When the active-platform subscription SDK key is still a
+  placeholder (`isSubscriptionMockActive()` in `root/Di.kt` checks `BuildConfig.SUBSCRIPTION_PROVIDER_*_API_KEY
+  == "testValue"`), DI swaps in `MockSubscriptionProvider` (in `subscription-api`, next to
+  `NoOpSubscriptionProvider`) instead of the linked real provider. It returns demo packages and a
+  "purchase" simulates success (persisted via `UserPreferences`), so the whole paywall → purchase →
+  unlock → cancel flow works on every platform with **no keys**. The paywall shows a red `DemoBanner`
+  (`SubscriptionProvider.isMockProvider` → `PaywallUiState.isMock`), buys skip the sign-in gate, and the
+  Subscriptions screen's "manage here" link cancels in-app via `cancelMockSubscription()` (an interface
+  method — default no-op, only the mock implements it). Client-only fake (no receipt); auto-reverts to
+  the real provider the moment a key is set. The mock stays dependency-free — its ids/persistence/clock
+  are injected by `Di.kt`.
 
 ### Paywall Layer
 

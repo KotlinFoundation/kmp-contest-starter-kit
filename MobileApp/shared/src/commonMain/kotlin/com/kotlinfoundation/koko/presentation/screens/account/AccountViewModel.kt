@@ -28,30 +28,24 @@ class AccountViewModel(
     private val subscriptionRepository: SubscriptionRepository,
 ) : ViewModel() {
 
-    private val allSettingsItemList: List<SettingsItemUiState> = buildList {
-        add(
-            SettingsItemUiState(
-                startIcon = UiRes.drawable.ic_settings_item_subscriptions,
-                textRes = Res.string.subscriptions,
-            ),
-        )
+    private val subscriptionsItem = SettingsItemUiState(
+        startIcon = UiRes.drawable.ic_settings_item_subscriptions,
+        textRes = Res.string.subscriptions,
+    )
+    private val supportItem = SettingsItemUiState(
+        startIcon = UiRes.drawable.ic_settings_item_support_legal,
+        textRes = Res.string.help_and_support,
+    )
+    private val logoutItem = SettingsItemUiState(
+        startIcon = UiRes.drawable.ic_settings_item_logout,
+        textRes = Res.string.logout,
+        showEndIcon = false,
+    )
 
-        add(
-            SettingsItemUiState(
-                startIcon = UiRes.drawable.ic_settings_item_support_legal,
-                textRes = Res.string.help_and_support,
-            ),
-        )
-
-        if (Constants.AUTH_SOCIAL_LOGIN_ENABLED) {
-            add(
-                SettingsItemUiState(
-                    startIcon = UiRes.drawable.ic_settings_item_logout,
-                    textRes = Res.string.logout,
-                    showEndIcon = false,
-                ),
-            )
-        }
+    private fun settingsItemsFor(isSignedIn: Boolean): List<SettingsItemUiState> = buildList {
+        add(subscriptionsItem)
+        add(supportItem)
+        if (Constants.AUTH_SOCIAL_LOGIN_ENABLED && isSignedIn) add(logoutItem)
     }
 
     private val _uiState = MutableStateFlow(AccountUiState())
@@ -64,12 +58,7 @@ class AccountViewModel(
             val user = currentUser.getOrNull()
             uiState.copy(
                 user = if (user?.isAnonymous == true && Constants.AUTH_SOCIAL_LOGIN_ENABLED) null else user,
-                settingsItemList =
-                if (user != null) {
-                    allSettingsItemList
-                } else {
-                    allSettingsItemList.subList(0, allSettingsItemList.size - 1)
-                },
+                settingsItemList = settingsItemsFor(isSignedIn = user != null),
                 showUpgradePremiumBanner = currentSubscription.isFree,
             )
         }.stateIn(viewModelScope, WhileSubscribed(5000), _uiState.value)

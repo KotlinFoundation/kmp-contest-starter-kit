@@ -8,6 +8,9 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+/** Current wall-clock time in epoch milliseconds. */
+fun nowEpochMillis(): Long = Clock.System.now().toEpochMilliseconds()
+
 fun Long.asFormattedDate(
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
     format: String = "dd.MM.yyyy",

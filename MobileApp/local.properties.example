@@ -26,6 +26,9 @@ GOOGLE_WEB_CLIENT_ID=
 # Public SDK keys for the billing provider selected by SUBSCRIPTION_PROVIDER in gradle.properties.
 # Adapty:     https://app.adapty.io/      -> App settings -> API keys (public SDK keys)
 # RevenueCat: https://app.revenuecat.com/ -> Project -> API keys (public app-specific keys)
+# Until these are set, the app runs a built-in MOCK provider: the paywall shows demo packages and a
+# "purchase" simulates unlocking Premium / adding credits (with a "Demo paywall" banner). Setting a
+# real key here automatically switches to the real provider.
 SUBSCRIPTION_PROVIDER_ANDROID_API_KEY=
 SUBSCRIPTION_PROVIDER_IOS_API_KEY=
 

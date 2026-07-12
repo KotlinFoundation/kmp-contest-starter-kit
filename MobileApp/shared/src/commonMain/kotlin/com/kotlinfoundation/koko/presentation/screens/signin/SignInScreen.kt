@@ -102,32 +102,35 @@ fun SignInScreen(
                 isSignIn = signInMode,
             )
 
-            AuthUIHelperButtons(
-                linkAccount = signInMode.not(),
-                modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing).fillMaxWidth(),
-            ) { result ->
-                result.onSuccess {
-                    AppLogger.d("Successful sign in")
-                    userRepository.onSuccessfulOauthSign()
-                    onSuccessfulSignIn()
-                }.onFailure { error ->
-                    AppLogger.e("Error occurred while signing in, $error")
-                    if (error is UserAlreadyExistsException) {
-                        signInMode = true
-                        coroutineScope.launch {
-                            AppGlobalUiState.showUiMessage(
-                                UiMessage.Resource(Res.string.auth_user_already_exists_message),
-                            )
-                        }
-                    } else {
-                        coroutineScope.launch {
-                            AppGlobalUiState.showUiMessage(UiMessage.Message(error.message))
+            // Google/Apple buttons only when social login is enabled; otherwise anonymous-only.
+            if (Constants.AUTH_SOCIAL_LOGIN_ENABLED) {
+                AuthUIHelperButtons(
+                    linkAccount = signInMode.not(),
+                    modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing).fillMaxWidth(),
+                ) { result ->
+                    result.onSuccess {
+                        AppLogger.d("Successful sign in")
+                        userRepository.onSuccessfulOauthSign()
+                        onSuccessfulSignIn()
+                    }.onFailure { error ->
+                        AppLogger.e("Error occurred while signing in, $error")
+                        if (error is UserAlreadyExistsException) {
+                            signInMode = true
+                            coroutineScope.launch {
+                                AppGlobalUiState.showUiMessage(
+                                    UiMessage.Resource(Res.string.auth_user_already_exists_message),
+                                )
+                            }
+                        } else {
+                            coroutineScope.launch {
+                                AppGlobalUiState.showUiMessage(UiMessage.Message(error.message))
+                            }
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(AppTheme.spacing.defaultSpacing))
+                Spacer(modifier = Modifier.height(AppTheme.spacing.defaultSpacing))
+            }
 
             AppButton(
                 modifier = Modifier.fillMaxWidth(),

@@ -77,6 +77,15 @@ class SubscriptionRepository(
         }
     }
 
+    /**
+     * True when the active provider is the built-in mock (no real subscription key configured).
+     * The paywall shows a "Demo" banner in this case.
+     */
+    val isMockProvider: Boolean get() = subscriptionProvider.isMockProvider
+
+    /** Demo-only: cancels the simulated subscription. No-op for real providers (cancel via store). */
+    suspend fun cancelMockSubscription() = subscriptionProvider.cancelMockSubscription()
+
     suspend fun hasPremiumAccess(): Boolean = hasAccess(PAYWALL_PREMIUM_ACCESS)
 
     suspend fun hasAccess(key: String): Boolean = subscriptionProvider.hasAccess(key = key)

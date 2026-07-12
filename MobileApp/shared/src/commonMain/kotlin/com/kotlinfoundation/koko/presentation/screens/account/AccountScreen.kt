@@ -126,13 +126,15 @@ fun AccountScreen(
                 )
             }
 
-            ProfileInfoBox(user = uiState.user, onClick = {
-                if (uiState.user == null) {
-                    onUiEvent(AccountUiEvent.OnClickSignIn)
-                } else {
-                    onUiEvent(AccountUiEvent.OnClickProfile)
-                }
-            })
+            if (Constants.AUTH_SOCIAL_LOGIN_ENABLED || uiState.user?.id?.isNotEmpty() == true) {
+                ProfileInfoBox(user = uiState.user, onClick = {
+                    if (uiState.user == null) {
+                        onUiEvent(AccountUiEvent.OnClickSignIn)
+                    } else {
+                        onUiEvent(AccountUiEvent.OnClickProfile)
+                    }
+                })
+            }
             SettingItemListContainer(
                 itemList = uiState.settingsItemList,
                 onClick = { onUiEvent(AccountUiEvent.OnSettingsItemClick(it)) },

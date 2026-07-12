@@ -45,6 +45,10 @@ you go. Each line is labelled with who owns it (Agent / User).
 
 Verify: `./scripts/check_env.sh --phase monetization`.
 
+> Until the subscription keys are set, the paywall runs a built-in **mock** provider (demo packages,
+> simulated purchases, a "Demo paywall" banner) so you can build/test the flow before wiring a billing
+> account. It auto-switches to the real provider once you add a key. See `setup-subscriptions`.
+
 ## Ordered checklist
 
 ### 1. Design the offer

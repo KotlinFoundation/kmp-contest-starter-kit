@@ -6,6 +6,9 @@ data class SubscriptionsUiState(
     val isLoading: Boolean = false,
     val showUpgradePremiumBanner: Boolean = true,
     val currentPlan: Subscription? = null,
+    val isMock: Boolean = false,
 )
 
-sealed class SubscriptionsUiEvent
+sealed class SubscriptionsUiEvent {
+    data object OnCancelMockSubscription : SubscriptionsUiEvent()
+}
