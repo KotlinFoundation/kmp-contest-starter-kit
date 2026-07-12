@@ -255,6 +255,29 @@ rename_roborazzi_snapshots() {
   done
 }
 
+# Room exports each @Database schema to schemas/<database-FQCN>/<version>.json. The directory name
+# is the database class' fully-qualified name (dotted, e.g.
+# com.kotlinfoundation.kmpstarterkit.data.source.local.AppDatabase), so move_package_directories —
+# which only handles the slashed source path com/x/y — misses it. Rename the schema dir(s) so the
+# exported FQCN matches the renamed @Database (otherwise the build regenerates a new dir and the old
+# one lingers, tracked).
+rename_room_schemas() {
+  local module_dir="$1" schemas_dir="$1/schemas" d base new
+  [ -d "$schemas_dir" ] || return 0
+  for d in "$schemas_dir"/*; do
+    [ -d "$d" ] || continue
+    base="$(basename "$d")"
+    case "$base" in
+      *"$OLD_APP_ID"*)
+        new="${base//$OLD_APP_ID/$NEW_APP_ID}"
+        [ -e "$schemas_dir/$new" ] && { echo "  target exists, skipping schema move: $new"; continue; }
+        mv "$d" "$schemas_dir/$new"
+        echo "  renamed room schema: $base -> $new"
+        ;;
+    esac
+  done
+}
+
 update_gradle_files() {
   local f
   for m in "${REFACTOR_MODULES[@]}"; do
@@ -374,6 +397,7 @@ if [ "$SKIP_PACKAGE_RENAME" = false ]; then
     update_package_names_in_files "$module_dir"
     move_package_directories "$module_dir"
     rename_roborazzi_snapshots "$module_dir"
+    rename_room_schemas "$module_dir"
   done
   update_gradle_files
   update_task_group
