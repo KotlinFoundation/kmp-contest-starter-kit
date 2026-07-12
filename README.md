@@ -1,6 +1,6 @@
 # Koko — KMPStarterKit
 
-**Koko** is the KMP contest starter kit (nickname: Koko). Kotlin Multiplatform + Compose Multiplatform boilerplate starter kit for building Android and iOS apps with a shared codebase.
+**Koko** is the KMP contest starter kit — a Kotlin Multiplatform + Compose Multiplatform boilerplate for building Android and iOS apps with a shared codebase.
 
 Documentation: [docs.kappmaker.com](https://docs.kappmaker.com)
 
