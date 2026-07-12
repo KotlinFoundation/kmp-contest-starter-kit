@@ -33,6 +33,10 @@ credentials, IDs, and toggles.
 | `GOOGLE_WEB_CLIENT_ID` | Google sign-in (Android + iOS) | Firebase → Auth → Google provider → **Web client ID** | integrations (`enable-auth`) |
 | `SUBSCRIPTION_PROVIDER_ANDROID_API_KEY` | Billing SDK public key (Android) | Adapty or RevenueCat dashboard | integrations (opt-in) / monetization |
 | `SUBSCRIPTION_PROVIDER_IOS_API_KEY` | Billing SDK public key (iOS) | Adapty or RevenueCat dashboard | integrations (opt-in) / monetization |
+
+> **Subscription mock:** while the two subscription keys are unset, the app runs a built-in mock
+> provider so the paywall/purchase/unlock flow works with zero keys (a "Demo paywall" banner marks
+> it). Setting a real key auto-switches to the real provider — see `setup-subscriptions`.
 | `ADMOB_APP_ID_ANDROID` | AdMob app id (Android) | Google AdMob console | monetization (ads) |
 | `ADMOB_BANNER_AD_ID_ANDROID` | Banner ad unit (Android) | AdMob console | monetization |
 | `ADMOB_INTERSTITIAL_AD_ID_ANDROID` | Interstitial ad unit (Android) | AdMob console | monetization |

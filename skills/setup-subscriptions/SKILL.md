@@ -33,6 +33,15 @@ symbol each provider module exposes in package `com.kotlinfoundation.koko.subscr
 - **Both `ADAPTY` and `REVENUECAT` builds must compile.** If you touch subscription code, flip the
   property to the other value and rebuild before declaring done.
 
+## Mock mode — default until keys are set
+
+Until real SDK keys are configured, the app runs a built-in **mock** subscription provider
+(`MockSubscriptionProvider`, auto-selected by `isSubscriptionMockActive()` in `root/Di.kt`). The paywall
+shows demo packages and a "purchase" simulates success — unlocking Premium or adding credits — so the
+whole flow is explorable on every platform with zero keys. A **"Demo paywall" banner** marks it, and it
+**auto-switches to the real provider** the moment you set a key below. It's client-only (no receipt),
+for exploration; do the steps below before shipping.
+
 ## 2. SDK API keys → `local.properties` (User Action)
 
 Ask the developer to log into the provider dashboard and copy the two **public SDK keys**, then paste
