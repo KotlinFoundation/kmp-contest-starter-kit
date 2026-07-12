@@ -7,7 +7,7 @@ import com.kotlinfoundation.koko.subscription.config.activeSubscriptionProviderF
 object Constants {
     const val URL_PRIVACY_POLICY = ""
     const val URL_TERMS_CONDITIONS = ""
-    const val CONTACT_EMAIL = "team@measify.com"
+    const val CONTACT_EMAIL = "support@example.com"
     const val APPSTORE_APP_ID = ""
 
     // Enables Apple and Google sign-in. If false, only anonymous login is supported.

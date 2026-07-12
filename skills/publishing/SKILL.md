@@ -39,7 +39,7 @@ review. Guide precisely, stage local files, then wait.
 
 - **`Constants.kt` fields** (required) — set these before you ship:
   - `URL_PRIVACY_POLICY` + `URL_TERMS_CONDITIONS` — your published legal URLs.
-  - `CONTACT_EMAIL` — your own support email (ships as boilerplate `team@measify.com`).
+  - `CONTACT_EMAIL` — your own support email (ships as boilerplate `support@example.com`).
   - `APPSTORE_APP_ID` — numeric App Store id for rate/review + manage-subscription deep links; set it
     once App Store Connect assigns it (`setup-appstore-connect`).
 - **Signing + store credentials** (required — CI secrets, not local files) — upload keystore, App

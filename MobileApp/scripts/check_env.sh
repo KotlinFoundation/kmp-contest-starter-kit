@@ -176,8 +176,8 @@ if phase_active publishing; then
   echo "[P3] publishing"
   if [ -z "$PRIVACY_URL" ]; then row required "Constants.URL_PRIVACY_POLICY" "empty" "publish a privacy policy URL and set it in Constants.kt"; else row ok "Constants.URL_PRIVACY_POLICY" "set"; fi
   if [ -z "$TERMS_URL" ]; then row required "Constants.URL_TERMS_CONDITIONS" "empty" "publish a terms URL and set it in Constants.kt"; else row ok "Constants.URL_TERMS_CONDITIONS" "set"; fi
-  # CONTACT_EMAIL ships as the boilerplate team@measify.com — flag until it's your own.
-  if [ -z "$CONTACT_EMAIL" ] || [ "$CONTACT_EMAIL" = "team@measify.com" ]; then
+  # CONTACT_EMAIL ships as the boilerplate support@example.com — flag until it's your own.
+  if [ -z "$CONTACT_EMAIL" ] || [ "$CONTACT_EMAIL" = "support@example.com" ]; then
     row required "Constants.CONTACT_EMAIL" "boilerplate/empty" "set your own support email in Constants.kt (still $CONTACT_EMAIL)"
   else row ok "Constants.CONTACT_EMAIL" "set"; fi
   # APPSTORE_APP_ID is assigned by App Store Connect — only knowable once the iOS app record exists.
