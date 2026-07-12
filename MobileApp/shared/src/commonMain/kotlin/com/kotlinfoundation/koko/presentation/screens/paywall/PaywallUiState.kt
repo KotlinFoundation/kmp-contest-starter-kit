@@ -31,6 +31,11 @@ data class PaywallUiState(
      * disclose (credit packs and no-intro plans).
      */
     val belowCtaText: UiText? = null,
+    /**
+     * True when the built-in mock subscription provider is active (no real Adapty/RevenueCat key
+     * set). Drives the "Demo paywall" banner so simulated purchases are never mistaken for real.
+     */
+    val isMock: Boolean = false,
 )
 
 enum class PaywallMode { SUBSCRIPTION, CREDIT_PACK }

@@ -2,6 +2,7 @@ package com.kotlinfoundation.koko.data.repository
 
 import com.kotlinfoundation.koko.data.BackgroundExecutor
 import com.kotlinfoundation.koko.data.source.preferences.UserPreferences
+import com.kotlinfoundation.koko.data.subscription.MockSubscriptionProvider
 import com.kotlinfoundation.koko.domain.model.Subscription
 import com.kotlinfoundation.koko.subscription.api.BillingPeriod
 import com.kotlinfoundation.koko.subscription.api.PurchasePackage
@@ -76,6 +77,12 @@ class SubscriptionRepository(
             AppLogger.e("Error occurred while logging out for subscription provider", it)
         }
     }
+
+    /**
+     * True when the active provider is the built-in mock (no real subscription key configured).
+     * The paywall shows a "Demo" banner in this case. See [MockSubscriptionProvider].
+     */
+    val isMockProvider: Boolean get() = subscriptionProvider is MockSubscriptionProvider
 
     suspend fun hasPremiumAccess(): Boolean = hasAccess(PAYWALL_PREMIUM_ACCESS)
 

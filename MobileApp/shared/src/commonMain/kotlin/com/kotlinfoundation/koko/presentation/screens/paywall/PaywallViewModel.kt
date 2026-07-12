@@ -48,7 +48,11 @@ class PaywallViewModel(
     private var selectedPackageId: PurchasePackageId? = null
 
     private val _uiState = MutableStateFlow(
-        PaywallUiState(mode = mode, currentPlacementId = placementId),
+        PaywallUiState(
+            mode = mode,
+            currentPlacementId = placementId,
+            isMock = subscriptionRepository.isMockProvider,
+        ),
     )
     val uiState: StateFlow<PaywallUiState> = _uiState.asStateFlow()
 

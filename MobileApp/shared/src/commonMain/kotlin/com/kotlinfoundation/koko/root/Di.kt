@@ -16,6 +16,8 @@ import com.kotlinfoundation.koko.data.source.remote.HttpClientFactory
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.OpenAiApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.ReplicateApiService
+import com.kotlinfoundation.koko.data.subscription.MockSubscriptionProvider
+import com.kotlinfoundation.koko.data.subscription.isSubscriptionMockActive
 import com.kotlinfoundation.koko.domain.model.credit.creditSystemConfig
 import com.kotlinfoundation.koko.domain.usecase.AiGenerationProvider
 import com.kotlinfoundation.koko.presentation.screens.account.AccountViewModel
@@ -27,6 +29,7 @@ import com.kotlinfoundation.koko.presentation.screens.onboarding.OnBoardingViewM
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallViewModel
 import com.kotlinfoundation.koko.presentation.screens.profile.ProfileViewModel
 import com.kotlinfoundation.koko.presentation.screens.subscriptions.SubscriptionsViewModel
+import com.kotlinfoundation.koko.subscription.api.NoOpSubscriptionProviderUi
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProvider
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderFactory
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderUi
@@ -80,10 +83,24 @@ private val dataModule = module {
     factory { Constants.authServiceProviderFactory } bind AuthServiceProviderFactory::class
     single { get<AuthServiceProviderFactory>().create() } bind AuthServiceProvider::class
 
-    // Subscription Provider
+    // Subscription Provider. When no real SDK key is set (isSubscriptionMockActive), swap in the
+    // MockSubscriptionProvider so the paywall/purchase/unlock flow is explorable with zero keys.
+    // Auto-reverts to the real provider (Adapty/RevenueCat) the moment a key is configured.
     factory { Constants.subscriptionProviderFactory } bind SubscriptionProviderFactory::class
-    single { get<SubscriptionProviderFactory>().createProvider() } bind SubscriptionProvider::class
-    factory { get<SubscriptionProviderFactory>().createProviderUi() } bind SubscriptionProviderUi::class
+    single {
+        if (isSubscriptionMockActive()) {
+            MockSubscriptionProvider(get())
+        } else {
+            get<SubscriptionProviderFactory>().createProvider()
+        }
+    } bind SubscriptionProvider::class
+    factory {
+        if (isSubscriptionMockActive()) {
+            NoOpSubscriptionProviderUi
+        } else {
+            get<SubscriptionProviderFactory>().createProviderUi()
+        }
+    } bind SubscriptionProviderUi::class
 
     // Repositories
     single { UserRepository(get(), get(), get(), get(), get()) }
