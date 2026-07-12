@@ -41,7 +41,6 @@ credentials, IDs, and toggles.
 | `ADMOB_INTERSTITIAL_AD_ID_IOS` | Interstitial ad unit (iOS) | AdMob console | monetization |
 | `ADMOB_REWARDED_AD_ID_IOS` | Rewarded ad unit (iOS) | AdMob console | monetization |
 | `IMGBB_TOKEN` | Image hosting/upload token | https://api.imgbb.com/ account | when using image upload |
-| `OPENAI_API_KEY` | Local/dev OpenAI calls | https://platform.openai.com/ | integrations (dev only — prod keys live in Secret Manager, see `integrate-web-proxy`) |
 
 > The AdMob and `ADMOB_APP_ID_ANDROID` value is also consumed in `androidApp/build.gradle.kts`
 > (manifest placeholder). Production Cloud Functions read `OPENAI_API_KEY` / `REPLICATE_API_KEY`

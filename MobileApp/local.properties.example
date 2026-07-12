@@ -43,6 +43,6 @@ ADMOB_REWARDED_AD_ID_IOS=
 # --- Optional / conditional --------------------------------------------------------------------
 # Image hosting token, only if you use image upload. Get it from https://api.imgbb.com/
 IMGBB_TOKEN=
-# Local/dev OpenAI calls only. Production keys live in Google Cloud Secret Manager (see the
-# integrate-web-proxy skill), NOT here. Get a key from https://platform.openai.com/
-OPENAI_API_KEY=
+
+# Note: OpenAI / Replicate keys do NOT go here. The app calls them only through the Cloud Functions
+# web-proxy, which reads them from Google Cloud Secret Manager — see the integrate-web-proxy skill.
