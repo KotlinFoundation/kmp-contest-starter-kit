@@ -12,7 +12,7 @@ Firebase project from the `integrations` phase — no new project.
 ## 1. Listeners (already wired)
 
 `AppInitializer.initializeNotification()`
-(`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/root/AppInitializer.kt`) registers:
+(`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/root/AppInitializer.kt`) registers:
 - `KMPNotifier.addListener { onNotificationClicked(data) }` — user tapped a notification.
 - `KMPNotifier.addPushListener { onNewToken(token); onPushNotificationWithPayloadData(...) }` — the
   device FCM token (log it) and incoming pushes.

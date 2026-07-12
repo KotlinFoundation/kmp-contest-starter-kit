@@ -65,7 +65,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: com.kotlinfoundation.kmpstarterkit
+          packageName: com.kotlinfoundation.koko
           releaseFiles: MobileApp/androidApp/build/outputs/bundle/release/*.aab
           track: internal #internal, alpha, beta or production
           whatsNewDirectory: MobileApp/distribution/whatsnew

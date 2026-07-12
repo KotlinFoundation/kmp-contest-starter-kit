@@ -1,6 +1,6 @@
 @file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 
-package com.kotlinfoundation.kmpstarterkit.example
+package com.kotlinfoundation.koko.example
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

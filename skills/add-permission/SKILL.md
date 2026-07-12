@@ -8,7 +8,7 @@ description: Request a runtime permission (camera, gallery, location, microphone
 Permissions go through the app-level `AppPermissionState` wrapper (backed by Calf) — real dialogs on
 Android/iOS, granted no-op on desktop/web. **Never use Calf types directly in screens.**
 
-Helpers live in `shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/permissions/AppPermissionState.kt`.
+Helpers live in `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/permissions/AppPermissionState.kt`.
 
 ## Ready-made helpers
 

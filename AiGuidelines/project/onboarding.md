@@ -5,7 +5,7 @@ a first taste of value** before any ask — then hand off to the paywall at the 
 (see `paywall.md`). Fill the `TAILOR PER APP` blanks for your product; the rest are strong defaults.
 
 > Code lives in
-> `MobileApp/shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/presentation/screens/onboarding/`
+> `MobileApp/shared/src/commonMain/kotlin/com/kotlinfoundation/koko/presentation/screens/onboarding/`
 > (`OnBoardingScreen.kt` + `OnBoardingScreenVariation1/2.kt`, `OnBoardingUiState.kt`).
 
 ## Pattern choice

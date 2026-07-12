@@ -21,7 +21,7 @@ Open https://console.firebase.google.com/ → your project:
 ## 2. Log analytics events
 
 Events go through the `Analytics` interface — Firebase Analytics on mobile, no-op elsewhere:
-`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/analytics/Analytics.kt`.
+`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/analytics/Analytics.kt`.
 
 - `analytics.logEvent(event, params)` — custom event.
 - `analytics.logScreenView(screenName)` — the common screen-view event.
@@ -34,7 +34,7 @@ points (screen entry, key conversions). Analytics is gated by the `IS_ANALYTICS_
 ## 3. Feature flags via Remote Config
 
 Flags are read through `FeatureFlagManager`
-(`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/data/source/featureflag/FeatureFlagManager.kt`),
+(`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/data/source/featureflag/FeatureFlagManager.kt`),
 backed by Firebase Remote Config on Android/iOS and a no-op elsewhere. `AppInitializer` calls
 `syncsFlagsAsync()` on startup; values fall back to `DEFAULT_VALUES` until fresh ones fetch.
 
@@ -69,7 +69,7 @@ Firebase **DebugView** shows events in near-real-time from a debug-enabled devic
 - Then open **Firebase Console → Analytics → DebugView** and drive the app.
 
 Use `AppLogger`
-(`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/logging/AppLogger.kt`,
+(`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/logging/AppLogger.kt`,
 initialized in `AppInitializer`) for local `AppLogger.d(...)` traces alongside DebugView while
 confirming events fire.
 

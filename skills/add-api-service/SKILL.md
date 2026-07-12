@@ -8,7 +8,7 @@ description: Add a Ktor-backed network request end-to-end — request/response D
 Generic Ktor call to **any** URL — this is not tied to the project's own backend. Follow the layering:
 DTOs → API service → repository (`Result` wrapping) → ViewModel.
 
-Paths below are under `shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/`.
+Paths below are under `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/`.
 
 ## 1. DTOs — `data/source/remote/request/` and `data/source/remote/response/`
 

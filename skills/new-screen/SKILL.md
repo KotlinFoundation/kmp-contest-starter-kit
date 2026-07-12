@@ -12,7 +12,7 @@ Run from `MobileApp/`:
 ```
 
 The script is idempotent (safe to re-run). It generates
-`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/presentation/screens/yourscreenname/`:
+`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/presentation/screens/yourscreenname/`:
 
 - `YourScreenNameScreen.kt` — dual-overload pattern (ViewModel entry point + pure composable for previews/tests)
 - `YourScreenNameUiState.kt` — UiState data class + UiEvent sealed interface

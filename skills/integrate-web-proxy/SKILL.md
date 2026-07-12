@@ -94,7 +94,7 @@ The deploy prints the base URL, shaped
 ## 3. Point the app at the URL — User Action / Agent Action
 
 Set the base URL in
-`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/Constants.kt`:
+`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt`:
 
 ```kotlin
 const val CLOUD_FUNCTIONS_URL = "https://us-central1-your-project-id.cloudfunctions.net"

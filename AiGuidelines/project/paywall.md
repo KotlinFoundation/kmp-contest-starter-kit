@@ -5,7 +5,7 @@ trial/purchase — **by honest means only** (no fake scarcity, no buried cancel,
 Fill the `TAILOR PER APP` blanks; the rest are strong defaults.
 
 > Code lives in
-> `MobileApp/shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/presentation/screens/paywall/`
+> `MobileApp/shared/src/commonMain/kotlin/com/kotlinfoundation/koko/presentation/screens/paywall/`
 > — `SubscriptionPaywallScreen.kt`, `creditpack/CreditPackPaywallScreen.kt`,
 > `remotepaywall/RemotePaywallScreen.kt`, and `PaywallUiStateMapper`.
 

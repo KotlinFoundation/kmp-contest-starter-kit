@@ -26,7 +26,7 @@ SUBSCRIPTION_PROVIDER=ADAPTY
 That property does two things: (a) `shared/build.gradle.kts` puts only the matching provider module
 on the classpath (`libs/subscription/subscription-adapty` or `subscription-revenuecat`), and (b)
 `Constants.subscriptionProviderFactory` delegates to `activeSubscriptionProviderFactory` — the single
-symbol each provider module exposes in package `com.kotlinfoundation.kmpstarterkit.subscription.config`.
+symbol each provider module exposes in package `com.kotlinfoundation.koko.subscription.config`.
 
 - **Never hardcode a provider in `Constants`.** `Constants` must stay provider-agnostic; the property
   resolves it so build + app code can't drift.
@@ -69,7 +69,7 @@ In the provider dashboard (Adapty or RevenueCat):
 2. Map them to an **entitlement / access level** whose key matches
    `Constants.PAYWALL_PREMIUM_ACCESS` (default `"Premium"`). To use a different key or multiple tiers,
    edit `PAYWALL_PREMIUM_ACCESS` in
-   `shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/Constants.kt`; the repo checks
+   `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt`; the repo checks
    access via `subscriptionRepository.hasPremiumAccess()` (and `hasEntitlementAccess(key)` for
    multi-tier).
 3. Configure the **paywall placement(s)** the app requests. The custom subscription paywall uses the

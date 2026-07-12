@@ -1,4 +1,4 @@
-package com.kotlinfoundation.kmpstarterkit.data.source.remote.apiservices
+package com.kotlinfoundation.koko.data.source.remote.apiservices
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.NoTransformationFoundException

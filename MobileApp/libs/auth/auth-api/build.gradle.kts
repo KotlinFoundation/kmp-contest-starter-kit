@@ -4,7 +4,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "com.kotlinfoundation.kmpstarterkit.auth.api"
+        namespace = "com.kotlinfoundation.koko.auth.api"
     }
 
     sourceSets {

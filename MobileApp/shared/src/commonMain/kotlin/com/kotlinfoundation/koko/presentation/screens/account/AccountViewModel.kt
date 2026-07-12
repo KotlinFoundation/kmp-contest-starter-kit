@@ -1,0 +1,105 @@
+package com.kotlinfoundation.koko.presentation.screens.account
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.kotlinfoundation.koko.data.repository.SubscriptionRepository
+import com.kotlinfoundation.koko.data.repository.UserRepository
+import com.kotlinfoundation.koko.designsystem.components.SettingsItemUiState
+import com.kotlinfoundation.koko.designsystem.generated.resources.UiRes
+import com.kotlinfoundation.koko.designsystem.generated.resources.ic_settings_item_logout
+import com.kotlinfoundation.koko.designsystem.generated.resources.ic_settings_item_subscriptions
+import com.kotlinfoundation.koko.designsystem.generated.resources.ic_settings_item_support_legal
+import com.kotlinfoundation.koko.domain.model.isFree
+import com.kotlinfoundation.koko.generated.resources.Res
+import com.kotlinfoundation.koko.generated.resources.help_and_support
+import com.kotlinfoundation.koko.generated.resources.logout
+import com.kotlinfoundation.koko.generated.resources.subscriptions
+import com.kotlinfoundation.koko.util.Constants
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class AccountViewModel(
+    private val userRepository: UserRepository,
+    private val subscriptionRepository: SubscriptionRepository,
+) : ViewModel() {
+
+    private val allSettingsItemList: List<SettingsItemUiState> = buildList {
+        add(
+            SettingsItemUiState(
+                startIcon = UiRes.drawable.ic_settings_item_subscriptions,
+                textRes = Res.string.subscriptions,
+            ),
+        )
+
+        add(
+            SettingsItemUiState(
+                startIcon = UiRes.drawable.ic_settings_item_support_legal,
+                textRes = Res.string.help_and_support,
+            ),
+        )
+
+        if (Constants.AUTH_SOCIAL_LOGIN_ENABLED) {
+            add(
+                SettingsItemUiState(
+                    startIcon = UiRes.drawable.ic_settings_item_logout,
+                    textRes = Res.string.logout,
+                    showEndIcon = false,
+                ),
+            )
+        }
+    }
+
+    private val _uiState = MutableStateFlow(AccountUiState())
+    val uiState: StateFlow<AccountUiState> =
+        combine(
+            userRepository.currentUser,
+            subscriptionRepository.currentSubscriptionFlow,
+            _uiState,
+        ) { currentUser, currentSubscription, uiState ->
+            val user = currentUser.getOrNull()
+            uiState.copy(
+                user = if (user?.isAnonymous == true && Constants.AUTH_SOCIAL_LOGIN_ENABLED) null else user,
+                settingsItemList =
+                if (user != null) {
+                    allSettingsItemList
+                } else {
+                    allSettingsItemList.subList(0, allSettingsItemList.size - 1)
+                },
+                showUpgradePremiumBanner = currentSubscription.isFree,
+            )
+        }.stateIn(viewModelScope, WhileSubscribed(5000), _uiState.value)
+
+    fun onUiEvent(event: AccountUiEvent) = viewModelScope.launch {
+        when (event) {
+            AccountUiEvent.OnLogoutConfirmClick -> {
+                userRepository.logOut()
+                _uiState.update { it.copy(isLogoutDialogVisible = false) }
+            }
+
+            AccountUiEvent.OnLogoutDialogDismiss -> {
+                _uiState.update { it.copy(isLogoutDialogVisible = false) }
+            }
+
+            is AccountUiEvent.OnSettingsItemClick -> {
+                when (event.item.textRes) {
+                    Res.string.logout -> {
+                        _uiState.update { it.copy(isLogoutDialogVisible = true) }
+                    }
+
+                    else -> {}
+                }
+            }
+
+            AccountUiEvent.OnClickUpgradePremium -> Unit
+
+            AccountUiEvent.OnClickProfile -> Unit
+
+            AccountUiEvent.OnClickSignIn -> Unit
+        }
+    }
+}

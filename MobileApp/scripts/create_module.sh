@@ -15,7 +15,7 @@ fi
 SAFE_MODULE_NAME=$(echo "$MODULE_NAME" | tr '-' '.' | tr '[:upper:]' '[:lower:]')
 
 # Namespace: use passed or default
-NAMESPACE=${3:-"com.kotlinfoundation.kmpstarterkit.$SAFE_MODULE_NAME"}
+NAMESPACE=${3:-"com.kotlinfoundation.koko.$SAFE_MODULE_NAME"}
 SAFE_NAMESPACE=$(echo "$NAMESPACE" | tr -d ' ' | tr '[:upper:]' '[:lower:]')
 MODULE_PATH="$TARGET_DIR/$MODULE_NAME"
 COMMON_SRC_PATH="$MODULE_PATH/src/commonMain/kotlin/$(echo "$SAFE_NAMESPACE" | tr '.' '/')"
