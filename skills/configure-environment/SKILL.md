@@ -42,6 +42,10 @@ credentials, IDs, and toggles.
 | `ADMOB_REWARDED_AD_ID_IOS` | Rewarded ad unit (iOS) | AdMob console | monetization |
 | `IMGBB_TOKEN` | Image hosting/upload token | https://api.imgbb.com/ account | when using image upload |
 
+> **Subscription mock:** while the two subscription keys are unset, the app runs a built-in mock
+> provider so the paywall/purchase/unlock/cancel flow works with zero keys (a red "Demo paywall" banner
+> marks it). Setting a real key auto-switches to the real provider — see `setup-subscriptions`.
+
 > The AdMob and `ADMOB_APP_ID_ANDROID` value is also consumed in `androidApp/build.gradle.kts`
 > (manifest placeholder). Production Cloud Functions read `OPENAI_API_KEY` / `REPLICATE_API_KEY`
 > from **Google Cloud Secret Manager**, not from `local.properties` — see the `integrate-web-proxy`
