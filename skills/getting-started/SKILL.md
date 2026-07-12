@@ -35,6 +35,14 @@ permission. Prove the loop end-to-end before adding any cloud services.
 
 ---
 
+## Keys / secrets you'll need
+
+Just one — this phase is local-only, no cloud, no accounts:
+- **`sdk.dir`** (required) — your machine's Android SDK path. Copy
+  `MobileApp/local.properties.example` → `local.properties` and set it.
+
+Verify: `./scripts/check_env.sh --phase getting-started`.
+
 ## Checklist (ordered)
 
 ### A. Prerequisites & first run

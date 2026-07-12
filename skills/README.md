@@ -30,6 +30,18 @@ guide's `progress-template.md` into your repo to track where you are.
 
 **Task skills** do one job each and are usable standalone. The guides call them by name.
 
+## Environment keys (don't get silently skipped)
+
+Service keys (Firebase, social sign-in, Adapty/RevenueCat, AdMob) live in the gitignored
+`MobileApp/local.properties`. The build defaults missing keys to `"testValue"`/empty and stays green,
+so a forgotten key is invisible in the build. Two tools make it visible:
+
+- **`MobileApp/local.properties.example`** — committed template of every key, with placeholder,
+  where-to-get URL, and owning phase. Copy it to `local.properties` and fill what your phase needs.
+- **`MobileApp/scripts/check_env.sh --phase <phase>`** — reports which keys required by that phase are
+  still placeholders (✅ / ⚠️ / ⚪). Non-breaking; wired into `run-quality-gates` and every guide's
+  validation gate. Feature-aware, so the easy first-run path (anonymous auth, no ads) is never nagged.
+
 ## The journey (5 phases)
 
 | Phase | Guide | You end with |

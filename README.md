@@ -118,6 +118,7 @@ This project is set up to be AI-ready out of the box — coding agents (Claude C
 - **`skills/`** — A phase-by-phase **developer journey** as agent-agnostic skills (open `SKILL.md` format): five guides — getting-started → integrations → publishing → monetization → growth — plus the one-job task skills they compose (run the app, new screen/model, Firebase, auth, signing, subscriptions, ads, notifications, …). Each is followable by an AI agent or by hand. Index: [`skills/README.md`](skills/README.md). Claude Code discovers them via the `.claude/skills` symlink; other agents via the Skills section in `AGENTS.md` (Gemini/Cursor/Copilot pointer files included)
 - **Build & test workflows** — All quality gates an agent needs are documented in `AGENTS.md` (Spotless, JVM/Android tests, debug build) and enforced in `.github/workflows/pr_checks.yml`
 - **Scaffolding scripts** — `MobileApp/scripts/generate_screen.sh` and `MobileApp/scripts/make_local.sh` keep agent-generated code consistent with project conventions
+- **Environment config** — copy `MobileApp/local.properties.example` → `local.properties`; `MobileApp/scripts/check_env.sh --phase <phase>` reports which required service keys are still placeholders so the agent can ask for them (the build otherwise defaults them and stays green)
 
 ## License
 

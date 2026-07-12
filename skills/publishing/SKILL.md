@@ -35,6 +35,15 @@ review. Guide precisely, stage local files, then wait.
 > `keystore.jks`, `keystore.properties`, `*.aab`, `*.ipa`, and `local.properties` — keep them
 > there and put the CI-facing copies in **repo Settings → Secrets and variables → Actions**.
 
+## Keys / secrets you'll need
+
+- **`Constants.URL_PRIVACY_POLICY` + `URL_TERMS_CONDITIONS`** (required) — published URLs.
+- **Signing + store credentials** (required — CI secrets, not local files) — upload keystore, App
+  Store Connect API key, provisioning profiles, Play service account. All move into **GitHub Actions
+  secrets**, never committed — see `setup-signing`.
+
+Verify local config: `./scripts/check_env.sh --phase publishing`.
+
 ## Checklist
 
 ### 1. Lock the final app identity — `refactor-package`

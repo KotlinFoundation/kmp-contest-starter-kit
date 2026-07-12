@@ -25,6 +25,17 @@ Most of this phase is heavy **User Action** work — creating a Firebase project
 downloading `google-services.json` / `GoogleService-Info.plist`, enabling providers, setting Secret
 Manager keys, pasting API keys into `local.properties`. You cannot do these; guide, then wait.
 
+## Keys / secrets you'll need
+
+- **Firebase config files** (required) — your own `google-services.json` + `GoogleService-Info.plist`
+  (the committed ones are boilerplate: `project_id = PROJECT_ID`).
+- **`GOOGLE_WEB_CLIENT_ID`** (opt-in) — only if you add Google/Apple sign-in.
+- **Subscription SDK keys** (opt-in) — only if you set up monetization now.
+- **`CLOUD_FUNCTIONS_URL` + Secret Manager keys** (opt-in) — only if you use the AI web-proxy.
+
+The recommended anonymous-only path needs just the Firebase config. Verify:
+`./scripts/check_env.sh --phase integrations`.
+
 ## Checklist
 
 ### 1. Lay out the key catalog — `configure-environment`

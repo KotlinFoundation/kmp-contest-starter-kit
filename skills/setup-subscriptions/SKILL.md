@@ -33,9 +33,10 @@ symbol each provider module exposes in package `com.kotlinfoundation.koko.subscr
 - **Both `ADAPTY` and `REVENUECAT` builds must compile.** If you touch subscription code, flip the
   property to the other value and rebuild before declaring done.
 
-## 2. SDK API keys → `local.properties`
+## 2. SDK API keys → `local.properties` (User Action)
 
-Same property names for both providers (`MobileApp/local.properties`, not committed):
+Ask the developer to log into the provider dashboard and copy the two **public SDK keys**, then paste
+them into `MobileApp/local.properties` (not committed). Same property names for both providers:
 
 ```properties
 SUBSCRIPTION_PROVIDER_ANDROID_API_KEY=<provider Android SDK key>
@@ -45,6 +46,10 @@ SUBSCRIPTION_PROVIDER_IOS_API_KEY=<provider iOS SDK key>
 - Adapty keys: [app.adapty.io](https://app.adapty.io/) → App settings → API keys (public SDK keys).
 - RevenueCat keys: [app.revenuecat.com](https://app.revenuecat.com/) → Project → API keys (public
   Android / iOS app-specific keys).
+
+> **STOP — these keys can't be generated locally.** Without them the paywall silently falls back to
+> `"testValue"` and fetches no products (the build still passes). Wait for the developer to paste both
+> keys and confirm. Verify with `./scripts/check_env.sh --phase monetization`.
 
 ## 3. Create products in the stores (User Action)
 
