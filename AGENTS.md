@@ -1,4 +1,6 @@
-# KMPStarterKit
+# Koko — KMPStarterKit
+
+> **Koko** is the app name (nickname); the project is the KMP contest starter kit (KMPStarterKit).
 
 ## Project Overview
 
