@@ -5,7 +5,21 @@ description: Run the same lint, test, screenshot, and build checks as CI. Use be
 
 # Run quality gates
 
-All commands run from `MobileApp/`. Same gates as `.github/workflows/pr_checks.yml`, in order:
+All commands run from `MobileApp/`. Same gates as `.github/workflows/pr_checks.yml`, in order.
+
+## 0. Environment keys (agent-visible signal)
+
+The build defaults missing keys to `"testValue"`/empty and stays **green**, so a missing cloud key
+never fails a gate. Run this first so you can SEE what's still a placeholder:
+
+```bash
+# Pass the current phase; omit --phase to check every phase.
+./scripts/check_env.sh --phase <getting-started|integrations|publishing|monetization|growth>
+```
+
+It's non-breaking (exit 0). If it prints any `⚠️` line for a key **required by the current phase**,
+**STOP and ask the developer** to supply that key before declaring the gates green — the compile
+gates below will pass regardless.
 
 ```bash
 # 1. Formatting / lint (auto-fix first, then verify)

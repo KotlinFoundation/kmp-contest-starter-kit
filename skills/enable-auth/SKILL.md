@@ -5,13 +5,17 @@ description: Enable Google and Apple social sign-in on top of Firebase Auth — 
 
 # Enable social auth (Google + Apple)
 
+**This is an opt-in upgrade.** The easiest path to a working app is **anonymous auth only** — just
+Firebase + Anonymous sign-in (done in `setup-firebase`), which needs none of the keys below. Only run
+this skill if the developer explicitly wants Google/Apple sign-in.
+
 Adds Google and Apple sign-in on top of the base Firebase project. Requires `setup-firebase` done
 first (project + registered apps + anonymous auth). Auth is implemented via the `libs/auth/` module
 (`auth-api` contracts + `auth-firebase` implementation, using KMPAuth); `UserRepository` exposes
 `continueAsGuest()`, `logOut()`, `deleteAccount()`, and `currentUser`. `SignInScreen` already wires
 the UI — you're supplying credentials, not writing auth code.
 
-## 1. Confirm the feature flag — Agent Action
+## 1. Turn on the feature flag — Agent Action
 
 In `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt`:
 
@@ -19,8 +23,8 @@ In `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt`:
 const val AUTH_SOCIAL_LOGIN_ENABLED = true
 ```
 
-`true` (default) shows Apple + Google buttons; `false` = anonymous/guest only. Leave `true` for this
-skill.
+Default is `false` (anonymous/guest only — the social buttons are hidden). Set it to `true` to show
+the Apple + Google buttons, then complete steps 2–4 to supply the credentials they need.
 
 ## 2. Enable providers in Firebase — User Action
 

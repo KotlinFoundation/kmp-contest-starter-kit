@@ -11,7 +11,10 @@ object Constants {
     const val APPSTORE_APP_ID = ""
 
     // Enables Apple and Google sign-in. If false, only anonymous login is supported.
-    const val AUTH_SOCIAL_LOGIN_ENABLED = true
+    // Default false — anonymous auth is the easiest path to a working app (just Firebase +
+    // Anonymous sign-in). Flip to true to add Google/Apple (see the enable-auth skill for the
+    // extra config: GOOGLE_WEB_CLIENT_ID, iOS Info.plist client IDs, Sign In with Apple capability).
+    const val AUTH_SOCIAL_LOGIN_ENABLED = false
 
     /**
      * The subscription provider is chosen in ONE place — the `SUBSCRIPTION_PROVIDER`
