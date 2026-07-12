@@ -48,7 +48,11 @@ class PaywallViewModel(
     private var selectedPackageId: PurchasePackageId? = null
 
     private val _uiState = MutableStateFlow(
-        PaywallUiState(mode = mode, currentPlacementId = placementId),
+        PaywallUiState(
+            mode = mode,
+            currentPlacementId = placementId,
+            isMock = subscriptionRepository.isMockProvider,
+        ),
     )
     val uiState: StateFlow<PaywallUiState> = _uiState.asStateFlow()
 
@@ -194,7 +198,9 @@ class PaywallViewModel(
     }
 
     private fun buyPackage() = viewModelScope.launch {
-        if (userCanDoPaymentAction().not()) {
+        // The mock provider simulates purchases with no backend, so it needs no signed-in user —
+        // skip the sign-in gate so the demo flow works with zero config (no Firebase/auth).
+        if (!subscriptionRepository.isMockProvider && userCanDoPaymentAction().not()) {
             AppGlobalUiState.showUiMessage(UiMessage.Resource(Res.string.paywall_msg_sign_in_required))
             _uiState.update { it.copy(signInActionRequired = true) }
             return@launch

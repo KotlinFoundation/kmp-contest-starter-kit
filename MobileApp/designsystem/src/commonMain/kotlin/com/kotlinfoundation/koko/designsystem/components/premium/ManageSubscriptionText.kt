@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.kotlinfoundation.koko.designsystem.generated.resources.UiRes
@@ -27,6 +30,9 @@ fun ManageSubscriptionText(
     isLifetime: Boolean = false,
     expirationDate: String? = null,
     isRecurring: Boolean = true,
+    // When set, tapping the "here" link runs this instead of opening [subscriptionUrl] — used by the
+    // mock provider to cancel in-app (there's no real store to manage).
+    onManageClick: (() -> Unit)? = null,
 ) {
     val annotatedString = when {
         isLifetime -> buildAnnotatedString {
@@ -54,8 +60,17 @@ fun ManageSubscriptionText(
                 }
                 val remainingText = text.substringAfter(expirationDate)
                 append(remainingText.substringBefore(hereText))
-                withStyle(style = clickableTextStyle) {
-                    appendLinkIfNotEmpty(subscriptionUrl, hereText)
+                if (onManageClick != null) {
+                    withLink(
+                        LinkAnnotation.Clickable(
+                            tag = "manage",
+                            styles = TextLinkStyles(style = clickableTextStyle),
+                        ) { onManageClick() },
+                    ) { append(hereText) }
+                } else {
+                    withStyle(style = clickableTextStyle) {
+                        appendLinkIfNotEmpty(subscriptionUrl, hereText)
+                    }
                 }
                 append(remainingText.substringAfter(hereText))
             }

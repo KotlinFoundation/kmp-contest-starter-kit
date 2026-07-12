@@ -22,6 +22,7 @@ class SubscriptionsViewModel(private val subscriptionRepository: SubscriptionRep
                         currentPlan = currentSubscription,
                         isLoading = false,
                         showUpgradePremiumBanner = currentSubscription.isFree,
+                        isMock = subscriptionRepository.isMockProvider,
                     )
                 }
             }
@@ -29,5 +30,10 @@ class SubscriptionsViewModel(private val subscriptionRepository: SubscriptionRep
     }
 
     fun onUiEvent(event: SubscriptionsUiEvent) {
+        when (event) {
+            SubscriptionsUiEvent.OnCancelMockSubscription -> viewModelScope.launch {
+                subscriptionRepository.cancelMockSubscription()
+            }
+        }
     }
 }

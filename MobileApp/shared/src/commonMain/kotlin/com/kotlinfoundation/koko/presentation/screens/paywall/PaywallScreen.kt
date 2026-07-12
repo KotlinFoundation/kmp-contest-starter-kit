@@ -1,22 +1,29 @@
 package com.kotlinfoundation.koko.presentation.screens.paywall
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kotlinfoundation.koko.designsystem.components.DemoBanner
 import com.kotlinfoundation.koko.designsystem.components.LoadingProgress
 import com.kotlinfoundation.koko.designsystem.components.LoadingProgressMode
 import com.kotlinfoundation.koko.designsystem.components.modals.AppDialog
 import com.kotlinfoundation.koko.designsystem.components.modals.DialogType
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
+import com.kotlinfoundation.koko.generated.resources.Res
+import com.kotlinfoundation.koko.generated.resources.paywall_demo_banner
 import com.kotlinfoundation.koko.presentation.components.premium.PremiumFeatureFactory
 import com.kotlinfoundation.koko.presentation.components.premium.SuccessfulPurchaseView
 import com.kotlinfoundation.koko.presentation.screens.paywall.creditpack.CreditPackPaywallScreen
 import com.kotlinfoundation.koko.presentation.screens.paywall.subscription.SubscriptionPaywallScreen
 import com.kotlinfoundation.koko.util.extensions.asFormattedDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PaywallScreen(
@@ -78,21 +85,35 @@ fun PaywallScreen(
     onUiEvent: (PaywallUiEvent) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    when {
-        uiState.isLoading -> LoadingProgress(mode = LoadingProgressMode.FULLSCREEN)
+    Column(modifier = modifier) {
+        // Shown for both subscription and credit-pack paywalls when the mock provider is active.
+        if (uiState.isMock) {
+            DemoBanner(
+                text = stringResource(Res.string.paywall_demo_banner),
+                modifier = Modifier.padding(
+                    horizontal = AppTheme.spacing.outerSpacing,
+                    vertical = AppTheme.spacing.defaultSpacing,
+                ),
+            )
+        }
+        when {
+            uiState.isLoading -> Box(modifier = Modifier.weight(1f)) {
+                LoadingProgress(mode = LoadingProgressMode.FULLSCREEN)
+            }
 
-        uiState.mode == PaywallMode.CREDIT_PACK -> CreditPackPaywallScreen(
-            modifier = modifier,
-            uiState = uiState,
-            onUiEvent = onUiEvent,
-            onDismiss = onDismiss,
-        )
+            uiState.mode == PaywallMode.CREDIT_PACK -> CreditPackPaywallScreen(
+                modifier = Modifier.weight(1f),
+                uiState = uiState,
+                onUiEvent = onUiEvent,
+                onDismiss = onDismiss,
+            )
 
-        else -> SubscriptionPaywallScreen(
-            modifier = modifier,
-            uiState = uiState,
-            onUiEvent = onUiEvent,
-            onDismiss = onDismiss,
-        )
+            else -> SubscriptionPaywallScreen(
+                modifier = Modifier.weight(1f),
+                uiState = uiState,
+                onUiEvent = onUiEvent,
+                onDismiss = onDismiss,
+            )
+        }
     }
 }

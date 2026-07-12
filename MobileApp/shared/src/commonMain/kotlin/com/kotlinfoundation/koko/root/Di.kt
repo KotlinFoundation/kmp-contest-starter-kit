@@ -2,6 +2,7 @@ package com.kotlinfoundation.koko.root
 
 import com.kotlinfoundation.koko.auth.api.AuthServiceProvider
 import com.kotlinfoundation.koko.auth.api.AuthServiceProviderFactory
+import com.kotlinfoundation.koko.common.BuildConfig
 import com.kotlinfoundation.koko.data.BackgroundExecutor
 import com.kotlinfoundation.koko.data.repository.CreditRepository
 import com.kotlinfoundation.koko.data.repository.GenerationRepository
@@ -27,12 +28,16 @@ import com.kotlinfoundation.koko.presentation.screens.onboarding.OnBoardingViewM
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallViewModel
 import com.kotlinfoundation.koko.presentation.screens.profile.ProfileViewModel
 import com.kotlinfoundation.koko.presentation.screens.subscriptions.SubscriptionsViewModel
+import com.kotlinfoundation.koko.subscription.api.MockSubscriptionProvider
+import com.kotlinfoundation.koko.subscription.api.NoOpSubscriptionProviderUi
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProvider
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderFactory
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderUi
 import com.kotlinfoundation.koko.util.ApplicationScope
 import com.kotlinfoundation.koko.util.Constants
 import com.kotlinfoundation.koko.util.defaultAsyncDispatcher
+import com.kotlinfoundation.koko.util.extensions.nowEpochMillis
+import com.kotlinfoundation.koko.util.isAndroid
 import com.kotlinfoundation.koko.util.logging.Logger
 import com.kotlinfoundation.koko.util.logging.NapierLogger
 import com.kotlinfoundation.koko.util.logging.TelegramLogger
@@ -80,10 +85,36 @@ private val dataModule = module {
     factory { Constants.authServiceProviderFactory } bind AuthServiceProviderFactory::class
     single { get<AuthServiceProviderFactory>().create() } bind AuthServiceProvider::class
 
-    // Subscription Provider
+    // Subscription Provider. When no real SDK key is set (isSubscriptionMockActive), swap in the
+    // MockSubscriptionProvider so the paywall/purchase/unlock flow is explorable with zero keys.
+    // Auto-reverts to the real provider (Adapty/RevenueCat) the moment a key is configured.
     factory { Constants.subscriptionProviderFactory } bind SubscriptionProviderFactory::class
-    single { get<SubscriptionProviderFactory>().createProvider() } bind SubscriptionProvider::class
-    factory { get<SubscriptionProviderFactory>().createProviderUi() } bind SubscriptionProviderUi::class
+    single {
+        if (isSubscriptionMockActive()) {
+            val userPreferences = get<UserPreferences>()
+            MockSubscriptionProvider(
+                readPremiumPurchased = {
+                    userPreferences.getBoolean(MockSubscriptionProvider.KEY_MOCK_PREMIUM_PURCHASED, false)
+                },
+                writePremiumPurchased = {
+                    userPreferences.putBoolean(MockSubscriptionProvider.KEY_MOCK_PREMIUM_PURCHASED, it)
+                },
+                premiumAccessId = Constants.PAYWALL_PREMIUM_ACCESS,
+                creditPackPrefix = Constants.CREDIT_PACK_PRODUCT_ID_PREFIX,
+                creditPackPlacementId = Constants.PAYWALL_PLACEMENT_CREDITS_PACK,
+                currentTimeMillis = ::nowEpochMillis,
+            )
+        } else {
+            get<SubscriptionProviderFactory>().createProvider()
+        }
+    } bind SubscriptionProvider::class
+    factory {
+        if (isSubscriptionMockActive()) {
+            NoOpSubscriptionProviderUi
+        } else {
+            get<SubscriptionProviderFactory>().createProviderUi()
+        }
+    } bind SubscriptionProviderUi::class
 
     // Repositories
     single { UserRepository(get(), get(), get(), get(), get()) }
@@ -155,6 +186,21 @@ private fun Module.initializeCreditSystem() {
 
         CreditRepository(appCreditSystemConfig, get(), get(), get(), get())
     }
+}
+
+/**
+ * True when the active-platform subscription SDK key is still a placeholder, i.e. no real
+ * Adapty/RevenueCat account is wired yet. While true the app runs [MockSubscriptionProvider] so the
+ * whole paywall → purchase → unlock flow is explorable with zero keys. Auto-off once a real key is set.
+ */
+private fun isSubscriptionMockActive(): Boolean {
+    val key =
+        if (isAndroid) {
+            BuildConfig.SUBSCRIPTION_PROVIDER_ANDROID_API_KEY
+        } else {
+            BuildConfig.SUBSCRIPTION_PROVIDER_IOS_API_KEY
+        }
+    return key.isBlank() || key == MockSubscriptionProvider.PLACEHOLDER_KEY
 }
 
 // All Koin modules loaded at startup. platformModule is the expect/actual per-target module.

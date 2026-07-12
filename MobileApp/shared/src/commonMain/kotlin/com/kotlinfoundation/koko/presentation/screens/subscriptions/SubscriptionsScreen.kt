@@ -115,6 +115,12 @@ private fun SubscriptionsScreen(
                 isRecurring = uiState.currentPlan.willRenew,
                 expirationDate = uiState.currentPlan.expirationDateInMillis?.asFormattedDate(),
                 subscriptionUrl = subscriptionUrl,
+                // Mock has no store — tapping "here" cancels in-app instead of opening the URL.
+                onManageClick = if (uiState.isMock) {
+                    { onUiEvent(SubscriptionsUiEvent.OnCancelMockSubscription) }
+                } else {
+                    null
+                },
             )
         }
     }
