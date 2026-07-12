@@ -227,12 +227,14 @@ move_package_directories() {
     new_path="$src/$NEW_PKG_PATH"
     [ -d "$old_path" ] || continue
     if [ -e "$new_path" ]; then
-      echo "  target exists, skipping move: ${new_path#"$REPO_ROOT"/}"
-      continue
+      cp -R "$old_path/." "$new_path/"
+      rm -rf "$old_path"
+      echo "  merged: ${old_path#"$REPO_ROOT"/} -> ${new_path#"$REPO_ROOT"/}"
+    else
+      mkdir -p "$(dirname "$new_path")"
+      mv "$old_path" "$new_path"
+      echo "  moved: ${old_path#"$REPO_ROOT"/} -> ${new_path#"$REPO_ROOT"/}"
     fi
-    mkdir -p "$(dirname "$new_path")"
-    mv "$old_path" "$new_path"
-    echo "  moved: ${old_path#"$REPO_ROOT"/} -> ${new_path#"$REPO_ROOT"/}"
     # Prune empty leftover ancestor dirs from the old package path (e.g. com/measify).
     find "$src" -type d -empty -delete 2>/dev/null || true
   done
