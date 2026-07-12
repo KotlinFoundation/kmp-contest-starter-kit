@@ -98,5 +98,6 @@ phase done.
 
 ## Next phase
 
-Once revenue plumbing works end-to-end, move on to the **`growth`** phase (analytics, retention,
-virality — see `AiGuidelines/project/virality_loops.md`).
+Once revenue plumbing works end-to-end, **trigger the next phase explicitly** — tell your agent
+**"start the growth phase"** (or run the `growth` skill) for analytics, retention, and virality
+(see `AiGuidelines/project/virality_loops.md`).

@@ -84,9 +84,14 @@ Verify: `./scripts/check_env.sh --phase getting-started`.
 
 > **App launches on at least one platform and shows the Home screen; quality gates pass.**
 
-Once green, switch back to the **Root Window** to proceed to the **`integrations`** guide (Firebase, auth, backend/web-proxy), then **`publishing`**.
-
 Progress is tracked in `PROGRESS_P1_GETTING_STARTED.md` at the root folder.
+
+## Done → next phase
+
+Once green, switch back to the **Root Window** and start Phase 2. **Trigger it explicitly** — tell
+your agent **"start the integrations phase"** (or run the `integrations` skill). That connects the
+app to real services: Firebase + anonymous auth, optional social sign-in, and the web-proxy backend.
+Then **`publishing`**. Don't stop here assuming the next phase auto-starts — name the phase to begin it.
 
 ---
 

@@ -111,5 +111,6 @@ the SDK **credentials** early if they want them.
 
 ## Done → next phase
 
-When authentication works and a live Cloud Function returns data, the app is connected. Proceed to
-the **`publishing`** phase to prepare store listings, signing, and release builds.
+When authentication works and a live Cloud Function returns data, the app is connected. **Trigger the
+next phase explicitly** — tell your agent **"start the publishing phase"** (or run the `publishing`
+skill) to prepare icons, release signing, store listings, and the first review build.

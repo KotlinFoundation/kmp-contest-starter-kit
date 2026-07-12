@@ -136,6 +136,6 @@ Verify Constants config: `./scripts/check_env.sh --phase publishing`.
 ## Done → next phase
 
 When the first signed build is in the Play internal track and TestFlight and submitted for
-review, the app is publishable. Proceed to the **`monetization`** phase to add subscriptions,
-credit-pack IAPs, the paywall, and ads (the store subscription/IAP products are created there,
-not here).
+review, the app is publishable. **Trigger the next phase explicitly** — tell your agent **"start the
+monetization phase"** (or run the `monetization` skill) to add subscriptions, credit-pack IAPs, the
+paywall, and ads (the store subscription/IAP products are created there, not here).
