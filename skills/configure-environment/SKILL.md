@@ -14,11 +14,16 @@ credentials, IDs, and toggles.
 | `MobileApp/gradle.properties` | subscription-provider toggle | Yes |
 | `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt` | URLs, emails, feature flags, Cloud Functions URL | Yes |
 
-> `MobileApp/local.properties` is gitignored (`MobileApp/.gitignore`), so it never ships in the
-> template — you always create/fill it yourself. Keys are read at build time by
-> `shared/build.gradle.kts` via `getRequiredProperty(...)`; missing keys with no default fail the
-> build with `Make sure you added \`<KEY>\` in local.properties`. Most keys have a `defaultValue`
-> ("testValue" or "") so the app still builds without them, but the corresponding feature won't work.
+> `MobileApp/local.properties` is gitignored (`MobileApp/.gitignore`), so it never ships filled — copy
+> it from the committed **`MobileApp/local.properties.example`** and fill what your phase needs. Keys
+> are read at build time by `shared/build.gradle.kts` via `getRequiredProperty(...)`; missing keys with
+> no default fail the build with `Make sure you added \`<KEY>\` in local.properties`. Most keys have a
+> `defaultValue` ("testValue" or "") so the app still builds without them, but the corresponding
+> feature won't work — which means a missing key is invisible in the build.
+>
+> **Make it visible:** run `./scripts/check_env.sh --phase <phase>` from `MobileApp/` to list which
+> keys required by that phase are still placeholders (✅ / ⚠️ / ⚪). It's non-breaking and is wired into
+> `run-quality-gates` and every phase's validation gate.
 
 ## `MobileApp/local.properties` — key catalog
 
@@ -26,8 +31,8 @@ credentials, IDs, and toggles.
 |-----|-----|-----------------|-----------------|
 | `sdk.dir` | Android SDK location | Your machine's SDK path (`/Users/<you>/Library/Android/sdk`) | getting-started |
 | `GOOGLE_WEB_CLIENT_ID` | Google sign-in (Android + iOS) | Firebase → Auth → Google provider → **Web client ID** | integrations (`enable-auth`) |
-| `SUBSCRIPTION_PROVIDER_ANDROID_API_KEY` | Billing SDK public key (Android) | Adapty or RevenueCat dashboard | publishing / monetization |
-| `SUBSCRIPTION_PROVIDER_IOS_API_KEY` | Billing SDK public key (iOS) | Adapty or RevenueCat dashboard | publishing / monetization |
+| `SUBSCRIPTION_PROVIDER_ANDROID_API_KEY` | Billing SDK public key (Android) | Adapty or RevenueCat dashboard | integrations (opt-in) / monetization |
+| `SUBSCRIPTION_PROVIDER_IOS_API_KEY` | Billing SDK public key (iOS) | Adapty or RevenueCat dashboard | integrations (opt-in) / monetization |
 | `ADMOB_APP_ID_ANDROID` | AdMob app id (Android) | Google AdMob console | monetization (ads) |
 | `ADMOB_BANNER_AD_ID_ANDROID` | Banner ad unit (Android) | AdMob console | monetization |
 | `ADMOB_INTERSTITIAL_AD_ID_ANDROID` | Interstitial ad unit (Android) | AdMob console | monetization |
@@ -36,23 +41,21 @@ credentials, IDs, and toggles.
 | `ADMOB_INTERSTITIAL_AD_ID_IOS` | Interstitial ad unit (iOS) | AdMob console | monetization |
 | `ADMOB_REWARDED_AD_ID_IOS` | Rewarded ad unit (iOS) | AdMob console | monetization |
 | `IMGBB_TOKEN` | Image hosting/upload token | https://api.imgbb.com/ account | when using image upload |
-| `OPENAI_API_KEY` | Local/dev OpenAI calls | https://platform.openai.com/ | integrations (dev only — prod keys live in Secret Manager, see `integrate-web-proxy`) |
 
 > The AdMob and `ADMOB_APP_ID_ANDROID` value is also consumed in `androidApp/build.gradle.kts`
 > (manifest placeholder). Production Cloud Functions read `OPENAI_API_KEY` / `REPLICATE_API_KEY`
 > from **Google Cloud Secret Manager**, not from `local.properties` — see the `integrate-web-proxy`
 > skill.
 
-Example `MobileApp/local.properties`:
+Full template with placeholders, where-to-get URLs, and per-phase comments lives in the committed
+**`MobileApp/local.properties.example`** — copy it to `local.properties` and fill what you need:
 
-```properties
-sdk.dir=/Users/you/Library/Android/sdk
-GOOGLE_WEB_CLIENT_ID=1234567890-abcdef.apps.googleusercontent.com
-SUBSCRIPTION_PROVIDER_ANDROID_API_KEY=
-SUBSCRIPTION_PROVIDER_IOS_API_KEY=
-ADMOB_APP_ID_ANDROID=
-IMGBB_TOKEN=
+```bash
+cp MobileApp/local.properties.example MobileApp/local.properties   # then edit
 ```
+
+For the easy first-run path you only need `sdk.dir`. Everything else is filled as you reach the phase
+that needs it (and `check_env.sh` tells you when).
 
 ## `MobileApp/gradle.properties` — subscription provider toggle
 
@@ -74,7 +77,7 @@ Never hardcode a concrete provider in `Constants.kt`.
 | Field | Purpose |
 |-------|---------|
 | `CLOUD_FUNCTIONS_URL` | Base URL of the deployed web proxy — `https://REGION-PROJECT_ID.cloudfunctions.net` (default region `us-central1`). Set in the `integrate-web-proxy` skill. |
-| `AUTH_SOCIAL_LOGIN_ENABLED` | `true` = show Apple + Google sign-in; `false` = anonymous only. |
+| `AUTH_SOCIAL_LOGIN_ENABLED` | `false` (default) = anonymous auth only, the easy path; `true` = also show Apple + Google sign-in (needs `GOOGLE_WEB_CLIENT_ID` + iOS config — see `enable-auth`). |
 | `URL_PRIVACY_POLICY` | Privacy policy URL (needed before store publishing). |
 | `URL_TERMS_CONDITIONS` | Terms & conditions URL. |
 | `CONTACT_EMAIL` | Support/contact email shown in-app. |

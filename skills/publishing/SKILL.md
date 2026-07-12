@@ -35,6 +35,19 @@ review. Guide precisely, stage local files, then wait.
 > `keystore.jks`, `keystore.properties`, `*.aab`, `*.ipa`, and `local.properties` — keep them
 > there and put the CI-facing copies in **repo Settings → Secrets and variables → Actions**.
 
+## Keys / secrets you'll need
+
+- **`Constants.kt` fields** (required) — set these before you ship:
+  - `URL_PRIVACY_POLICY` + `URL_TERMS_CONDITIONS` — your published legal URLs.
+  - `CONTACT_EMAIL` — your own support email (ships as boilerplate `support@example.com`).
+  - `APPSTORE_APP_ID` — numeric App Store id for rate/review + manage-subscription deep links; set it
+    once App Store Connect assigns it (`setup-appstore-connect`).
+- **Signing + store credentials** (required — CI secrets, not local files) — upload keystore, App
+  Store Connect API key, provisioning profiles, Play service account. All move into **GitHub Actions
+  secrets**, never committed — see `setup-signing`.
+
+Verify Constants config: `./scripts/check_env.sh --phase publishing`.
+
 ## Checklist
 
 ### 1. Lock the final app identity — `refactor-package`
@@ -113,6 +126,9 @@ review. Guide precisely, stage local files, then wait.
   to **TestFlight**, then **submit for review** on both. **Stop and confirm.**
 
 ### 10. Validation gate
+- **Validation** — Run `./scripts/check_env.sh --phase publishing` from `MobileApp/` — the
+  `Constants.kt` legal URLs + `CONTACT_EMAIL` must be set (no `⚠️`), `APPSTORE_APP_ID` once ASC
+  assigned it.
 - **Validation** — The signed release build **uploads to the Play internal track /
   TestFlight and appears in the console**. Run the `run-quality-gates` skill before tagging a
   release.
@@ -120,6 +136,6 @@ review. Guide precisely, stage local files, then wait.
 ## Done → next phase
 
 When the first signed build is in the Play internal track and TestFlight and submitted for
-review, the app is publishable. Proceed to the **`monetization`** phase to add subscriptions,
-credit-pack IAPs, the paywall, and ads (the store subscription/IAP products are created there,
-not here).
+review, the app is publishable. **Trigger the next phase explicitly** — tell your agent **"start the
+monetization phase"** (or run the `monetization` skill) to add subscriptions, credit-pack IAPs, the
+paywall, and ads (the store subscription/IAP products are created there, not here).

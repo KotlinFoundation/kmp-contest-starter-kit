@@ -60,6 +60,7 @@
 - [ ] **[User]** Submit for review on both stores
 
 ## 10. Validation gate
+- [ ] **[Validate]** `./scripts/check_env.sh --phase publishing` — Constants legal URLs + `CONTACT_EMAIL` set
 - [ ] **[Validate]** Signed build uploads to Play internal track / TestFlight and appears in the console
 - [ ] **[Validate]** Run the `run-quality-gates` skill
 

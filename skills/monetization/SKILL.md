@@ -37,6 +37,14 @@ they've done it before continuing. Never fabricate product IDs, entitlements, or
 Copy `skills/monetization/progress-template.md` into the working area at the start and tick items as
 you go. Each line is labelled with who owns it (Agent / User).
 
+## Keys / secrets you'll need
+
+- **Subscription SDK keys** (required) — `SUBSCRIPTION_PROVIDER_ANDROID_API_KEY` / `_IOS_API_KEY`
+  from the Adapty (default) or RevenueCat dashboard.
+- **AdMob ids** (opt-in) — only if you enable ads (`FeatureFlagManager` `IS_ADS_ENABLED`).
+
+Verify: `./scripts/check_env.sh --phase monetization`.
+
 ## Ordered checklist
 
 ### 1. Design the offer
@@ -90,5 +98,6 @@ phase done.
 
 ## Next phase
 
-Once revenue plumbing works end-to-end, move on to the **`growth`** phase (analytics, retention,
-virality — see `AiGuidelines/project/virality_loops.md`).
+Once revenue plumbing works end-to-end, **trigger the next phase explicitly** — tell your agent
+**"start the growth phase"** (or run the `growth` skill) for analytics, retention, and virality
+(see `AiGuidelines/project/virality_loops.md`).

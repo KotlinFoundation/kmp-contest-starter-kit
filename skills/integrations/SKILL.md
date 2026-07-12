@@ -25,6 +25,17 @@ Most of this phase is heavy **User Action** work — creating a Firebase project
 downloading `google-services.json` / `GoogleService-Info.plist`, enabling providers, setting Secret
 Manager keys, pasting API keys into `local.properties`. You cannot do these; guide, then wait.
 
+## Keys / secrets you'll need
+
+- **Firebase config files** (required) — your own `google-services.json` + `GoogleService-Info.plist`
+  (the committed ones are boilerplate: `project_id = PROJECT_ID`).
+- **`GOOGLE_WEB_CLIENT_ID`** (opt-in) — only if you add Google/Apple sign-in.
+- **Subscription SDK keys** (opt-in) — only if you set up monetization now.
+- **`CLOUD_FUNCTIONS_URL` + Secret Manager keys** (opt-in) — only if you use the AI web-proxy.
+
+The recommended anonymous-only path needs just the Firebase config. Verify:
+`./scripts/check_env.sh --phase integrations`.
+
 ## Checklist
 
 ### 1. Lay out the key catalog — `configure-environment`
@@ -32,8 +43,10 @@ Manager keys, pasting API keys into `local.properties`. You cannot do these; gui
   catalog of `MobileApp/local.properties` keys, the `MobileApp/gradle.properties`
   `SUBSCRIPTION_PROVIDER` toggle, and the `Constants.kt` fields. Establish which values this phase
   needs (`GOOGLE_WEB_CLIENT_ID`, `CLOUD_FUNCTIONS_URL`) vs. later phases.
-- **User Action** — Ensure `MobileApp/local.properties` exists with at least `sdk.dir`. It is
-  gitignored, so it never came from the template. **Stop and confirm.**
+- **User Action** — Ensure `MobileApp/local.properties` exists with at least `sdk.dir` (copy it from
+  the committed `MobileApp/local.properties.example` if needed). It is gitignored, so it never came
+  from the template. Run `./scripts/check_env.sh --phase integrations` to see which keys this phase
+  will need. **Stop and confirm.**
 
 ### 2. Create the Firebase project + apps + anonymous auth — `setup-firebase`
 - **Agent Action** — Read the `setup-firebase` skill. Read the app's `applicationId` /
@@ -47,15 +60,35 @@ Manager keys, pasting API keys into `local.properties`. You cannot do these; gui
 - **Validation** — `./gradlew :androidApp:assembleDebug` succeeds with the real
   `google-services.json` in place.
 
-### 3. Enable social sign-in (Google / Apple) — `enable-auth`
-- **Agent Action** — Read the `enable-auth` skill. Confirm `Constants.AUTH_SOCIAL_LOGIN_ENABLED = true`
-  (default). Point the developer at the **Web client ID** they'll copy from Firebase.
-- **User Action** — In Firebase Auth → Sign-in method, enable **Google** and **Apple**; copy the
-  **Web client ID** into `GOOGLE_WEB_CLIENT_ID` in `MobileApp/local.properties`; wire iOS
-  `Info.plist` client IDs and (for Apple on iOS) add the **Sign In with Apple** capability in Xcode.
-  **Stop and confirm.**
+### 3. Authentication — anonymous first, social opt-in — `enable-auth`
+Easiest-first: the recommended path is **Firebase + Anonymous auth only** — the app already has
+working authentication (`continueAsGuest()`), no extra keys, no social config. `setup-firebase`
+(step 2) already enables Anonymous, so **by default this step is done** — `AUTH_SOCIAL_LOGIN_ENABLED`
+defaults to `false`, so the Google/Apple buttons are hidden and `GOOGLE_WEB_CLIENT_ID` is not needed.
 
-### 4. Deploy the web proxy + point the client at it — `integrate-web-proxy`
+- **Agent Action** — **Ask the developer: "do you also want Google / Apple sign-in?"**
+  - **No** (recommended for a first app) → nothing to do; anonymous auth works. Skip to step 4.
+  - **Yes** → read the `enable-auth` skill and proceed with the User Action below.
+- **User Action** (only if they said yes) — Set `Constants.AUTH_SOCIAL_LOGIN_ENABLED = true`, then in
+  Firebase Auth → Sign-in method enable **Google** and **Apple** (re-download **both**
+  `google-services.json` and `GoogleService-Info.plist`); copy the **Web client ID** into
+  `GOOGLE_WEB_CLIENT_ID` in `MobileApp/local.properties`; fill the iOS `Info.plist` client IDs
+  (`GIDServerClientID` / `GIDClientID` / `CFBundleURLSchemes`); add the **Sign In with Apple**
+  capability in Xcode; and for Apple-on-Android complete the Apple Developer `.p8` + Service ID web
+  flow. The `enable-auth` skill lists each of these. **Stop and confirm each.**
+
+### 4. Subscriptions — OPTIONAL commercial step (opt-in) — `setup-subscriptions`
+Not required for a working app — skip it unless the developer is setting up monetization now. Full
+product / entitlement / paywall dashboard wiring lives in Phase 4 (`monetization`); here we only grab
+the SDK **credentials** early if they want them.
+
+- **Agent Action** — **Ask: "are you setting up subscriptions/monetization now?"** If no, skip to
+  step 5 — the app still works fully.
+- **User Action** (only if yes) — Log into Adapty (default) or RevenueCat, copy both **public SDK
+  keys**, and paste them into `MobileApp/local.properties` (`SUBSCRIPTION_PROVIDER_ANDROID_API_KEY`,
+  `SUBSCRIPTION_PROVIDER_IOS_API_KEY`). **Stop and confirm.**
+
+### 5. Deploy the web proxy + point the client at it — `integrate-web-proxy`
 - **Agent Action** — Read the `integrate-web-proxy` skill. Explain the `Web/functions` backend, the
   `{statusCode, errorMessage, data}` response shape, and the `requireAuth` Firebase-token gate.
 - **User Action** — Set Secret Manager secrets `OPENAI_API_KEY` / `REPLICATE_API_KEY`
@@ -67,12 +100,17 @@ Manager keys, pasting API keys into `local.properties`. You cannot do these; gui
   wraps in `Result`). Optionally test the backend locally first with
   `firebase emulators:start --only functions` from `Web/`.
 
-### 5. Validation gate
+### 6. Validation gate
+- **Validation** — Run `./scripts/check_env.sh --phase integrations` from `MobileApp/`. For the
+  recommended anonymous-only path it should report clean once your real Firebase config is in place
+  (`GOOGLE_WEB_CLIENT_ID` and the subscription keys stay `⚪` unless you opted in above). Any `⚠️` is
+  a key to go get.
 - **Validation** — The app authenticates (anonymous **or** social) and a **live remote call**
   (e.g. one of the Cloud Functions) returns data on a real device/emulator. Run the
   `run-quality-gates` skill.
 
 ## Done → next phase
 
-When authentication works and a live Cloud Function returns data, the app is connected. Proceed to
-the **`publishing`** phase to prepare store listings, signing, and release builds.
+When authentication works and a live Cloud Function returns data, the app is connected. **Trigger the
+next phase explicitly** — tell your agent **"start the publishing phase"** (or run the `publishing`
+skill) to prepare icons, release signing, store listings, and the first review build.

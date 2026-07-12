@@ -19,9 +19,11 @@ flag, so you can also toggle it remotely via **Firebase Remote Config** (key `is
 shipping a build. While ads are disabled, `rememberInterstitialAdDisplayer()` /
 `rememberRewardedAdDisplayer()` return `null` — that's expected.
 
-## 2. Ad-unit IDs → `local.properties`
+## 2. Ad-unit IDs → `local.properties` (User Action)
 
-Add the IDs for the platforms + ad types you want (`MobileApp/local.properties`):
+These come from the AdMob console — ask the developer to create the app + ad units and paste the IDs;
+they can't be generated locally. **Stop and confirm** (or use Google's test ad unit IDs to try the UI
+first). Add the IDs for the platforms + ad types you want (`MobileApp/local.properties`):
 
 ```properties
 # Android

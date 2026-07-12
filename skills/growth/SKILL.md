@@ -31,6 +31,14 @@ Crashlytics, Remote Config, and Cloud Messaging are all **the same Firebase proj
 Console work (upload the APNs `.p8` key, add Remote Config parameters, send a test push, read
 DebugView) is **User Action** — you cannot do it. Guide, then wait.
 
+## Keys / secrets you'll need
+
+No new `local.properties` keys. Analytics / Crashlytics / Remote Config reuse the existing Firebase
+project; push notifications need an **APNs `.p8`** uploaded in the Firebase console (see
+`enable-notifications`).
+
+Verify: `./scripts/check_env.sh --phase growth`.
+
 ## Checklist
 
 ### 1. Instrument the app — `setup-analytics`
