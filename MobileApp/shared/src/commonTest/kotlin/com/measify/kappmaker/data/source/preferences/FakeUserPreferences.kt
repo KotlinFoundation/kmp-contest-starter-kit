@@ -1,4 +1,4 @@
-package com.kotlinfoundation.kmpstarterkit.data.source.preferences
+package com.kotlinfoundation.koko.data.source.preferences
 
 /**
  * In-memory [UserPreferences] for tests — no DataStore, no disk. Reusable from

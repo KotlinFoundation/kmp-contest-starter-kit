@@ -53,7 +53,7 @@
 		A6C616C12D7C9038008FE51C /* RewardedAdLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardedAdLoader.swift; sourceTree = "<group>"; };
 		A6C616C32D7C9050008FE51C /* AdMobBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobBannerView.swift; sourceTree = "<group>"; };
 		A6E617582D415F40009646A5 /* IosNativeViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosNativeViewFactory.swift; sourceTree = "<group>"; };
-		A93A953729CC810C00F8E227 /* KMPStarterKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KMPStarterKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A93A953729CC810C00F8E227 /* Koko.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Koko.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A93A953A29CC810C00F8E227 /* iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp.swift; sourceTree = "<group>"; };
 		A93A953E29CC810D00F8E227 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A93A954129CC810D00F8E227 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -148,7 +148,7 @@
 		A93A953829CC810C00F8E227 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A93A953729CC810C00F8E227 /* KMPStarterKit.app */,
+				A93A953729CC810C00F8E227 /* Koko.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -210,7 +210,7 @@
 				0A1FA780B052A1A769AD6023 /* GoogleMobileAds */,
 			);
 			productName = iosApp;
-			productReference = A93A953729CC810C00F8E227 /* KMPStarterKit.app */;
+			productReference = A93A953729CC810C00F8E227 /* Koko.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -458,7 +458,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = KMPStarterKit;
+				INFOPLIST_KEY_CFBundleDisplayName = Koko;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -473,8 +473,8 @@
 					"-framework",
 					"\"SwiftUI\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kotlinfoundation.kmpstarterkit;
-				PRODUCT_NAME = KMPStarterKit;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kotlinfoundation.koko;
+				PRODUCT_NAME = Koko;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -493,7 +493,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = KMPStarterKit;
+				INFOPLIST_KEY_CFBundleDisplayName = Koko;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -508,8 +508,8 @@
 					"-framework",
 					"\"SwiftUI\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kotlinfoundation.kmpstarterkit;
-				PRODUCT_NAME = KMPStarterKit;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kotlinfoundation.koko;
+				PRODUCT_NAME = Koko;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

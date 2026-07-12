@@ -38,7 +38,7 @@ a cold launch wall.
 ## 2. Map decisions onto the code
 
 The offer flows into the existing paywall layer at
-`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/presentation/screens/paywall/`:
+`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/presentation/screens/paywall/`:
 
 - **`PaywallMode`** (`SUBSCRIPTION` / `CREDIT_PACK`) selects the child screen. Your primary model picks
   which the paywall leads with; the credit-pack flow opens via

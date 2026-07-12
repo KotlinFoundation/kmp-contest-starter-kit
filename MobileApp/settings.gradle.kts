@@ -1,4 +1,4 @@
-rootProject.name = "KMPStarterKit"
+rootProject.name = "Koko"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

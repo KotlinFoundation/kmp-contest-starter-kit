@@ -1,9 +1,9 @@
 @file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 
-package com.kotlinfoundation.kmpstarterkit.presentation.screens.onboarding
+package com.kotlinfoundation.koko.presentation.screens.onboarding
 
-import com.kotlinfoundation.kmpstarterkit.data.source.preferences.FakeUserPreferences
-import com.kotlinfoundation.kmpstarterkit.data.source.preferences.UserPreferences
+import com.kotlinfoundation.koko.data.source.preferences.FakeUserPreferences
+import com.kotlinfoundation.koko.data.source.preferences.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle

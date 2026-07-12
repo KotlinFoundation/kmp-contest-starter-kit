@@ -10,14 +10,14 @@ plugins {
 }
 
 android {
-    namespace = "com.kotlinfoundation.kmpstarterkit"
+    namespace = "com.kotlinfoundation.koko"
     compileSdk =
         libs.versions.android.compileSdk
             .get()
             .toInt()
 
     defaultConfig {
-        applicationId = "com.kotlinfoundation.kmpstarterkit"
+        applicationId = "com.kotlinfoundation.koko"
         minSdk =
             libs.versions.android.minSdk
                 .get()

@@ -12,7 +12,7 @@ credentials, IDs, and toggles.
 |------|-------|-----------|
 | `MobileApp/local.properties` | SDK path + all secret API keys | **No — gitignored** |
 | `MobileApp/gradle.properties` | subscription-provider toggle | Yes |
-| `shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/Constants.kt` | URLs, emails, feature flags, Cloud Functions URL | Yes |
+| `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt` | URLs, emails, feature flags, Cloud Functions URL | Yes |
 
 > `MobileApp/local.properties` is gitignored (`MobileApp/.gitignore`), so it never ships in the
 > template — you always create/fill it yourself. Keys are read at build time by
@@ -69,7 +69,7 @@ Never hardcode a concrete provider in `Constants.kt`.
 
 ## `Constants.kt` — code-level config
 
-`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/Constants.kt`:
+`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt`:
 
 | Field | Purpose |
 |-------|---------|

@@ -9,7 +9,7 @@ description: Store a small typed flag/setting locally via the UserPreferences (D
 Android/iOS/JVM, `localStorage` on web. Use it for small primitive flags and counters only. Structured
 data goes to Room (use the `new-local-model` skill).
 
-Files live in `shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/data/source/preferences/`:
+Files live in `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/data/source/preferences/`:
 - `UserPreferences.kt` — the interface + `Keys` companion (add your key here).
 - `UserPreferencesImpl.kt` — DataStore implementation (usually no edits needed — string/int/long/boolean are all supported).
 - `PreferencesDataStoreProvider.kt` — platform storage location.

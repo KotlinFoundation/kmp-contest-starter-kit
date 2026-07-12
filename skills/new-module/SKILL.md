@@ -13,7 +13,7 @@ Run from `MobileApp/`:
 
 - `ModuleName` — module name (hyphens become dots in the namespace)
 - `targetDir` — optional parent directory (e.g. `libs/payment`); defaults to the repo layout the script prints
-- `namespace` — optional Android namespace; defaults to `com.kotlinfoundation.kmpstarterkit.<modulename>`
+- `namespace` — optional Android namespace; defaults to `com.kotlinfoundation.koko.<modulename>`
 
 The script creates the module directories, a `build.gradle.kts` using the convention plugins from `build-logic/`, and registers the module in `settings.gradle.kts`.
 

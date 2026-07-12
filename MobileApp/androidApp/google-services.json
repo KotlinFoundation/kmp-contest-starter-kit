@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "MOBILESDK_APP_ID",
         "android_client_info": {
-          "package_name": "com.kotlinfoundation.kmpstarterkit"
+          "package_name": "com.kotlinfoundation.koko"
         }
       },
       "oauth_client": [],

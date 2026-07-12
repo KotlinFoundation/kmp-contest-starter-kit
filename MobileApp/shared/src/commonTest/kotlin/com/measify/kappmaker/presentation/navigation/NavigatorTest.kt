@@ -1,4 +1,4 @@
-package com.kotlinfoundation.kmpstarterkit.presentation.navigation
+package com.kotlinfoundation.koko.presentation.navigation
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList

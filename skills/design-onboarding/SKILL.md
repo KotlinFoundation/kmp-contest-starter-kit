@@ -29,7 +29,7 @@ copy brief (headlines, subcopy, CTAs, step order). It reads the spec you just fi
 ## 3. Build the screens
 
 Existing onboarding lives at
-`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/presentation/screens/onboarding/`
+`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/presentation/screens/onboarding/`
 (`OnBoardingScreen.kt`, `OnBoardingScreenVariation1/2.kt`, `OnBoardingUiState.kt`,
 `OnBoardingViewModel.kt`). Refine those or add new steps via the **`new-screen`** skill (Screen +
 UiState + ViewModel, wired into navigation + DI).

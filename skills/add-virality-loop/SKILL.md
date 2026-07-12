@@ -28,7 +28,7 @@ In-app review uses the **native OS APIs** (Play In-App Review / StoreKit) — **
 Firebase**. Reference `Documentation/docs/features/inapp-review.md`.
 
 Trigger from a genuine post-value moment via `rememberInAppReviewTrigger()`
-(`shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/inappreview/InAppReviewManager.kt`):
+(`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/inappreview/InAppReviewManager.kt`):
 ```kotlin
 val reviewTrigger = rememberInAppReviewTrigger()
 LaunchedEffect(Unit) {

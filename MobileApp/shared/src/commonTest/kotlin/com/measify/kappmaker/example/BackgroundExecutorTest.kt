@@ -1,6 +1,6 @@
-package com.kotlinfoundation.kmpstarterkit.example
+package com.kotlinfoundation.koko.example
 
-import com.kotlinfoundation.kmpstarterkit.data.BackgroundExecutor
+import com.kotlinfoundation.koko.data.BackgroundExecutor
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

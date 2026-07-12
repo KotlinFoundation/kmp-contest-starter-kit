@@ -14,11 +14,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.kotlinfoundation.kmpstarterkit.MainKt"
+        mainClass = "com.kotlinfoundation.koko.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.kotlinfoundation.kmpstarterkit"
+            packageName = "com.kotlinfoundation.koko"
             packageVersion = "1.0.0"
         }
     }

@@ -24,7 +24,7 @@ if [ -z "$MODEL_NAME" ]; then
   exit 1
 fi
 
-BASE_PACKAGE="com.kotlinfoundation.kmpstarterkit"
+BASE_PACKAGE="com.kotlinfoundation.koko"
 BASE_PATH=$(echo "$BASE_PACKAGE" | tr '.' '/')
 
 # snake_case for table name (e.g. CreditTransaction -> credit_transaction)

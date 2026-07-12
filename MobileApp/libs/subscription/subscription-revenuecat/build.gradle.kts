@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "com.kotlinfoundation.kmpstarterkit.subscription.revenuecat"
+        namespace = "com.kotlinfoundation.koko.subscription.revenuecat"
     }
 
     sourceSets {

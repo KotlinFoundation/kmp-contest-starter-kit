@@ -13,7 +13,7 @@ the UI — you're supplying credentials, not writing auth code.
 
 ## 1. Confirm the feature flag — Agent Action
 
-In `shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/util/Constants.kt`:
+In `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt`:
 
 ```kotlin
 const val AUTH_SOCIAL_LOGIN_ENABLED = true

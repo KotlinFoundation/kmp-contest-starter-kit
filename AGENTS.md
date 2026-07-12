@@ -8,7 +8,7 @@ Monorepo with three main parts:
 - **Documentation/** — Docusaurus documentation site (git submodule, published at docs.kappmaker.com)
 
 Tech stack: Kotlin 2.3.20, Compose Multiplatform 1.10.0, AGP 9.2.0, Gradle 9.4.1, Gradle Kotlin DSL
-Package: `com.kotlinfoundation.kmpstarterkit`
+Package: `com.kotlinfoundation.koko`
 
 ## Repository Structure
 
@@ -402,7 +402,7 @@ Two interchangeable billing backends live under `libs/subscription/` behind the
   property both (a) selects which module `shared/build.gradle.kts` puts on the classpath
   and (b) drives `Constants.subscriptionProviderFactory`, which delegates to
   `activeSubscriptionProviderFactory` — a single symbol each provider module exposes in
-  package `com.kotlinfoundation.kmpstarterkit.subscription.config`. Exactly one provider module is ever
+  package `com.kotlinfoundation.koko.subscription.config`. Exactly one provider module is ever
   linked, so `Constants` never names a concrete provider. **Do not hardcode a provider in
   `Constants`.**
 - Switching providers = change the gradle property only (plus the provider's API keys in
@@ -410,7 +410,7 @@ Two interchangeable billing backends live under `libs/subscription/` behind the
 
 ### Paywall Layer
 
-Location: `shared/src/commonMain/kotlin/com/kotlinfoundation/kmpstarterkit/presentation/screens/paywall/`
+Location: `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/presentation/screens/paywall/`
 
 Three-piece architecture that keeps Compose screens display-only:
 

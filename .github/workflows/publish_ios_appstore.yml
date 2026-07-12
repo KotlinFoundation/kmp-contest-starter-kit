@@ -18,8 +18,8 @@ jobs:
       contents: write
     env:
       github_token: ${{ secrets.GITHUB_TOKEN }}
-      bundle_id: com.kotlinfoundation.kmpstarterkit
-      app_name: KMPStarterKit
+      bundle_id: com.kotlinfoundation.koko
+      app_name: Koko
 
     steps:
       - uses: actions/checkout@v4

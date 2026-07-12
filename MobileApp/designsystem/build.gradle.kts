@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "com.kotlinfoundation.kmpstarterkit.designsystem"
+        namespace = "com.kotlinfoundation.koko.designsystem"
     }
 
     sourceSets {
@@ -35,7 +35,7 @@ kotlin {
 compose.resources {
     publicResClass = true
     nameOfResClass = "UiRes"
-    packageOfResClass = "com.kotlinfoundation.kmpstarterkit.designsystem.generated.resources"
+    packageOfResClass = "com.kotlinfoundation.koko.designsystem.generated.resources"
 }
 
 // Hot reload support
