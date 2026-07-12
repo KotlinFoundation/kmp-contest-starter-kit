@@ -77,6 +77,7 @@
     <string name="paywall_footer_terms">Terms</string>
     <string name="paywall_badge_best_value">BEST VALUE</string>
     <string name="paywall_badge_save_percent">SAVE %1$d%%</string>
+    <string name="paywall_demo_banner">Demo paywall — no subscription key set. Purchases are simulated. Add your Adapty or RevenueCat key to go live.</string>
 
     <string name="paywall_msg_sign_in_required">You need to sign in first</string>
     <string name="paywall_msg_credits_added">%1$d credits added to your account.</string>

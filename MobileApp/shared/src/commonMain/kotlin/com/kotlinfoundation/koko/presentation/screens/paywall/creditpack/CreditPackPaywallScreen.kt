@@ -48,6 +48,7 @@ import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallPackageUiSt
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallPreviewData
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiEvent
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiState
+import com.kotlinfoundation.koko.presentation.screens.paywall.components.DemoPaywallBanner
 import com.kotlinfoundation.koko.subscription.api.PurchasePackageId
 import com.kotlinfoundation.koko.util.Constants
 import com.kotlinfoundation.koko.util.StoreDevice
@@ -76,6 +77,11 @@ fun CreditPackPaywallScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.sectionSpacing),
             ) {
+                if (uiState.isMock) {
+                    DemoPaywallBanner(
+                        modifier = Modifier.padding(horizontal = AppTheme.spacing.outerSpacing),
+                    )
+                }
                 Hero()
                 if (uiState.packages.isNotEmpty()) {
                     PackList(
