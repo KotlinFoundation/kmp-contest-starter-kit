@@ -97,6 +97,8 @@ ADS_ENABLED="$(flag_default_bool IS_ADS_ENABLED)"
 CLOUD_URL="$(const_string CLOUD_FUNCTIONS_URL)"
 PRIVACY_URL="$(const_string URL_PRIVACY_POLICY)"
 TERMS_URL="$(const_string URL_TERMS_CONDITIONS)"
+CONTACT_EMAIL="$(const_string CONTACT_EMAIL)"
+APPSTORE_ID="$(const_string APPSTORE_APP_ID)"
 PROVIDER="$(prop "$GRADLE_PROPS" SUBSCRIPTION_PROVIDER)"; PROVIDER="${PROVIDER:-ADAPTY}"
 
 WARN_COUNT=0
@@ -174,6 +176,14 @@ if phase_active publishing; then
   echo "[P3] publishing"
   if [ -z "$PRIVACY_URL" ]; then row required "Constants.URL_PRIVACY_POLICY" "empty" "publish a privacy policy URL and set it in Constants.kt"; else row ok "Constants.URL_PRIVACY_POLICY" "set"; fi
   if [ -z "$TERMS_URL" ]; then row required "Constants.URL_TERMS_CONDITIONS" "empty" "publish a terms URL and set it in Constants.kt"; else row ok "Constants.URL_TERMS_CONDITIONS" "set"; fi
+  # CONTACT_EMAIL ships as the boilerplate team@measify.com — flag until it's your own.
+  if [ -z "$CONTACT_EMAIL" ] || [ "$CONTACT_EMAIL" = "team@measify.com" ]; then
+    row required "Constants.CONTACT_EMAIL" "boilerplate/empty" "set your own support email in Constants.kt (still $CONTACT_EMAIL)"
+  else row ok "Constants.CONTACT_EMAIL" "set"; fi
+  # APPSTORE_APP_ID is assigned by App Store Connect — only knowable once the iOS app record exists.
+  if [ -z "$APPSTORE_ID" ]; then
+    row optional "Constants.APPSTORE_APP_ID" "not set" "numeric App Store id for rate/review + manage-subscription deep links; set it after App Store Connect creates the app"
+  else row ok "Constants.APPSTORE_APP_ID" "set"; fi
   row optional "signing / CI secrets" "not checked here" "keystore + store credentials live in GitHub Actions secrets — see the setup-signing skill"
   echo
 fi

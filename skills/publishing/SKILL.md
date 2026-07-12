@@ -37,12 +37,16 @@ review. Guide precisely, stage local files, then wait.
 
 ## Keys / secrets you'll need
 
-- **`Constants.URL_PRIVACY_POLICY` + `URL_TERMS_CONDITIONS`** (required) — published URLs.
+- **`Constants.kt` fields** (required) — set these before you ship:
+  - `URL_PRIVACY_POLICY` + `URL_TERMS_CONDITIONS` — your published legal URLs.
+  - `CONTACT_EMAIL` — your own support email (ships as boilerplate `team@measify.com`).
+  - `APPSTORE_APP_ID` — numeric App Store id for rate/review + manage-subscription deep links; set it
+    once App Store Connect assigns it (`setup-appstore-connect`).
 - **Signing + store credentials** (required — CI secrets, not local files) — upload keystore, App
   Store Connect API key, provisioning profiles, Play service account. All move into **GitHub Actions
   secrets**, never committed — see `setup-signing`.
 
-Verify local config: `./scripts/check_env.sh --phase publishing`.
+Verify Constants config: `./scripts/check_env.sh --phase publishing`.
 
 ## Checklist
 
@@ -122,6 +126,9 @@ Verify local config: `./scripts/check_env.sh --phase publishing`.
   to **TestFlight**, then **submit for review** on both. **Stop and confirm.**
 
 ### 10. Validation gate
+- **Validation** — Run `./scripts/check_env.sh --phase publishing` from `MobileApp/` — the
+  `Constants.kt` legal URLs + `CONTACT_EMAIL` must be set (no `⚠️`), `APPSTORE_APP_ID` once ASC
+  assigned it.
 - **Validation** — The signed release build **uploads to the Play internal track /
   TestFlight and appears in the console**. Run the `run-quality-gates` skill before tagging a
   release.
