@@ -16,7 +16,7 @@ import com.kotlinfoundation.koko.data.source.remote.HttpClientFactory
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.OpenAiApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.ReplicateApiService
-import com.kotlinfoundation.koko.data.subscription.MockSubscriptionProvider
+import com.kotlinfoundation.koko.data.subscription.KEY_MOCK_PREMIUM_PURCHASED
 import com.kotlinfoundation.koko.data.subscription.isSubscriptionMockActive
 import com.kotlinfoundation.koko.domain.model.credit.creditSystemConfig
 import com.kotlinfoundation.koko.domain.usecase.AiGenerationProvider
@@ -29,6 +29,7 @@ import com.kotlinfoundation.koko.presentation.screens.onboarding.OnBoardingViewM
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallViewModel
 import com.kotlinfoundation.koko.presentation.screens.profile.ProfileViewModel
 import com.kotlinfoundation.koko.presentation.screens.subscriptions.SubscriptionsViewModel
+import com.kotlinfoundation.koko.subscription.api.MockSubscriptionProvider
 import com.kotlinfoundation.koko.subscription.api.NoOpSubscriptionProviderUi
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProvider
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderFactory
@@ -89,7 +90,14 @@ private val dataModule = module {
     factory { Constants.subscriptionProviderFactory } bind SubscriptionProviderFactory::class
     single {
         if (isSubscriptionMockActive()) {
-            MockSubscriptionProvider(get())
+            val userPreferences = get<UserPreferences>()
+            MockSubscriptionProvider(
+                readPremiumPurchased = { userPreferences.getBoolean(KEY_MOCK_PREMIUM_PURCHASED, false) },
+                writePremiumPurchased = { userPreferences.putBoolean(KEY_MOCK_PREMIUM_PURCHASED, it) },
+                premiumAccessId = Constants.PAYWALL_PREMIUM_ACCESS,
+                creditPackPrefix = Constants.CREDIT_PACK_PRODUCT_ID_PREFIX,
+                creditPackPlacementId = Constants.PAYWALL_PLACEMENT_CREDITS_PACK,
+            )
         } else {
             get<SubscriptionProviderFactory>().createProvider()
         }

@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kotlinfoundation.koko.designsystem.components.AppButton
 import com.kotlinfoundation.koko.designsystem.components.ButtonStyle
+import com.kotlinfoundation.koko.designsystem.components.DemoBanner
 import com.kotlinfoundation.koko.designsystem.components.ScreenWithToolbar
 import com.kotlinfoundation.koko.designsystem.generated.resources.UiRes
 import com.kotlinfoundation.koko.designsystem.generated.resources.ic_close
@@ -42,13 +43,13 @@ import com.kotlinfoundation.koko.generated.resources.Res
 import com.kotlinfoundation.koko.generated.resources.paywall_cp_section_title
 import com.kotlinfoundation.koko.generated.resources.paywall_cp_subtitle
 import com.kotlinfoundation.koko.generated.resources.paywall_cp_title
+import com.kotlinfoundation.koko.generated.resources.paywall_demo_banner
 import com.kotlinfoundation.koko.generated.resources.paywall_footer_privacy
 import com.kotlinfoundation.koko.generated.resources.paywall_footer_terms
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallPackageUiState
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallPreviewData
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiEvent
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiState
-import com.kotlinfoundation.koko.presentation.screens.paywall.components.DemoPaywallBanner
 import com.kotlinfoundation.koko.subscription.api.PurchasePackageId
 import com.kotlinfoundation.koko.util.Constants
 import com.kotlinfoundation.koko.util.StoreDevice
@@ -78,7 +79,8 @@ fun CreditPackPaywallScreen(
                 verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.sectionSpacing),
             ) {
                 if (uiState.isMock) {
-                    DemoPaywallBanner(
+                    DemoBanner(
+                        text = stringResource(Res.string.paywall_demo_banner),
                         modifier = Modifier.padding(horizontal = AppTheme.spacing.outerSpacing),
                     )
                 }

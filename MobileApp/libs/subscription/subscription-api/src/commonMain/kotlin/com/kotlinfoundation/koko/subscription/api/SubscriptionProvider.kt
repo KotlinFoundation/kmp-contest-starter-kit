@@ -7,6 +7,12 @@ interface SubscriptionProvider {
         fun get(factory: SubscriptionProviderFactory): SubscriptionProvider = factory.createProvider()
     }
 
+    /**
+     * True only for [MockSubscriptionProvider] (the built-in fake used when no real SDK key is set).
+     * Real providers inherit `false`. The paywall reads this to show its "Demo" banner.
+     */
+    val isMockProvider: Boolean get() = false
+
     val currentSubscriptionProviderUserFlow: Flow<SubscriptionProviderUser?>
 
     suspend fun initialize(apiKey: String): Result<Unit>

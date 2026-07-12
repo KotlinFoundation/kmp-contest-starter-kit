@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kotlinfoundation.koko.designsystem.components.AppButton
 import com.kotlinfoundation.koko.designsystem.components.ButtonStyle
+import com.kotlinfoundation.koko.designsystem.components.DemoBanner
 import com.kotlinfoundation.koko.designsystem.components.ScreenWithToolbar
 import com.kotlinfoundation.koko.designsystem.components.premium.PremiumFeatureUiState
 import com.kotlinfoundation.koko.designsystem.generated.resources.UiRes
@@ -43,6 +44,7 @@ import com.kotlinfoundation.koko.designsystem.theme.AppTheme
 import com.kotlinfoundation.koko.generated.resources.Res
 import com.kotlinfoundation.koko.generated.resources.btn_skip
 import com.kotlinfoundation.koko.generated.resources.paywall_btn_restore
+import com.kotlinfoundation.koko.generated.resources.paywall_demo_banner
 import com.kotlinfoundation.koko.generated.resources.paywall_sub_subtitle
 import com.kotlinfoundation.koko.generated.resources.paywall_sub_title
 import com.kotlinfoundation.koko.presentation.components.premium.PremiumFeatureFactory
@@ -50,7 +52,6 @@ import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallPackageUiSt
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallPreviewData
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiEvent
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiState
-import com.kotlinfoundation.koko.presentation.screens.paywall.components.DemoPaywallBanner
 import com.kotlinfoundation.koko.presentation.screens.paywall.creditpack.FooterLinksRow
 import com.kotlinfoundation.koko.subscription.api.PurchasePackageId
 import com.kotlinfoundation.koko.util.StoreScreenshot
@@ -82,7 +83,8 @@ fun SubscriptionPaywallScreen(
                 verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.sectionSpacing),
             ) {
                 if (uiState.isMock) {
-                    DemoPaywallBanner(
+                    DemoBanner(
+                        text = stringResource(Res.string.paywall_demo_banner),
                         modifier = Modifier.padding(horizontal = AppTheme.spacing.outerSpacing),
                     )
                 }

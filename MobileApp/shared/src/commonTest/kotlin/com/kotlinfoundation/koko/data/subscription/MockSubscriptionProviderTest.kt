@@ -1,6 +1,7 @@
 package com.kotlinfoundation.koko.data.subscription
 
 import com.kotlinfoundation.koko.data.source.preferences.FakeUserPreferences
+import com.kotlinfoundation.koko.subscription.api.MockSubscriptionProvider
 import com.kotlinfoundation.koko.subscription.api.PurchasePackageId
 import com.kotlinfoundation.koko.subscription.api.hasAccess
 import com.kotlinfoundation.koko.util.Constants
@@ -11,7 +12,15 @@ import kotlin.test.assertTrue
 
 class MockSubscriptionProviderTest {
 
-    private fun provider() = MockSubscriptionProvider(FakeUserPreferences())
+    private val premiumKey = "mock_premium"
+
+    private fun provider(preferences: FakeUserPreferences = FakeUserPreferences()) = MockSubscriptionProvider(
+        readPremiumPurchased = { preferences.getBoolean(premiumKey, false) },
+        writePremiumPurchased = { preferences.putBoolean(premiumKey, it) },
+        premiumAccessId = Constants.PAYWALL_PREMIUM_ACCESS,
+        creditPackPrefix = Constants.CREDIT_PACK_PRODUCT_ID_PREFIX,
+        creditPackPlacementId = Constants.PAYWALL_PLACEMENT_CREDITS_PACK,
+    )
 
     @Test
     fun subscriptionPlacementReturnsPackages() = runTest {
@@ -52,11 +61,11 @@ class MockSubscriptionProviderTest {
     @Test
     fun premiumUnlockPersistsAcrossInstances() = runTest {
         val preferences = FakeUserPreferences()
-        val subscriptionId = MockSubscriptionProvider(preferences)
+        val subscriptionId = provider(preferences)
             .getPurchasePackages(placementId = null).getOrThrow().first().id
-        MockSubscriptionProvider(preferences).purchase(subscriptionId).getOrThrow()
+        provider(preferences).purchase(subscriptionId).getOrThrow()
 
         // A fresh provider backed by the same preferences still sees the unlock.
-        assertTrue(MockSubscriptionProvider(preferences).hasAccess(Constants.PAYWALL_PREMIUM_ACCESS))
+        assertTrue(provider(preferences).hasAccess(Constants.PAYWALL_PREMIUM_ACCESS))
     }
 }
