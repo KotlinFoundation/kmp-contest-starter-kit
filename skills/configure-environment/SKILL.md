@@ -41,15 +41,21 @@ credentials, IDs, and toggles.
 | `ADMOB_INTERSTITIAL_AD_ID_IOS` | Interstitial ad unit (iOS) | AdMob console | monetization |
 | `ADMOB_REWARDED_AD_ID_IOS` | Rewarded ad unit (iOS) | AdMob console | monetization |
 | `IMGBB_TOKEN` | Image hosting/upload token | https://api.imgbb.com/ account | when using image upload |
+| `OPENAI_API_KEY` | Direct OpenAI calls (no proxy) | https://platform.openai.com/ | integrations (direct/dev — see note) |
+| `REPLICATE_API_KEY` | Direct Replicate calls (no proxy) | https://replicate.com/account/api-tokens | integrations (direct/dev — see note) |
 
 > **Subscription mock:** while the two subscription keys are unset, the app runs a built-in mock
 > provider so the paywall/purchase/unlock/cancel flow works with zero keys (a red "Demo paywall" banner
 > marks it). Setting a real key auto-switches to the real provider — see `setup-subscriptions`.
 
+> **Direct AI mode (prototyping):** `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `local.properties` are used
+> only for the **direct** (no-Firebase) AI path — the app calls the provider straight from the device when
+> `Constants.CLOUD_FUNCTIONS_URL` is blank and a key is set (`Constants.USE_AI_PROXY_SERVER` overrides). The key
+> ships in the app binary, so this is prototyping only. In **production** the app calls the web-proxy and
+> the keys live in **Google Cloud Secret Manager**, not on device — see `integrate-web-proxy`.
+
 > The AdMob and `ADMOB_APP_ID_ANDROID` value is also consumed in `androidApp/build.gradle.kts`
-> (manifest placeholder). Production Cloud Functions read `OPENAI_API_KEY` / `REPLICATE_API_KEY`
-> from **Google Cloud Secret Manager**, not from `local.properties` — see the `integrate-web-proxy`
-> skill.
+> (manifest placeholder).
 
 Full template with placeholders, where-to-get URLs, and per-phase comments lives in the committed
 **`MobileApp/local.properties.example`** — copy it to `local.properties` and fill what you need:

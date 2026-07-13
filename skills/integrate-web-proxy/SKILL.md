@@ -11,6 +11,16 @@ reads the real API key from **Google Cloud Secret Manager**, forwards the reques
 uniform envelope. Requires a Blaze-plan Firebase project (`setup-firebase`) and auth
 (`enable-auth` / anonymous).
 
+> **Prototyping shortcut — Direct AI mode (no Firebase).** To try AI generation *before* deploying this
+> proxy: put an `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `local.properties` and leave
+> `Constants.CLOUD_FUNCTIONS_URL` blank. The app's `AiTransport` then calls the provider **directly** from
+> the device (auto-detected; `Constants.USE_AI_PROXY_SERVER` overrides — `true`=proxy, `false`=direct).
+> **Not for production** — the key is
+> compiled into the app binary. Deploy this proxy and clear those keys before shipping. Note: text→image
+> is fully Firebase-free; image-*editing* still uploads the reference image via `KMPStorage`/Firebase
+> Storage. Direct calls return the provider's raw JSON (no `{statusCode,errorMessage,data}` envelope) —
+> `AiTransport` adapts it, so the DTOs and generation providers are unchanged.
+
 ## What's in `Web/functions`
 
 - `index.js` — exports the enabled functions (`replicate*`, `openAi*`), gated by `AI_PROVIDERS`
@@ -35,7 +45,9 @@ Every function returns the same JSON shape (`utils/utils.js` → `sendApiRespons
 - `errorMessage` — non-null only on error (e.g. `403 "Missing Authorization header..."`).
 - `data` — the provider's raw response object on success.
 
-Model your response DTO on this envelope with a nested `data` payload.
+This envelope is already modeled as `AiApiBaseResponse<T>` (with `handleAsResult`) — reuse it; the
+provider payload is the nested `data: T`. (In direct mode the provider returns `T` at the top level and
+`AiTransport` re-wraps it into the same `AiApiBaseResponse<T>`, so nothing downstream changes.)
 
 ## Prerequisites
 
@@ -112,16 +124,26 @@ Point `CLOUD_FUNCTIONS_URL` at the emulator host while iterating, then switch ba
 
 ## 5. Call it from the app — Agent Action
 
-Follow the `add-api-service` skill to build the Ktor client end-to-end (request/response DTOs, API
-service, repository, ViewModel call). Two specifics for this backend:
+The OpenAI/Replicate calls are **already wired** — `OpenAiApiService` / `ReplicateApiService` route
+through `AiTransport`, and the proxy `HttpClient` (`HttpClientFactory.default`) attaches the Firebase ID
+token to every request automatically. So once `CLOUD_FUNCTIONS_URL` is set (and no direct key is set /
+`USE_AI_PROXY_SERVER` isn't forcing direct), the existing generation flow uses the proxy with **no code
+change**.
 
-- **Base URL** = `Constants.CLOUD_FUNCTIONS_URL`; the path is the function name
-  (e.g. `/openAiCreateTextCompletion`). Most endpoints are `POST`.
-- **Auth header** — attach the current Firebase ID token as
-  `Authorization: Bearer <token>` (the same token from the anonymous/social session). Without it,
-  auth-gated endpoints return `403` in `errorMessage`.
-- **Response** — parse the `{ statusCode, errorMessage, data }` envelope; on non-null `errorMessage`,
-  surface it as a failure in the repository's `Result`.
+To add a **new** endpoint:
+- **AI provider call** — add a method to the AI service that calls
+  `aiTransport.execute(method, proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/<functionName>", direct = directSpec("<providerUrl>"), proxyQueryParams = …, body = …)`.
+  `AiTransport` picks proxy vs direct and adapts the response — the DTOs and `handleAsResult` don't change.
+- **Other backend call** — follow `add-api-service` (Ktor service + DTOs + repository `Result`).
+
+Specifics for this backend:
+- **Base URL** = `Constants.CLOUD_FUNCTIONS_URL`; the path is the function **name**
+  (e.g. `/openAiCreateTextCompletion`). Most endpoints are `POST`; dynamic values go as **query params**
+  (the functions read `req.query`, not path segments).
+- **Auth** — the proxy client attaches `Authorization: Bearer <Firebase ID token>` automatically; you
+  don't set it per call. Auth-gated endpoints return `403` in `errorMessage` without a signed-in user.
+- **Response** — the `{ statusCode, errorMessage, data }` envelope is parsed by `AiApiBaseResponse` /
+  `handleAsResult`; a non-null `errorMessage` becomes a `Result` failure.
 
 ## 6. Validate — Validation
 

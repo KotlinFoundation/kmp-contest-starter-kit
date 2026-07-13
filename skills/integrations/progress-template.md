@@ -42,8 +42,8 @@
 - [ ] **[Agent]** Explain `Web/functions`, `{statusCode, errorMessage, data}` shape, `requireAuth`
 - [ ] **[User]** Set Secret Manager `OPENAI_API_KEY` / `REPLICATE_API_KEY`
 - [ ] **[User]** `firebase deploy --only functions` from `Web/`
-- [ ] **[User]** Paste base URL into `Constants.CLOUD_FUNCTIONS_URL`
-- [ ] **[Agent]** Wire a client (Ktor + Firebase Bearer token) per the `add-api-service` pattern
+- [ ] **[User]** Paste base URL into `Constants.CLOUD_FUNCTIONS_URL` → existing AI flow now uses the proxy (no code change; the proxy client attaches the Firebase token). Hand-wire only for a NEW endpoint.
+- [ ] **[Agent]** *(prototyping alt)* Skip the proxy: set `OPENAI_API_KEY`/`REPLICATE_API_KEY` in `local.properties`, leave `CLOUD_FUNCTIONS_URL` blank → direct provider calls (key on device — not for production)
 
 ## 6. Validation gate
 - [ ] **[Validate]** `./scripts/check_env.sh --phase integrations` — clean for the anonymous-only path once real Firebase config is in place

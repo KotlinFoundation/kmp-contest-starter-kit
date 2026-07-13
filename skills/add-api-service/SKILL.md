@@ -10,6 +10,14 @@ DTOs → API service → repository (`Result` wrapping) → ViewModel.
 
 Paths below are under `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/`.
 
+> **AI services are special.** The OpenAI/Replicate services route through `AiTransport` (proxy vs direct
+> mode) rather than calling the client directly. In **proxy** mode the response is the
+> `{statusCode, errorMessage, data}` envelope (`AiApiBaseResponse<T>`); in **direct** mode the provider
+> returns its **raw body at the top level** and `AiTransport` re-wraps it into the same envelope — so the
+> DTOs (`T`) stay identical. If you add a new AI provider, mirror this: pass your `directUrl` + auth
+> headers + key-readiness to `AiTransport.execute`. Non-AI services just use the Ktor client directly, as
+> below.
+
 ## 1. DTOs — `data/source/remote/request/` and `data/source/remote/response/`
 
 `*Request` / `*Response` suffixes are required. All DTOs `@Serializable` + `@SerialName`. Response DTOs
