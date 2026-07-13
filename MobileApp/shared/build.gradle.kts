@@ -259,6 +259,12 @@ buildConfig {
     )
     buildConfigField("IMGBB_TOKEN", getRequiredProperty(key = "IMGBB_TOKEN", defaultValue = "testValue"))
 
+    // Direct-AI (no-Firebase) provider keys. Empty by default → the app uses the Cloud Functions proxy.
+    // Setting one (with a blank CLOUD_FUNCTIONS_URL) makes AiTransport call the provider directly.
+    // Prototyping only — the key ships in the app binary; production should keep the proxy.
+    buildConfigField("OPENAI_API_KEY", getRequiredProperty(key = "OPENAI_API_KEY", defaultValue = ""))
+    buildConfigField("REPLICATE_API_KEY", getRequiredProperty(key = "REPLICATE_API_KEY", defaultValue = ""))
+
     // Adapty or RevenueCat Api key
     buildConfigField(
         "SUBSCRIPTION_PROVIDER_ANDROID_API_KEY",
