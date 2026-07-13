@@ -1,5 +1,6 @@
 package com.kotlinfoundation.koko.data.source.remote.apiservices.ai
 
+import com.kotlinfoundation.koko.common.BuildConfig
 import com.kotlinfoundation.koko.data.source.remote.request.ai.openai.OpenAiCreateChatRequest
 import com.kotlinfoundation.koko.data.source.remote.request.ai.openai.OpenAiCreateChatRequestBuilder
 import com.kotlinfoundation.koko.data.source.remote.request.ai.openai.OpenAiCreateImageRequest
@@ -7,12 +8,11 @@ import com.kotlinfoundation.koko.data.source.remote.response.ai.AiApiBaseRespons
 import com.kotlinfoundation.koko.data.source.remote.response.ai.openai.OpenAiCreateChatResponse
 import com.kotlinfoundation.koko.data.source.remote.response.ai.openai.OpenAiCreateImageResponse
 import com.kotlinfoundation.koko.util.Constants
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
+import io.ktor.http.HttpMethod
 
-class OpenAiApiService(private val httpClient: HttpClient) {
+class OpenAiApiService(private val aiTransport: AiTransport) {
+
+    private fun directSpec(url: String) = AiDirectSpec(url = url, apiKey = BuildConfig.OPENAI_API_KEY)
 
     /**
      * Creates a chat completion using the OpenAI API.
@@ -43,9 +43,12 @@ class OpenAiApiService(private val httpClient: HttpClient) {
      * @param requestBody The request data for the chat completion.
      * @return The response from the OpenAI API as an [AiApiBaseResponse] containing [OpenAiCreateChatResponse].
      */
-    suspend fun createChat(requestBody: OpenAiCreateChatRequest): AiApiBaseResponse<OpenAiCreateChatResponse> = httpClient.post("${Constants.CLOUD_FUNCTIONS_URL}/openAiCreateTextCompletion") {
-        setBody(requestBody)
-    }.body()
+    suspend fun createChat(requestBody: OpenAiCreateChatRequest): AiApiBaseResponse<OpenAiCreateChatResponse> = aiTransport.execute(
+        method = HttpMethod.Post,
+        proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/openAiCreateTextCompletion",
+        direct = directSpec("https://api.openai.com/v1/chat/completions"),
+        body = requestBody,
+    )
 
     /**
      * Creates an image using the OpenAI API with DALL-E.
@@ -53,7 +56,10 @@ class OpenAiApiService(private val httpClient: HttpClient) {
      * @param requestBody of [OpenAiCreateImageRequest] The request data for image generation.
      * @return The response from the OpenAI API as an [AiApiBaseResponse] containing [OpenAiCreateImageResponse].
      */
-    suspend fun createImage(requestBody: OpenAiCreateImageRequest): AiApiBaseResponse<OpenAiCreateImageResponse> = httpClient.post("${Constants.CLOUD_FUNCTIONS_URL}/openAiCreateImage") {
-        setBody(requestBody)
-    }.body()
+    suspend fun createImage(requestBody: OpenAiCreateImageRequest): AiApiBaseResponse<OpenAiCreateImageResponse> = aiTransport.execute(
+        method = HttpMethod.Post,
+        proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/openAiCreateImage",
+        direct = directSpec("https://api.openai.com/v1/images/generations"),
+        body = requestBody,
+    )
 }

@@ -15,6 +15,7 @@ import com.kotlinfoundation.koko.data.source.preferences.UserPreferences
 import com.kotlinfoundation.koko.data.source.preferences.UserPreferencesImpl
 import com.kotlinfoundation.koko.data.source.remote.HttpClientFactory
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ApiService
+import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.AiTransport
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.OpenAiApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.ReplicateApiService
 import com.kotlinfoundation.koko.domain.model.credit.creditSystemConfig
@@ -47,6 +48,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import kotlin.coroutines.CoroutineContext
@@ -75,9 +77,10 @@ private val dataModule = module {
 
     // Remote source
     single { HttpClientFactory.default(get()) }
-    factoryOf(::ApiService)
+    single(named("aiDirectClient")) { HttpClientFactory.direct() }
+    single { AiTransport(proxyClient = get(), directClient = get(named("aiDirectClient"))) }
 
-    // AI API services
+    factoryOf(::ApiService)
     factoryOf(::OpenAiApiService)
     factoryOf(::ReplicateApiService)
 

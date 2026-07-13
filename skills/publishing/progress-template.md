@@ -11,6 +11,12 @@
 >
 > *STOP RULE:* Stop at any unchecked **[User]** item and wait for confirmation before proceeding.
 
+## 0. Release readiness gate ("is my app ready to publish?")
+- [ ] **[Validate]** `./scripts/check_env.sh --phase publishing` — no `⚠️` (privacy/terms URLs, CONTACT_EMAIL, AI backend on the proxy not on-device keys, real subscription keys)
+- [ ] **[Validate]** AI uses the **web-proxy** in production — `CLOUD_FUNCTIONS_URL` set, no direct `OPENAI_API_KEY`/`REPLICATE_API_KEY` shipping, `USE_AI_PROXY_SERVER` not forced to direct
+- [ ] **[Validate]** Real subscription keys set (not the demo mock) if the app sells subscriptions/IAPs
+- [ ] **[Validate]** All items 1–10 below complete; `run-quality-gates` passes
+
 ## 1. Lock final app identity — `refactor-package`
 - [ ] **[Agent]** App id / bundle id / display name are final (`./scripts/refactor_package.sh …`, or already done)
 

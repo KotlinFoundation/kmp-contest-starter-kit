@@ -91,6 +91,19 @@ flag_default_bool() {
   grep -E "Keys\.$key[[:space:]]+to[[:space:]]+" "$FEATURE_FLAGS" | tail -1 | grep -qE 'to[[:space:]]+true' && echo "true" || echo "false"
 }
 
+# Read a nullable Boolean const from Constants.kt → prints "true" | "false" | "null".
+const_tristate() {
+  local name="$1" line
+  [ -f "$CONSTANTS" ] || { echo "null"; return 0; }
+  line="$(grep -E "val[[:space:]]+$name\b" "$CONSTANTS" | tail -1)"
+  echo "$line" | grep -qE '=[[:space:]]*true' && { echo "true"; return 0; }
+  echo "$line" | grep -qE '=[[:space:]]*false' && { echo "false"; return 0; }
+  echo "null"
+}
+
+# A local.properties value is a real (usable) key: non-empty and not the "testValue" placeholder.
+key_is_set() { local v="$1"; [ -n "$v" ] && [ "$v" != "testValue" ]; }
+
 # ---------------------------------------------------------------------------- state
 SOCIAL_AUTH="$(const_bool AUTH_SOCIAL_LOGIN_ENABLED)"
 ADS_ENABLED="$(flag_default_bool IS_ADS_ENABLED)"
@@ -100,6 +113,11 @@ TERMS_URL="$(const_string URL_TERMS_CONDITIONS)"
 CONTACT_EMAIL="$(const_string CONTACT_EMAIL)"
 APPSTORE_ID="$(const_string APPSTORE_APP_ID)"
 PROVIDER="$(prop "$GRADLE_PROPS" SUBSCRIPTION_PROVIDER)"; PROVIDER="${PROVIDER:-ADAPTY}"
+USE_AI_PROXY="$(const_tristate USE_AI_PROXY_SERVER)"
+OPENAI_KEY="$(prop "$LOCAL_PROPS" OPENAI_API_KEY)"
+REPLICATE_KEY="$(prop "$LOCAL_PROPS" REPLICATE_API_KEY)"
+SUB_ANDROID_KEY="$(prop "$LOCAL_PROPS" SUBSCRIPTION_PROVIDER_ANDROID_API_KEY)"
+SUB_IOS_KEY="$(prop "$LOCAL_PROPS" SUBSCRIPTION_PROVIDER_IOS_API_KEY)"
 
 WARN_COUNT=0
 phase_active() { [ "$PHASE" = "all" ] || [ "$PHASE" = "$1" ]; }
@@ -184,6 +202,27 @@ if phase_active publishing; then
   if [ -z "$APPSTORE_ID" ]; then
     row optional "Constants.APPSTORE_APP_ID" "not set" "numeric App Store id for rate/review + manage-subscription deep links; set it after App Store Connect creates the app"
   else row ok "Constants.APPSTORE_APP_ID" "set"; fi
+
+  # AI backend — production must use the Firebase proxy so provider keys aren't compiled into the binary.
+  ai_direct_key_set=false
+  { key_is_set "$OPENAI_KEY" || key_is_set "$REPLICATE_KEY"; } && ai_direct_key_set=true
+  if [ "$USE_AI_PROXY" = "false" ]; then
+    row required "AI backend" "forced DIRECT" "Constants.USE_AI_PROXY_SERVER=false ships the API key in the app — set it to null/true and use the web-proxy for production (integrate-web-proxy)"
+  elif [ -z "$CLOUD_URL" ] && [ "$ai_direct_key_set" = true ]; then
+    row required "AI backend" "DIRECT (key on device)" "no CLOUD_FUNCTIONS_URL + a direct key set → providers are called directly with the key in the binary. Deploy the proxy + set CLOUD_FUNCTIONS_URL"
+  elif [ "$ai_direct_key_set" = true ]; then
+    row optional "AI backend" "direct key present" "proxy is active, but OPENAI/REPLICATE_API_KEY still compiles into the binary — clear it from local.properties for release builds"
+  else
+    row ok "AI backend" "proxy / none"
+  fi
+
+  # Subscriptions — real provider keys (not the demo mock) are needed to process purchases.
+  if key_is_set "$SUB_ANDROID_KEY" || key_is_set "$SUB_IOS_KEY"; then
+    row ok "subscription keys" "set"
+  else
+    row optional "subscription keys" "mock (unset)" "$PROVIDER SDK keys not set → the paywall runs the demo mock; set real keys before selling subscriptions/IAPs (setup-subscriptions)"
+  fi
+
   row optional "signing / CI secrets" "not checked here" "keystore + store credentials live in GitHub Actions secrets — see the setup-signing skill"
   echo
 fi

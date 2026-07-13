@@ -1,6 +1,6 @@
 ---
 name: publishing
-description: Phase-3 guide for publishing the KMP contest starter kit / publish to Play Store and App Store — icons, release signing (keys moved into CI secrets), store metadata + screenshots, App Store Connect + Google Play Console app creation, and the first build submitted for review. Use when the developer wants to publish / ship / release the app to the stores, or prepare store listings and signing.
+description: Phase-3 guide for publishing the KMP contest starter kit / publish to Play Store and App Store — icons, release signing (keys moved into CI secrets), store metadata + screenshots, App Store Connect + Google Play Console app creation, and the first build submitted for review. Use when the developer wants to publish / ship / release the app to the stores, prepare store listings and signing, or asks "is my app ready to publish / release?" (run the Release readiness gate below).
 ---
 
 # Phase 3 — Publishing (ship to Google Play + App Store)
@@ -16,6 +16,37 @@ console / Xcode), or **Validation** (prove it works). Steps compose the atomic s
 the referenced skill before doing that step.
 
 Track progress in a copy of [`progress-template.md`](progress-template.md).
+
+## Release readiness gate — run this when asked "is my app ready to publish?"
+
+Don't answer from memory — **run the checks and report what's unmet**, then point at the step/skill that fixes each. Two parts:
+
+**A. Automated config check.** From `MobileApp/`:
+```bash
+./scripts/check_env.sh --phase publishing
+```
+Every `⚠️` must be resolved before release. It covers:
+- `Constants.URL_PRIVACY_POLICY` / `URL_TERMS_CONDITIONS` set to **live, reachable** pages (stores reject placeholders).
+- `Constants.CONTACT_EMAIL` is your own (not the `support@example.com` boilerplate).
+- **AI backend uses the proxy, not on-device keys** — flags `USE_AI_PROXY_SERVER=false`, or a blank
+  `CLOUD_FUNCTIONS_URL` with a direct `OPENAI_API_KEY`/`REPLICATE_API_KEY` (key would ship in the binary).
+  Production must deploy the web-proxy (`integrate-web-proxy`) and clear direct keys.
+- **Subscription keys are real, not the demo mock** — if you sell subscriptions/IAPs, set the real
+  Adapty/RevenueCat SDK keys (`setup-subscriptions`); otherwise the paywall runs the client-only mock.
+- `Constants.APPSTORE_APP_ID` (set once App Store Connect assigns it).
+
+**B. Human-only readiness (can't be auto-checked)** — confirm each, sending the developer to the step/skill:
+- Package / applicationId / bundle id + display name **locked** (`refactor-package`, step 1).
+- Final **app icons** generated (`generate-app-icons`, step 2).
+- **Release signing keys moved into CI secrets**, keystore backed up (`setup-signing`, step 4) — never in the app.
+- **Version** bumped for both platforms (`bump-version`, step 3).
+- **Store listings** created + metadata/graphics/data-safety/content-rating filled: App Store Connect
+  (`setup-appstore-connect`) and Google Play Console (`setup-google-play`), steps 7–8.
+- **Store screenshots** generated (`store-screenshots`, step 5).
+- `run-quality-gates` passes.
+
+The published docs mirror this: **`Documentation/docs/production/pre-publishing-checklist.md`**. If any item
+is unmet, walk the developer through the matching numbered step below.
 
 ## STOP rule (read verbatim)
 

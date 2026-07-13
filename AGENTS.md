@@ -172,6 +172,24 @@ interface JobApiService {
 }
 ```
 
+**AI transport (proxy vs direct).** The OpenAI/Replicate services route every call through
+`AiTransport` (`data/source/remote/apiservices/ai/AiTransport.kt`) instead of hitting the Ktor client
+directly. It picks between two backends and adapts the response so the DTOs + `AiGenerationProvider`s +
+`AiApiBaseResponse.handleAsResult` never change:
+- **Proxy (production, default):** call `${Constants.CLOUD_FUNCTIONS_URL}/…` via the Firebase-interceptor
+  client; the body already is the `{statusCode, errorMessage, data}` envelope.
+- **Direct (prototyping):** call the provider URL (`api.openai.com` / `api.replicate.com`) via a second
+  client with **no** Firebase interceptor, sending `Authorization: Bearer <OPENAI_API_KEY|REPLICATE_API_KEY>`
+  (from `BuildConfig`/`local.properties`) + Replicate's `Prefer: wait`. The raw provider JSON is re-wrapped
+  into a synthetic `AiApiBaseResponse`.
+- **Selection:** auto — direct when `Constants.CLOUD_FUNCTIONS_URL` is blank AND the provider key is set;
+  `Constants.USE_AI_PROXY_SERVER` (`Boolean?`; `true`=proxy, `false`=direct, `null`=auto) overrides.
+  Prototyping only — direct-mode keys ship in the app
+  binary; production keeps the proxy (keys in Secret Manager). `AiTransport` is **provider-agnostic**: each
+  service supplies its own `directUrl` + headers + key-readiness, so a new provider needs no `AiTransport`
+  change. Text→image is fully Firebase-free; image-editing still hosts the input image via
+  `KMPStorage`/Firebase Storage (an ImgBB host swap is the follow-up).
+
 ### Repositories
 - **Prefer concrete classes** — no interface unless swapping implementations at runtime
 - **BackgroundExecutor** for all async operations:

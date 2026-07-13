@@ -96,6 +96,19 @@ object Constants {
      */
     const val CLOUD_FUNCTIONS_URL = ""
 
+    /**
+     * How AI (OpenAI/Replicate) calls are routed.
+     *
+     * - `null` (AUTO, default): use the Cloud Functions proxy, unless [CLOUD_FUNCTIONS_URL] is blank AND a
+     *   provider key is set in `local.properties` — then call the provider directly from the device.
+     * - `true`: always use the proxy.
+     * - `false`: always call the provider directly.
+     *
+     * Keep the proxy for production so API keys stay in Secret Manager, never in the app binary. Direct
+     * mode is a no-Firebase prototyping shortcut (the key ships in the app) — see `integrate-web-proxy`.
+     */
+    val USE_AI_PROXY_SERVER: Boolean? = null
+
     const val LOCAL_DB_STORAGE_NAME = "local_storage.db"
 
     // DataStore requires the file name to end with ".preferences_pb"

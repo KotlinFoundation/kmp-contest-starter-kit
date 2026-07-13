@@ -1,23 +1,25 @@
 package com.kotlinfoundation.koko.data.source.remote.apiservices.ai
 
+import com.kotlinfoundation.koko.common.BuildConfig
 import com.kotlinfoundation.koko.data.source.remote.request.ai.replicate.ReplicatePredictionRequest
 import com.kotlinfoundation.koko.data.source.remote.response.ai.AiApiBaseResponse
 import com.kotlinfoundation.koko.data.source.remote.response.ai.replicate.ReplicatePredictionResponse
 import com.kotlinfoundation.koko.util.Constants
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.utils.io.core.Input
+import io.ktor.http.HttpMethod
 
 /**
  * A service class for interacting with the Replicate API.
  * You can check different models on Replicate from [here](https://replicate.com/explore).
  *
  */
-class ReplicateApiService(val httpClient: HttpClient) {
+class ReplicateApiService(val aiTransport: AiTransport) {
+
+    @PublishedApi
+    internal fun directSpec(url: String) = AiDirectSpec(
+        url = url,
+        apiKey = BuildConfig.REPLICATE_API_KEY,
+        extraHeaders = mapOf("Prefer" to "wait"),
+    )
 
     /**
      * Creates a prediction request for a specific model using the Replicate API.
@@ -54,11 +56,13 @@ class ReplicateApiService(val httpClient: HttpClient) {
         modelOwner: String,
         modelName: String,
         requestBody: ReplicatePredictionRequest<Input>,
-    ): AiApiBaseResponse<ReplicatePredictionResponse<Input>> = httpClient.post("${Constants.CLOUD_FUNCTIONS_URL}/replicateCreateModelPrediction") {
-        parameter("model_owner", modelOwner)
-        parameter("model_name", modelName)
-        setBody(requestBody)
-    }.body()
+    ): AiApiBaseResponse<ReplicatePredictionResponse<Input>> = aiTransport.execute(
+        method = HttpMethod.Post,
+        proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/replicateCreateModelPrediction",
+        direct = directSpec("https://api.replicate.com/v1/models/$modelOwner/$modelName/predictions"),
+        proxyQueryParams = mapOf("model_owner" to modelOwner, "model_name" to modelName),
+        body = requestBody,
+    )
 
     /**
      * Creates a prediction request for non-official models, using the Replicate API, that has version
@@ -79,9 +83,12 @@ class ReplicateApiService(val httpClient: HttpClient) {
      * @param requestBody The body of the request, containing the model version and input parameters.
      * @return The response from the Replicate API as an [AiApiBaseResponse] containing [ReplicatePredictionResponse].
      */
-    suspend inline fun <reified Input> createPrediction(requestBody: ReplicatePredictionRequest<Input>): AiApiBaseResponse<ReplicatePredictionResponse<Input>> = httpClient.post("${Constants.CLOUD_FUNCTIONS_URL}/replicateCreatePrediction") {
-        setBody(requestBody)
-    }.body()
+    suspend inline fun <reified Input> createPrediction(requestBody: ReplicatePredictionRequest<Input>): AiApiBaseResponse<ReplicatePredictionResponse<Input>> = aiTransport.execute(
+        method = HttpMethod.Post,
+        proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/replicateCreatePrediction",
+        direct = directSpec("https://api.replicate.com/v1/predictions"),
+        body = requestBody,
+    )
 
     /**
      * Retrieves the status of an existing prediction using the Replicate API.
@@ -97,9 +104,12 @@ class ReplicateApiService(val httpClient: HttpClient) {
      * )
      * ```
      */
-    suspend inline fun <reified Input> getPredictionStatus(id: String): AiApiBaseResponse<ReplicatePredictionResponse<Input>> = httpClient.get("${Constants.CLOUD_FUNCTIONS_URL}/replicateGetPredictionStatus") {
-        parameter("id", id)
-    }.body()
+    suspend inline fun <reified Input> getPredictionStatus(id: String): AiApiBaseResponse<ReplicatePredictionResponse<Input>> = aiTransport.execute(
+        method = HttpMethod.Get,
+        proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/replicateGetPredictionStatus",
+        direct = directSpec("https://api.replicate.com/v1/predictions/$id"),
+        proxyQueryParams = mapOf("id" to id),
+    )
 
     /**
      * Cancels existing prediction
@@ -115,7 +125,10 @@ class ReplicateApiService(val httpClient: HttpClient) {
      * )
      * ```
      */
-    suspend inline fun <reified Input> cancelPrediction(id: String): AiApiBaseResponse<ReplicatePredictionResponse<Input>> = httpClient.post("${Constants.CLOUD_FUNCTIONS_URL}/replicateCancelPrediction") {
-        parameter("id", id)
-    }.body()
+    suspend inline fun <reified Input> cancelPrediction(id: String): AiApiBaseResponse<ReplicatePredictionResponse<Input>> = aiTransport.execute(
+        method = HttpMethod.Post,
+        proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/replicateCancelPrediction",
+        direct = directSpec("https://api.replicate.com/v1/predictions/$id/cancel"),
+        proxyQueryParams = mapOf("id" to id),
+    )
 }

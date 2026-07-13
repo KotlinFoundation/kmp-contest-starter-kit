@@ -91,6 +91,9 @@ the SDK **credentials** early if they want them.
 ### 5. Deploy the web proxy + point the client at it — `integrate-web-proxy`
 - **Agent Action** — Read the `integrate-web-proxy` skill. Explain the `Web/functions` backend, the
   `{statusCode, errorMessage, data}` response shape, and the `requireAuth` Firebase-token gate.
+- **Prototyping shortcut** — to try AI *without* deploying the proxy, set `OPENAI_API_KEY`/`REPLICATE_API_KEY`
+  in `local.properties` and leave `CLOUD_FUNCTIONS_URL` blank → the app calls the provider directly
+  (key on device, prototyping only). See `integrate-web-proxy` for the caveats.
 - **User Action** — Set Secret Manager secrets `OPENAI_API_KEY` / `REPLICATE_API_KEY`
   (https://console.cloud.google.com/security/secret-manager), then from `Web/` run
   `firebase deploy --only functions`. Copy the printed base URL

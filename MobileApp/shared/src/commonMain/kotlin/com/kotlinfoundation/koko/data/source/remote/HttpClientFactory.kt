@@ -18,9 +18,26 @@ import kotlinx.serialization.json.Json
 
 /** Builds the app's shared Ktor [HttpClient] — JSON, timeouts, logging, and a bearer-token interceptor. */
 object HttpClientFactory {
-    fun default(authServiceProvider: AuthServiceProvider) = HttpClient {
+    /** The app/proxy client: attaches the Firebase ID token as a bearer to every request. */
+    fun default(authServiceProvider: AuthServiceProvider) = baseClient().also {
+        it.plugin(HttpSend).intercept { request ->
+            // For all requests you can send user token here, for example
+            val userToken = authServiceProvider.getCurrentUserToken(forceRefresh = true)
+            request.header("Authorization", "Bearer $userToken")
+            execute(request)
+        }
+    }
+
+    /**
+     * Client for DIRECT provider calls (OpenAI/Replicate) — deliberately WITHOUT the Firebase bearer
+     * interceptor. The provider `Authorization` header (the on-device API key) is set per request by
+     * [com.kotlinfoundation.koko.data.source.remote.apiservices.ai.AiTransport].
+     */
+    fun direct() = baseClient()
+
+    private fun baseClient() = HttpClient {
         defaultRequest {
-            url("BASE_URL") // TODO replace with your API base URL
+            url("BASE_URL") // TODO replace with your API base URL (AI calls pass absolute URLs)
             header(HttpHeaders.ContentType, "application/json")
         }
         install(HttpTimeout) {
@@ -46,13 +63,6 @@ object HttpClientFactory {
                     explicitNulls = false
                 },
             )
-        }
-    }.also {
-        it.plugin(HttpSend).intercept { request ->
-            // For all requests you can send user token here, for example
-            val userToken = authServiceProvider.getCurrentUserToken(forceRefresh = true)
-            request.header("Authorization", "Bearer $userToken")
-            execute(request)
         }
     }
 }
