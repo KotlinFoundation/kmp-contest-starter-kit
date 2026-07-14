@@ -228,7 +228,7 @@ if phase_active publishing; then
     row optional "subscription keys" "mock (unset)" "$PROVIDER SDK keys not set → the paywall runs the demo mock; set real keys before selling subscriptions/IAPs (setup-subscriptions)"
   fi
 
-  row optional "signing / CI secrets" "not checked here" "keystore + store credentials live in GitHub Actions secrets — see the setup-signing skill"
+  row optional "signing" "not checked here" "keystore + store credentials stay local (gitignored) + backed up; add to GitHub Actions secrets only if publishing via CI — see the setup-signing skill"
   echo
 fi
 

@@ -1,12 +1,12 @@
 ---
 name: publishing
-description: Phase-3 guide for publishing the KMP contest starter kit / publish to Play Store and App Store — icons, release signing (keys moved into CI secrets), store metadata + screenshots, App Store Connect + Google Play Console app creation, and the first build submitted for review. Use when the developer wants to publish / ship / release the app to the stores, prepare store listings and signing, or asks "is my app ready to publish / release?" (run the Release readiness gate below).
+description: Phase-3 guide for publishing the KMP contest starter kit / publish to Play Store and App Store — icons, release signing (keystore kept out of the app), store metadata + screenshots, App Store Connect + Google Play Console app creation, and the first build submitted for review. Use when the developer wants to publish / ship / release the app to the stores, prepare store listings and signing, or asks "is my app ready to publish / release?" (run the Release readiness gate below).
 ---
 
 # Phase 3 — Publishing (ship to Google Play + App Store)
 
 **Goal:** take the integrated app (from the `integrations` phase) to the stores — final app
-identity + icons, **release signing with keys moved out of the app into CI secrets**, store
+identity + icons, **release signing set up (keystore gitignored + backed up)**, store
 metadata + screenshots, App Store Connect and Google Play Console apps created, and the first
 signed build submitted for review.
 
@@ -40,7 +40,7 @@ Every `⚠️` must be resolved before release. It covers:
 **B. Human-only readiness (can't be auto-checked)** — confirm each, sending the developer to the step/skill:
 - Package / applicationId / bundle id + display name **locked** (`refactor-package`, step 1).
 - Final **app icons** generated (`generate-app-icons`, step 2).
-- **Release signing keys moved into CI secrets**, keystore backed up (`setup-signing`, step 4) — never in the app.
+- **Release signing configured** — keystore gitignored + backed up (`setup-signing`, step 4); never committed. (Moving secrets into CI is only needed if you publish via the CI workflows.)
 - **Version** bumped for both platforms (`bump-version`, step 3).
 - **Store listings** created + metadata/graphics/data-safety/content-rating filled: App Store Connect
   (`setup-appstore-connect`) and Google Play Console (`setup-google-play`), steps 7–8.
@@ -62,11 +62,12 @@ review. Guide precisely, stage local files, then wait.
 
 ## Security principle (read before signing)
 
-> Signing keys and secrets must never be committed. Move the keystore, `keystore.properties`,
-> the iOS `.p12` + ASC API key, and any embedded API keys **out of the app** into CI secrets
-> (GitHub Actions) or the backend. The starter kit's `.gitignore` already excludes
-> `keystore.jks`, `keystore.properties`, `*.aab`, `*.ipa`, and `local.properties` — keep them
-> there and put the CI-facing copies in **repo Settings → Secrets and variables → Actions**.
+> Signing keys and secrets must never be committed. Keep the keystore, `keystore.properties`,
+> the iOS `.p12` + ASC API key, and any embedded API keys **out of the repo** and backed up
+> somewhere safe. The starter kit's `.gitignore` already excludes `keystore.jks`,
+> `keystore.properties`, `*.aab`, `*.ipa`, and `local.properties` — keep them there.
+> **Only if you publish via the CI workflows** do the same secrets need CI-facing copies in
+> **repo Settings → Secrets and variables → Actions**; for a manual store upload they stay local.
 
 ## Keys / secrets you'll need
 
@@ -75,9 +76,9 @@ review. Guide precisely, stage local files, then wait.
   - `CONTACT_EMAIL` — your own support email (ships as boilerplate `support@example.com`).
   - `APPSTORE_APP_ID` — numeric App Store id for rate/review + manage-subscription deep links; set it
     once App Store Connect assigns it (`setup-appstore-connect`).
-- **Signing + store credentials** (required — CI secrets, not local files) — upload keystore, App
-  Store Connect API key, provisioning profiles, Play service account. All move into **GitHub Actions
-  secrets**, never committed — see `setup-signing`.
+- **Signing + store credentials** (required, kept local + backed up) — keystore, App Store Connect
+  API key, provisioning profiles, Play service account. Never committed — see `setup-signing`.
+  *Only* if you publish through the CI workflows do these also go into **GitHub Actions secrets**.
 
 Verify AppConfiguration config: `./scripts/check_env.sh --phase publishing`.
 
@@ -104,18 +105,19 @@ Verify AppConfiguration config: `./scripts/check_env.sh --phase publishing`.
   (or `-v X.Y.Z`) from `MobileApp/` so Android `versionCode`/`versionName` and the iOS build
   number / marketing version move together. Show the resulting versions.
 
-### 4. Set up release signing + move keys into CI — `setup-signing`
+### 4. Set up release signing — `setup-signing`
 - **Agent Action** — Read the `setup-signing` skill. Run
   `./scripts/generate_android_keystore.sh "Name" "Org"` (or `keytool` manually) to create the
   gitignored `keystore.jks` + `keystore.properties`. Confirm `androidApp/build.gradle.kts`
   picks them up (it does automatically).
 - **User Action** — Create iOS certificates (Apple Development + Distribution → `Certificates.p12`)
-  and provisioning profiles, select them in Xcode. Add **all** signing secrets to GitHub
-  Actions: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`,
+  and provisioning profiles, select them in Xcode. **Back up the keystore + passwords safely**
+  (losing the Android keystore means you can never update the app). **Stop and confirm.**
+- **User Action (optional — only if publishing via the CI workflows)** — Add the signing secrets to
+  GitHub Actions: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`,
   `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, `IOS_APP_CERTIFICATE_P12_BASE64` (+ password),
   `APPSTORE_KEY_ID` / `APPSTORE_ISSUER_ID` / `APPSTORE_PRIVATE_KEY` / `APPSTORE_TEAM_ID`,
-  the two provision UUIDs, and `GRADLE_CACHE_ENCRYPTION_KEY`. **Back up the keystore + passwords.
-  Stop and confirm.**
+  the two provision UUIDs, and `GRADLE_CACHE_ENCRYPTION_KEY`. Skip this for a manual store upload.
 - **Validation** — `./gradlew :androidApp:bundleRelease` produces a **signed** AAB
   (`keytool -printcert -jarfile <aab>` shows your cert, not the debug cert).
 

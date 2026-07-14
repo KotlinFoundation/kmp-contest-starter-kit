@@ -30,12 +30,11 @@
 ## 3. Bump version — `bump-version`
 - [ ] **[Agent]** `./scripts/update_version.sh` (Android + iOS together); show versions
 
-## 4. Release signing + keys into CI — `setup-signing`
+## 4. Release signing — `setup-signing`
 - [ ] **[Agent]** Generate keystore (`generate_android_keystore.sh` or `keytool`) + gitignored `keystore.properties`
 - [ ] **[User]** iOS certificates (Dev + Distribution → `Certificates.p12`) + provisioning profiles, selected in Xcode
-- [ ] **[User]** Add Android CI secrets: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`, `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`
-- [ ] **[User]** Add iOS CI secrets: `IOS_APP_CERTIFICATE_P12_BASE64` (+ password), `APPSTORE_KEY_ID`/`ISSUER_ID`/`PRIVATE_KEY`/`TEAM_ID`, both provision UUIDs
-- [ ] **[User]** Add `GRADLE_CACHE_ENCRYPTION_KEY`; back up keystore + passwords safely
+- [ ] **[User]** Back up keystore + passwords safely (losing the Android keystore = can never update the app)
+- [ ] **[User]** *(optional — only if publishing via CI)* Add signing secrets to GitHub Actions: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`, `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, `IOS_APP_CERTIFICATE_P12_BASE64` (+ password), `APPSTORE_KEY_ID`/`ISSUER_ID`/`PRIVATE_KEY`/`TEAM_ID`, both provision UUIDs, `GRADLE_CACHE_ENCRYPTION_KEY`
 - [ ] **[Validate]** `:androidApp:bundleRelease` produces a signed AAB (`keytool -printcert -jarfile` = your cert)
 
 ## 5. Store screenshots — `store-screenshots`
