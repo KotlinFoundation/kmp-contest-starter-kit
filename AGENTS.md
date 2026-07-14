@@ -176,14 +176,14 @@ interface JobApiService {
 `AiTransport` (`data/source/remote/apiservices/ai/AiTransport.kt`) instead of hitting the Ktor client
 directly. It picks between two backends and adapts the response so the DTOs + `AiGenerationProvider`s +
 `AiApiBaseResponse.handleAsResult` never change:
-- **Proxy (production, default):** call `${Constants.CLOUD_FUNCTIONS_URL}/…` via the Firebase-interceptor
+- **Proxy (production, default):** call `${AppConfiguration.CLOUD_FUNCTIONS_URL}/…` via the Firebase-interceptor
   client; the body already is the `{statusCode, errorMessage, data}` envelope.
 - **Direct (prototyping):** call the provider URL (`api.openai.com` / `api.replicate.com`) via a second
   client with **no** Firebase interceptor, sending `Authorization: Bearer <OPENAI_API_KEY|REPLICATE_API_KEY>`
   (from `BuildConfig`/`local.properties`) + Replicate's `Prefer: wait`. The raw provider JSON is re-wrapped
   into a synthetic `AiApiBaseResponse`.
-- **Selection:** auto — direct when `Constants.CLOUD_FUNCTIONS_URL` is blank AND the provider key is set;
-  `Constants.USE_AI_PROXY_SERVER` (`Boolean?`; `true`=proxy, `false`=direct, `null`=auto) overrides.
+- **Selection:** auto — direct when `AppConfiguration.CLOUD_FUNCTIONS_URL` is blank AND the provider key is set;
+  `AppConfiguration.USE_AI_PROXY_SERVER` (`Boolean?`; `true`=proxy, `false`=direct, `null`=auto) overrides.
   Prototyping only — direct-mode keys ship in the app
   binary; production keeps the proxy (keys in Secret Manager). `AiTransport` is **provider-agnostic**: each
   service supplies its own `directUrl` + headers + key-readiness, so a new provider needs no `AiTransport`
@@ -273,6 +273,9 @@ sealed interface HomeUiEvent {
   - `factoryOf()` / `viewModelOf()` → ViewModels, validators, screen-scoped services
   - `bind` → only when multiple implementations exist
 - Initialization: `root/AppInitializer.kt` is the bootstrap — `startKoin { … modules(appModules) … }` (loaded from `Di.kt`) plus one-time startup side effects (logging, analytics, notifications, billing, ads, anonymous sign-in). Each platform entry point calls `AppInitializer.initialize { }` once.
+
+### App configuration
+Per-app compile-time config lives in **`root/AppConfiguration.kt`** (`object AppConfiguration`) — the toggles/values a developer sets when spinning up an app: `CLOUD_FUNCTIONS_URL`, `USE_AI_PROXY_SERVER`, `AUTH_SOCIAL_LOGIN_ENABLED`, legal URLs, `CONTACT_EMAIL`, `APPSTORE_APP_ID`, and the `subscriptionProviderFactory` / `authServiceProviderFactory` selectors. Distinct from **`util/Constants.kt`** (framework detail — paywall entitlement/placement ids, `CREDIT_PACK_PRODUCT_ID_PREFIX`, DB/prefs file names) and from **`FeatureFlagManager`** (runtime, Firebase Remote Config). `scripts/check_env.sh` reads `AppConfiguration.kt` for the URLs/AI/auth values it verifies.
 
 ### Coroutines
 - `backgroundScope`: `CoroutineScope(SupervisorJob() + Dispatchers.IO)` for repo/data work
@@ -420,11 +423,11 @@ Two interchangeable billing backends live under `libs/subscription/` behind the
 - **One switch, one place.** The provider is chosen by the `SUBSCRIPTION_PROVIDER`
   gradle property in `gradle.properties` (`ADAPTY` default, or `REVENUECAT`). That
   property both (a) selects which module `shared/build.gradle.kts` puts on the classpath
-  and (b) drives `Constants.subscriptionProviderFactory`, which delegates to
+  and (b) drives `AppConfiguration.subscriptionProviderFactory`, which delegates to
   `activeSubscriptionProviderFactory` — a single symbol each provider module exposes in
   package `com.kotlinfoundation.koko.subscription.config`. Exactly one provider module is ever
-  linked, so `Constants` never names a concrete provider. **Do not hardcode a provider in
-  `Constants`.**
+  linked, so `AppConfiguration` never names a concrete provider. **Do not hardcode a provider in
+  `AppConfiguration`.**
 - Switching providers = change the gradle property only (plus the provider's API keys in
   `local.properties`). Both `ADAPTY` and `REVENUECAT` builds must compile.
 - **Mock provider (zero-config demo).** When the active-platform subscription SDK key is still a

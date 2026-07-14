@@ -25,11 +25,11 @@ SUBSCRIPTION_PROVIDER=ADAPTY
 
 That property does two things: (a) `shared/build.gradle.kts` puts only the matching provider module
 on the classpath (`libs/subscription/subscription-adapty` or `subscription-revenuecat`), and (b)
-`Constants.subscriptionProviderFactory` delegates to `activeSubscriptionProviderFactory` — the single
+`AppConfiguration.subscriptionProviderFactory` delegates to `activeSubscriptionProviderFactory` — the single
 symbol each provider module exposes in package `com.kotlinfoundation.koko.subscription.config`.
 
-- **Never hardcode a provider in `Constants`.** `Constants` must stay provider-agnostic; the property
-  resolves it so build + app code can't drift.
+- **Never hardcode a provider in `AppConfiguration`.** `AppConfiguration.subscriptionProviderFactory` must
+  stay provider-agnostic; the gradle property resolves it so build + app code can't drift.
 - **Both `ADAPTY` and `REVENUECAT` builds must compile.** If you touch subscription code, flip the
   property to the other value and rebuild before declaring done.
 

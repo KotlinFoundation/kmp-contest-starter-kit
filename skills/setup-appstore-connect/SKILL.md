@@ -47,15 +47,15 @@ In the app → **iOS App** sidebar, a **1.0.0 Prepare for Submission** version e
 
 **App Privacy → Get Started:** declare what data the app collects and how it's used (e.g.
 Firebase Analytics/Crashlytics → identifiers/usage data; auth → account). Provide your
-**Privacy Policy URL** — this must match `Constants.URL_PRIVACY_POLICY` and be a real,
+**Privacy Policy URL** — this must match `AppConfiguration.URL_PRIVACY_POLICY` and be a real,
 reachable page (Apple rejects placeholders). A terms/EULA URL goes in
-`Constants.URL_TERMS_CONDITIONS`.
+`AppConfiguration.URL_TERMS_CONDITIONS`.
 
 ## 5. App Review Information
 
 At the bottom of the version page:
 
-- **Contact info** (first name, last name, phone, email — use `Constants.CONTACT_EMAIL`)
+- **Contact info** (first name, last name, phone, email — use `AppConfiguration.CONTACT_EMAIL`)
 - **Sign-in required?** The starter kit signs in **anonymously** by default, so usually no
   demo account is needed; if you enabled gated social login, provide a demo account.
 - **Notes** to the reviewer if any feature needs explanation.

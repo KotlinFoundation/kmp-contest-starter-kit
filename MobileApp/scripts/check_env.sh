@@ -5,7 +5,7 @@
 # The build deliberately does NOT fail on missing keys (getRequiredProperty substitutes "testValue"
 # so the local app keeps building fast). That means a missing cloud key is invisible to an agent
 # driving the build. This script makes it VISIBLE: it reads local.properties + gradle.properties +
-# the relevant Constants.kt / FeatureFlagManager.kt flags and reports, per phase, which required keys
+# the relevant AppConfiguration.kt / FeatureFlagManager.kt flags and reports, per phase, which required keys
 # are still placeholders — so the agent knows to stop and ask the developer.
 #
 # Usage (run from MobileApp/):
@@ -30,7 +30,8 @@ MOBILE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 LOCAL_PROPS="$MOBILE_DIR/local.properties"
 GRADLE_PROPS="$MOBILE_DIR/gradle.properties"
-CONSTANTS="$MOBILE_DIR/shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt"
+# Per-app config (URLs, contact, AI routing, auth toggle) lives in root/AppConfiguration.kt.
+APP_CONFIG="$MOBILE_DIR/shared/src/commonMain/kotlin/com/kotlinfoundation/koko/root/AppConfiguration.kt"
 FEATURE_FLAGS="$MOBILE_DIR/shared/src/commonMain/kotlin/com/kotlinfoundation/koko/data/source/featureflag/FeatureFlagManager.kt"
 GOOGLE_SERVICES="$MOBILE_DIR/androidApp/google-services.json"
 GOOGLE_PLIST="$MOBILE_DIR/iosApp/iosApp/GoogleService-Info.plist"
@@ -70,18 +71,18 @@ is_placeholder() {
   [ -z "$v" ] || [ "$v" = "testValue" ]
 }
 
-# Read a `const val NAME = "..."` string literal from Constants.kt.
+# Read a `const val NAME = "..."` string literal from AppConfiguration.kt.
 const_string() {
   local name="$1"
-  [ -f "$CONSTANTS" ] || return 0
-  grep -E "val[[:space:]]+$name[[:space:]]*=" "$CONSTANTS" | tail -1 | sed -E 's/.*=[[:space:]]*"([^"]*)".*/\1/' || true
+  [ -f "$APP_CONFIG" ] || return 0
+  grep -E "val[[:space:]]+$name[[:space:]]*=" "$APP_CONFIG" | tail -1 | sed -E 's/.*=[[:space:]]*"([^"]*)".*/\1/' || true
 }
 
-# Read a `const val NAME = true|false` boolean from Constants.kt.
+# Read a `const val NAME = true|false` boolean from AppConfiguration.kt.
 const_bool() {
   local name="$1"
-  [ -f "$CONSTANTS" ] || { echo "false"; return 0; }
-  grep -E "val[[:space:]]+$name[[:space:]]*=" "$CONSTANTS" | tail -1 | grep -qE '=[[:space:]]*true' && echo "true" || echo "false"
+  [ -f "$APP_CONFIG" ] || { echo "false"; return 0; }
+  grep -E "val[[:space:]]+$name[[:space:]]*=" "$APP_CONFIG" | tail -1 | grep -qE '=[[:space:]]*true' && echo "true" || echo "false"
 }
 
 # Read a FeatureFlagManager DEFAULT_VALUES boolean (e.g. Keys.IS_ADS_ENABLED to true).
@@ -91,11 +92,11 @@ flag_default_bool() {
   grep -E "Keys\.$key[[:space:]]+to[[:space:]]+" "$FEATURE_FLAGS" | tail -1 | grep -qE 'to[[:space:]]+true' && echo "true" || echo "false"
 }
 
-# Read a nullable Boolean const from Constants.kt → prints "true" | "false" | "null".
+# Read a nullable Boolean const from AppConfiguration.kt → prints "true" | "false" | "null".
 const_tristate() {
   local name="$1" line
-  [ -f "$CONSTANTS" ] || { echo "null"; return 0; }
-  line="$(grep -E "val[[:space:]]+$name\b" "$CONSTANTS" | tail -1)"
+  [ -f "$APP_CONFIG" ] || { echo "null"; return 0; }
+  line="$(grep -E "val[[:space:]]+$name\b" "$APP_CONFIG" | tail -1)"
   echo "$line" | grep -qE '=[[:space:]]*true' && { echo "true"; return 0; }
   echo "$line" | grep -qE '=[[:space:]]*false' && { echo "false"; return 0; }
   echo "null"
@@ -179,7 +180,7 @@ if phase_active integrations; then
   fi
   # AI web-proxy — optional unless you use it.
   if [ -z "$CLOUD_URL" ]; then
-    row optional "CLOUD_FUNCTIONS_URL" "not set" "only if you use the AI web-proxy; set in Constants.kt after 'firebase deploy' (integrate-web-proxy)"
+    row optional "CLOUD_FUNCTIONS_URL" "not set" "only if you use the AI web-proxy; set in AppConfiguration.kt after 'firebase deploy' (integrate-web-proxy)"
   else
     row ok "CLOUD_FUNCTIONS_URL" "set"
   fi
@@ -192,22 +193,22 @@ fi
 # ============================================================================ P3 publishing
 if phase_active publishing; then
   echo "[P3] publishing"
-  if [ -z "$PRIVACY_URL" ]; then row required "Constants.URL_PRIVACY_POLICY" "empty" "publish a privacy policy URL and set it in Constants.kt"; else row ok "Constants.URL_PRIVACY_POLICY" "set"; fi
-  if [ -z "$TERMS_URL" ]; then row required "Constants.URL_TERMS_CONDITIONS" "empty" "publish a terms URL and set it in Constants.kt"; else row ok "Constants.URL_TERMS_CONDITIONS" "set"; fi
+  if [ -z "$PRIVACY_URL" ]; then row required "AppConfiguration.URL_PRIVACY_POLICY" "empty" "publish a privacy policy URL and set it in AppConfiguration.kt"; else row ok "AppConfiguration.URL_PRIVACY_POLICY" "set"; fi
+  if [ -z "$TERMS_URL" ]; then row required "AppConfiguration.URL_TERMS_CONDITIONS" "empty" "publish a terms URL and set it in AppConfiguration.kt"; else row ok "AppConfiguration.URL_TERMS_CONDITIONS" "set"; fi
   # CONTACT_EMAIL ships as the boilerplate support@example.com — flag until it's your own.
   if [ -z "$CONTACT_EMAIL" ] || [ "$CONTACT_EMAIL" = "support@example.com" ]; then
-    row required "Constants.CONTACT_EMAIL" "boilerplate/empty" "set your own support email in Constants.kt (still $CONTACT_EMAIL)"
-  else row ok "Constants.CONTACT_EMAIL" "set"; fi
+    row required "AppConfiguration.CONTACT_EMAIL" "boilerplate/empty" "set your own support email in AppConfiguration.kt (still $CONTACT_EMAIL)"
+  else row ok "AppConfiguration.CONTACT_EMAIL" "set"; fi
   # APPSTORE_APP_ID is assigned by App Store Connect — only knowable once the iOS app record exists.
   if [ -z "$APPSTORE_ID" ]; then
-    row optional "Constants.APPSTORE_APP_ID" "not set" "numeric App Store id for rate/review + manage-subscription deep links; set it after App Store Connect creates the app"
-  else row ok "Constants.APPSTORE_APP_ID" "set"; fi
+    row optional "AppConfiguration.APPSTORE_APP_ID" "not set" "numeric App Store id for rate/review + manage-subscription deep links; set it after App Store Connect creates the app"
+  else row ok "AppConfiguration.APPSTORE_APP_ID" "set"; fi
 
   # AI backend — production must use the Firebase proxy so provider keys aren't compiled into the binary.
   ai_direct_key_set=false
   { key_is_set "$OPENAI_KEY" || key_is_set "$REPLICATE_KEY"; } && ai_direct_key_set=true
   if [ "$USE_AI_PROXY" = "false" ]; then
-    row required "AI backend" "forced DIRECT" "Constants.USE_AI_PROXY_SERVER=false ships the API key in the app — set it to null/true and use the web-proxy for production (integrate-web-proxy)"
+    row required "AI backend" "forced DIRECT" "AppConfiguration.USE_AI_PROXY_SERVER=false ships the API key in the app — set it to null/true and use the web-proxy for production (integrate-web-proxy)"
   elif [ -z "$CLOUD_URL" ] && [ "$ai_direct_key_set" = true ]; then
     row required "AI backend" "DIRECT (key on device)" "no CLOUD_FUNCTIONS_URL + a direct key set → providers are called directly with the key in the binary. Deploy the proxy + set CLOUD_FUNCTIONS_URL"
   elif [ "$ai_direct_key_set" = true ]; then
