@@ -41,7 +41,7 @@ The recommended anonymous-only path needs just the Firebase config. Verify:
 ### 1. Lay out the key catalog — `configure-environment`
 - **Agent Action** — Read the `configure-environment` skill. Walk the developer through the full
   catalog of `MobileApp/local.properties` keys, the `MobileApp/gradle.properties`
-  `SUBSCRIPTION_PROVIDER` toggle, and the `Constants.kt` fields. Establish which values this phase
+  `SUBSCRIPTION_PROVIDER` toggle, and the `AppConfiguration.kt` fields. Establish which values this phase
   needs (`GOOGLE_WEB_CLIENT_ID`, `CLOUD_FUNCTIONS_URL`) vs. later phases.
 - **User Action** — Ensure `MobileApp/local.properties` exists with at least `sdk.dir` (copy it from
   the committed `MobileApp/local.properties.example` if needed). It is gitignored, so it never came

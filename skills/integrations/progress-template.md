@@ -12,7 +12,7 @@
 > *STOP RULE:* Stop at any unchecked **[User]** item and wait for confirmation before proceeding.
 
 ## 1. Key catalog — `configure-environment`
-- [ ] **[Agent]** Walk through `local.properties` keys, `gradle.properties` `SUBSCRIPTION_PROVIDER`, `Constants.kt` fields
+- [ ] **[Agent]** Walk through `local.properties` keys, `gradle.properties` `SUBSCRIPTION_PROVIDER`, `AppConfiguration.kt` fields
 - [ ] **[User]** `MobileApp/local.properties` exists with `sdk.dir` (copy from `local.properties.example`; gitignored — confirm)
 - [ ] **[Agent]** Run `./scripts/check_env.sh --phase integrations` to see which keys this phase needs
 
