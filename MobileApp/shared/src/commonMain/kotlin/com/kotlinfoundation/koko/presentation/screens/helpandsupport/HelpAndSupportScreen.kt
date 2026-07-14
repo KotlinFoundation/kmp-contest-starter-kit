@@ -17,8 +17,8 @@ import com.kotlinfoundation.koko.designsystem.theme.AppTheme
 import com.kotlinfoundation.koko.generated.resources.Res
 import com.kotlinfoundation.koko.generated.resources.help_and_support
 import com.kotlinfoundation.koko.generated.resources.item_contact_support
+import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.util.AppUtil
-import com.kotlinfoundation.koko.util.Constants
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -52,11 +52,11 @@ fun HelpAndSupportScreen(
                     }
 
                     UiRes.string.privacy_policy -> {
-                        localUriHandler.openUri(Constants.URL_PRIVACY_POLICY)
+                        localUriHandler.openUri(AppConfiguration.URL_PRIVACY_POLICY)
                     }
 
                     UiRes.string.terms_conditions -> {
-                        localUriHandler.openUri(Constants.URL_TERMS_CONDITIONS)
+                        localUriHandler.openUri(AppConfiguration.URL_TERMS_CONDITIONS)
                     }
                 }
             },

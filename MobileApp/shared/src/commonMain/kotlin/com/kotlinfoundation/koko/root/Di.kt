@@ -85,13 +85,13 @@ private val dataModule = module {
     factoryOf(::ReplicateApiService)
 
     // Auth provider
-    factory { Constants.authServiceProviderFactory } bind AuthServiceProviderFactory::class
+    factory { AppConfiguration.authServiceProviderFactory } bind AuthServiceProviderFactory::class
     single { get<AuthServiceProviderFactory>().create() } bind AuthServiceProvider::class
 
     // Subscription Provider. When no real SDK key is set (isSubscriptionMockActive), swap in the
     // MockSubscriptionProvider so the paywall/purchase/unlock flow is explorable with zero keys.
     // Auto-reverts to the real provider (Adapty/RevenueCat) the moment a key is configured.
-    factory { Constants.subscriptionProviderFactory } bind SubscriptionProviderFactory::class
+    factory { AppConfiguration.subscriptionProviderFactory } bind SubscriptionProviderFactory::class
     single {
         if (isSubscriptionMockActive()) {
             val userPreferences = get<UserPreferences>()

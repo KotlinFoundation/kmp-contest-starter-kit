@@ -26,14 +26,14 @@ Don't answer from memory — **run the checks and report what's unmet**, then po
 ./scripts/check_env.sh --phase publishing
 ```
 Every `⚠️` must be resolved before release. It covers:
-- `Constants.URL_PRIVACY_POLICY` / `URL_TERMS_CONDITIONS` set to **live, reachable** pages (stores reject placeholders).
-- `Constants.CONTACT_EMAIL` is your own (not the `support@example.com` boilerplate).
+- `AppConfiguration.URL_PRIVACY_POLICY` / `URL_TERMS_CONDITIONS` set to **live, reachable** pages (stores reject placeholders).
+- `AppConfiguration.CONTACT_EMAIL` is your own (not the `support@example.com` boilerplate).
 - **AI backend uses the proxy, not on-device keys** — flags `USE_AI_PROXY_SERVER=false`, or a blank
   `CLOUD_FUNCTIONS_URL` with a direct `OPENAI_API_KEY`/`REPLICATE_API_KEY` (key would ship in the binary).
   Production must deploy the web-proxy (`integrate-web-proxy`) and clear direct keys.
 - **Subscription keys are real, not the demo mock** — if you sell subscriptions/IAPs, set the real
   Adapty/RevenueCat SDK keys (`setup-subscriptions`); otherwise the paywall runs the client-only mock.
-- `Constants.APPSTORE_APP_ID` (set once App Store Connect assigns it).
+- `AppConfiguration.APPSTORE_APP_ID` (set once App Store Connect assigns it).
 
 **B. Human-only readiness (can't be auto-checked)** — confirm each, sending the developer to the step/skill:
 - Package / applicationId / bundle id + display name **locked** (`refactor-package`, step 1).
@@ -136,7 +136,7 @@ Verify Constants config: `./scripts/check_env.sh --phase publishing`.
   primary language), the 1.0.0 version, categories, age-rating questionnaire, App Privacy /
   data usage, App Review info, and localized metadata (subtitle / description / keywords /
   what's-new / support + marketing URLs) with the generated screenshots + 1024 icon. Copy the
-  numeric **Apple ID** back into `Constants.APPSTORE_APP_ID`. **Stop and confirm.**
+  numeric **Apple ID** back into `AppConfiguration.APPSTORE_APP_ID`. **Stop and confirm.**
 
 ### 8. Create the Google Play Console app — `setup-google-play`
 - **Agent Action** — Read the `setup-google-play` skill; walk the developer through it.

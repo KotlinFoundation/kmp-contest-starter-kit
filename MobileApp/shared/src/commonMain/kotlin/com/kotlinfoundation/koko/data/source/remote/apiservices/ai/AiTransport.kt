@@ -1,7 +1,7 @@
 package com.kotlinfoundation.koko.data.source.remote.apiservices.ai
 
 import com.kotlinfoundation.koko.data.source.remote.response.ai.AiApiBaseResponse
-import com.kotlinfoundation.koko.util.Constants
+import com.kotlinfoundation.koko.root.AppConfiguration
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -48,8 +48,8 @@ class AiDirectSpec(
  * is the raw provider object — which is exactly what `data` holds — so we parse the body as `T` and wrap
  * it in a synthetic [AiApiBaseResponse]. Same `T`, same downstream code.
  *
- * DIRECT is auto-selected when [Constants.CLOUD_FUNCTIONS_URL] is blank AND the provider key is set
- * ([AiDirectSpec.apiKey] set); [Constants.USE_AI_PROXY_SERVER] overrides. Prototyping only — the key ships in the binary.
+ * DIRECT is auto-selected when [AppConfiguration.CLOUD_FUNCTIONS_URL] is blank AND the provider key is set
+ * ([AiDirectSpec.apiKey] set); [AppConfiguration.USE_AI_PROXY_SERVER] overrides. Prototyping only — the key ships in the binary.
  */
 class AiTransport(
     @PublishedApi internal val proxyClient: HttpClient, // carries the Firebase bearer-token interceptor
@@ -112,8 +112,8 @@ class AiTransport(
 
     @PublishedApi
     internal fun resolveMode(hasAiApiKey: Boolean): AiMode {
-        Constants.USE_AI_PROXY_SERVER?.let { return if (it) AiMode.PROXY else AiMode.DIRECT }
-        return if (Constants.CLOUD_FUNCTIONS_URL.isBlank() && hasAiApiKey) AiMode.DIRECT else AiMode.PROXY
+        AppConfiguration.USE_AI_PROXY_SERVER?.let { return if (it) AiMode.PROXY else AiMode.DIRECT }
+        return if (AppConfiguration.CLOUD_FUNCTIONS_URL.isBlank() && hasAiApiKey) AiMode.DIRECT else AiMode.PROXY
     }
 
     /**

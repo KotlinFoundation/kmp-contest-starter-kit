@@ -1,38 +1,6 @@
 package com.kotlinfoundation.koko.util
 
-import com.kotlinfoundation.koko.auth.api.AuthServiceProviderFactory
-import com.kotlinfoundation.koko.auth.firebase.Firebase
-import com.kotlinfoundation.koko.subscription.config.activeSubscriptionProviderFactory
-
 object Constants {
-    const val URL_PRIVACY_POLICY = ""
-    const val URL_TERMS_CONDITIONS = ""
-    const val CONTACT_EMAIL = "support@example.com"
-    const val APPSTORE_APP_ID = ""
-
-    // Enables Apple and Google sign-in. If false, only anonymous login is supported.
-    // Default false — anonymous auth is the easiest path to a working app (just Firebase +
-    // Anonymous sign-in). Flip to true to add Google/Apple (see the enable-auth skill for the
-    // extra config: GOOGLE_WEB_CLIENT_ID, iOS Info.plist client IDs, Sign In with Apple capability).
-    const val AUTH_SOCIAL_LOGIN_ENABLED = false
-
-    /**
-     * The subscription provider is chosen in ONE place — the `SUBSCRIPTION_PROVIDER`
-     * Gradle property in `gradle.properties` (default: `ADAPTY`):
-     *
-     *   SUBSCRIPTION_PROVIDER=ADAPTY
-     *   or
-     *   SUBSCRIPTION_PROVIDER=REVENUECAT
-     *
-     *   Also in local.properties add the following:
-     *
-     *   SUBSCRIPTION_PROVIDER_ANDROID_API_KEY=YOUR_API_KEY
-     *   SUBSCRIPTION_PROVIDER_IOS_API_KEY=YOUR_API_KEY
-     *
-     * That property decides which provider module is on the classpath; this accessor
-     * resolves to whichever one is linked. Do NOT name a concrete provider here.
-     */
-    val subscriptionProviderFactory get() = activeSubscriptionProviderFactory
 
     /**
      * Identifier used to unlock Premium access.
@@ -86,29 +54,6 @@ object Constants {
      */
     val PAYWALL_PLACEMENT_ONBOARDING: String? = null
 
-    /**
-     * CLOUD_FUNCTIONS_URL should be something like: "https://REGION-PROJECT_ID.cloudfunctions.net"
-     * Regions:
-     * US(Default): us-central1
-     * EU: europe-west1
-     *
-     * This is used AI proxy functions such as OpenAi, Replicate
-     */
-    const val CLOUD_FUNCTIONS_URL = ""
-
-    /**
-     * How AI (OpenAI/Replicate) calls are routed.
-     *
-     * - `null` (AUTO, default): use the Cloud Functions proxy, unless [CLOUD_FUNCTIONS_URL] is blank AND a
-     *   provider key is set in `local.properties` — then call the provider directly from the device.
-     * - `true`: always use the proxy.
-     * - `false`: always call the provider directly.
-     *
-     * Keep the proxy for production so API keys stay in Secret Manager, never in the app binary. Direct
-     * mode is a no-Firebase prototyping shortcut (the key ships in the app) — see `integrate-web-proxy`.
-     */
-    val USE_AI_PROXY_SERVER: Boolean? = null
-
     const val LOCAL_DB_STORAGE_NAME = "local_storage.db"
 
     // DataStore requires the file name to end with ".preferences_pb"
@@ -120,8 +65,6 @@ object Constants {
         } else {
             "https://apps.apple.com/account/subscriptions"
         }
-
-    val authServiceProviderFactory get() = AuthServiceProviderFactory.Firebase
 
     val MAX_FILE_UPLOAD_SIZE = 10 * 1024 * 1024L // 10mb
 }

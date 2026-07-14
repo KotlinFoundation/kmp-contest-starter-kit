@@ -13,8 +13,8 @@ uniform envelope. Requires a Blaze-plan Firebase project (`setup-firebase`) and 
 
 > **Prototyping shortcut — Direct AI mode (no Firebase).** To try AI generation *before* deploying this
 > proxy: put an `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `local.properties` and leave
-> `Constants.CLOUD_FUNCTIONS_URL` blank. The app's `AiTransport` then calls the provider **directly** from
-> the device (auto-detected; `Constants.USE_AI_PROXY_SERVER` overrides — `true`=proxy, `false`=direct).
+> `AppConfiguration.CLOUD_FUNCTIONS_URL` blank. The app's `AiTransport` then calls the provider **directly** from
+> the device (auto-detected; `AppConfiguration.USE_AI_PROXY_SERVER` overrides — `true`=proxy, `false`=direct).
 > **Not for production** — the key is
 > compiled into the app binary. Deploy this proxy and clear those keys before shipping. Note: text→image
 > is fully Firebase-free; image-*editing* still uploads the reference image via `KMPStorage`/Firebase
@@ -132,12 +132,12 @@ change**.
 
 To add a **new** endpoint:
 - **AI provider call** — add a method to the AI service that calls
-  `aiTransport.execute(method, proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/<functionName>", direct = directSpec("<providerUrl>"), proxyQueryParams = …, body = …)`.
+  `aiTransport.execute(method, proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/<functionName>", direct = directSpec("<providerUrl>"), proxyQueryParams = …, body = …)`.
   `AiTransport` picks proxy vs direct and adapts the response — the DTOs and `handleAsResult` don't change.
 - **Other backend call** — follow `add-api-service` (Ktor service + DTOs + repository `Result`).
 
 Specifics for this backend:
-- **Base URL** = `Constants.CLOUD_FUNCTIONS_URL`; the path is the function **name**
+- **Base URL** = `AppConfiguration.CLOUD_FUNCTIONS_URL`; the path is the function **name**
   (e.g. `/openAiCreateTextCompletion`). Most endpoints are `POST`; dynamic values go as **query params**
   (the functions read `req.query`, not path segments).
 - **Auth** — the proxy client attaches `Authorization: Bearer <Firebase ID token>` automatically; you

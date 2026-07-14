@@ -12,7 +12,8 @@ credentials, IDs, and toggles.
 |------|-------|-----------|
 | `MobileApp/local.properties` | SDK path + all secret API keys | **No — gitignored** |
 | `MobileApp/gradle.properties` | subscription-provider toggle | Yes |
-| `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt` | URLs, emails, feature flags, Cloud Functions URL | Yes |
+| `shared/src/commonMain/.../root/AppConfiguration.kt` | per-app config: URLs, contact email, AI routing (`CLOUD_FUNCTIONS_URL`, `USE_AI_PROXY_SERVER`), `AUTH_SOCIAL_LOGIN_ENABLED`, provider factories | Yes |
+| `shared/src/commonMain/.../util/Constants.kt` | framework constants: paywall entitlement/placement ids, DB/prefs file names | Yes |
 
 > `MobileApp/local.properties` is gitignored (`MobileApp/.gitignore`), so it never ships filled — copy
 > it from the committed **`MobileApp/local.properties.example`** and fill what your phase needs. Keys
@@ -50,7 +51,7 @@ credentials, IDs, and toggles.
 
 > **Direct AI mode (prototyping):** `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `local.properties` are used
 > only for the **direct** (no-Firebase) AI path — the app calls the provider straight from the device when
-> `Constants.CLOUD_FUNCTIONS_URL` is blank and a key is set (`Constants.USE_AI_PROXY_SERVER` overrides). The key
+> `AppConfiguration.CLOUD_FUNCTIONS_URL` is blank and a key is set (`AppConfiguration.USE_AI_PROXY_SERVER` overrides). The key
 > ships in the app binary, so this is prototyping only. In **production** the app calls the web-proxy and
 > the keys live in **Google Cloud Secret Manager**, not on device — see `integrate-web-proxy`.
 
@@ -69,7 +70,7 @@ that needs it (and `check_env.sh` tells you when).
 
 ## `MobileApp/gradle.properties` — subscription provider toggle
 
-One switch selects the billing backend module and drives `Constants.subscriptionProviderFactory`.
+One switch selects the billing backend module and drives `AppConfiguration.subscriptionProviderFactory`.
 Default is `ADAPTY`; the alternative is `REVENUECAT`. Both must compile.
 
 ```properties
@@ -78,22 +79,28 @@ SUBSCRIPTION_PROVIDER=ADAPTY
 ```
 
 Switching providers = change this property **plus** the provider's API keys in `local.properties`.
-Never hardcode a concrete provider in `Constants.kt`.
+Never hardcode a concrete provider in `AppConfiguration.kt`.
 
-## `Constants.kt` — code-level config
+## `AppConfiguration.kt` — per-app code-level config
 
-`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt`:
+`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/root/AppConfiguration.kt` — the toggles/values a
+developer sets per app:
 
 | Field | Purpose |
 |-------|---------|
 | `CLOUD_FUNCTIONS_URL` | Base URL of the deployed web proxy — `https://REGION-PROJECT_ID.cloudfunctions.net` (default region `us-central1`). Set in the `integrate-web-proxy` skill. |
+| `USE_AI_PROXY_SERVER` | `null` (auto) / `true` (force proxy) / `false` (force direct on-device AI). See `integrate-web-proxy`. |
 | `AUTH_SOCIAL_LOGIN_ENABLED` | `false` (default) = anonymous auth only, the easy path; `true` = also show Apple + Google sign-in (needs `GOOGLE_WEB_CLIENT_ID` + iOS config — see `enable-auth`). |
-| `URL_PRIVACY_POLICY` | Privacy policy URL (needed before store publishing). |
-| `URL_TERMS_CONDITIONS` | Terms & conditions URL. |
+| `URL_PRIVACY_POLICY` / `URL_TERMS_CONDITIONS` | Legal URLs (needed before store publishing). |
 | `CONTACT_EMAIL` | Support/contact email shown in-app. |
 | `APPSTORE_APP_ID` | Numeric App Store app id (for rate/review deep links). |
-| `PAYWALL_PREMIUM_ACCESS` | Entitlement / access-level id for Premium. |
-| `PAYWALL_PLACEMENT_*` | Paywall placement identifiers (credits pack, default, onboarding). |
+| `subscriptionProviderFactory` / `authServiceProviderFactory` | Provider selectors (resolve the gradle-chosen backend). |
+
+## `Constants.kt` — framework constants
+
+`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/Constants.kt` (unlikely to change per app):
+`PAYWALL_PREMIUM_ACCESS` (entitlement id), `PAYWALL_PLACEMENT_*` (placement ids), `CREDIT_PACK_PRODUCT_ID_PREFIX`,
+DB/prefs file names.
 
 Runtime **feature flags** live separately in
 `shared/src/commonMain/.../data/source/featureflag/FeatureFlagManager.kt`.

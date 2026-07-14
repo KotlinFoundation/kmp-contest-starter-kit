@@ -48,8 +48,8 @@ import com.kotlinfoundation.koko.generated.resources.help_and_support
 import com.kotlinfoundation.koko.generated.resources.subscriptions
 import com.kotlinfoundation.koko.generated.resources.title_screen_account
 import com.kotlinfoundation.koko.generated.resources.title_sign_in
+import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.root.AppGlobalUiState
-import com.kotlinfoundation.koko.util.Constants
 import com.kotlinfoundation.koko.util.UiMessage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -126,7 +126,7 @@ fun AccountScreen(
                 )
             }
 
-            if (Constants.AUTH_SOCIAL_LOGIN_ENABLED || uiState.user?.id?.isNotEmpty() == true) {
+            if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED || uiState.user?.id?.isNotEmpty() == true) {
                 ProfileInfoBox(user = uiState.user, onClick = {
                     if (uiState.user == null) {
                         onUiEvent(AccountUiEvent.OnClickSignIn)
@@ -149,7 +149,7 @@ private fun ProfileInfoBox(user: User?, onClick: () -> Unit) {
     AppCardContainer(
         modifier = Modifier.fillMaxWidth(),
         onClick = {
-            if (Constants.AUTH_SOCIAL_LOGIN_ENABLED) {
+            if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) {
                 onClick()
             } else {
                 user?.id?.let {
@@ -164,7 +164,7 @@ private fun ProfileInfoBox(user: User?, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.horizontalItemSpacing),
         ) {
-            if (Constants.AUTH_SOCIAL_LOGIN_ENABLED) {
+            if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalPlatformContext.current)
                         .data(user?.photoUrl)

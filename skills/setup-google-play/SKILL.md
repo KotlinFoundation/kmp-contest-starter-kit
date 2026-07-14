@@ -33,8 +33,8 @@ sure the app id is final (use the `refactor-package` skill first if not).
   (`distribution/store_screenshots/<locale>/<device>/`); add tablet screenshots if you ship
   tablet support.
 
-Category, contact email (use `Constants.CONTACT_EMAIL`), and **Privacy Policy URL** (must
-match `Constants.URL_PRIVACY_POLICY` and be reachable) are set under **Store settings** /
+Category, contact email (use `AppConfiguration.CONTACT_EMAIL`), and **Privacy Policy URL** (must
+match `AppConfiguration.URL_PRIVACY_POLICY` and be reachable) are set under **Store settings** /
 **App content**.
 
 ## 3. App content (Policy → App content)

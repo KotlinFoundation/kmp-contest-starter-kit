@@ -53,8 +53,8 @@ import com.kotlinfoundation.koko.generated.resources.title_sign_in
 import com.kotlinfoundation.koko.generated.resources.title_sign_up
 import com.kotlinfoundation.koko.generated.resources.txt_main_action_to_sign_in
 import com.kotlinfoundation.koko.presentation.components.AuthUIHelperButtons
+import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.root.AppGlobalUiState
-import com.kotlinfoundation.koko.util.Constants
 import com.kotlinfoundation.koko.util.UiMessage
 import com.kotlinfoundation.koko.util.logging.AppLogger
 import kotlinx.coroutines.launch
@@ -103,7 +103,7 @@ fun SignInScreen(
             )
 
             // Google/Apple buttons only when social login is enabled; otherwise anonymous-only.
-            if (Constants.AUTH_SOCIAL_LOGIN_ENABLED) {
+            if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) {
                 AuthUIHelperButtons(
                     linkAccount = signInMode.not(),
                     modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing).fillMaxWidth(),
@@ -161,8 +161,8 @@ fun SignInScreen(
 
             AgreePrivacyPolicyTermsConditionsText(
                 modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing).fillMaxWidth(),
-                privacyPolicyUrl = Constants.URL_PRIVACY_POLICY,
-                termsConditionsUrl = Constants.URL_TERMS_CONDITIONS,
+                privacyPolicyUrl = AppConfiguration.URL_PRIVACY_POLICY,
+                termsConditionsUrl = AppConfiguration.URL_TERMS_CONDITIONS,
             )
         }
     }

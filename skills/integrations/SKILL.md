@@ -69,7 +69,7 @@ defaults to `false`, so the Google/Apple buttons are hidden and `GOOGLE_WEB_CLIE
 - **Agent Action** — **Ask the developer: "do you also want Google / Apple sign-in?"**
   - **No** (recommended for a first app) → nothing to do; anonymous auth works. Skip to step 4.
   - **Yes** → read the `enable-auth` skill and proceed with the User Action below.
-- **User Action** (only if they said yes) — Set `Constants.AUTH_SOCIAL_LOGIN_ENABLED = true`, then in
+- **User Action** (only if they said yes) — Set `AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED = true`, then in
   Firebase Auth → Sign-in method enable **Google** and **Apple** (re-download **both**
   `google-services.json` and `GoogleService-Info.plist`); copy the **Web client ID** into
   `GOOGLE_WEB_CLIENT_ID` in `MobileApp/local.properties`; fill the iOS `Info.plist` client IDs
@@ -97,7 +97,7 @@ the SDK **credentials** early if they want them.
 - **User Action** — Set Secret Manager secrets `OPENAI_API_KEY` / `REPLICATE_API_KEY`
   (https://console.cloud.google.com/security/secret-manager), then from `Web/` run
   `firebase deploy --only functions`. Copy the printed base URL
-  (`https://REGION-PROJECT_ID.cloudfunctions.net`) into `Constants.CLOUD_FUNCTIONS_URL`. **Stop and confirm.**
+  (`https://REGION-PROJECT_ID.cloudfunctions.net`) into `AppConfiguration.CLOUD_FUNCTIONS_URL`. **Stop and confirm.**
 - **Agent Action** — Wire a client that calls the deployed function following the `add-api-service`
   pattern (Ktor service + DTOs, Firebase ID token in the `Authorization: Bearer` header, repository
   wraps in `Result`). Optionally test the backend locally first with

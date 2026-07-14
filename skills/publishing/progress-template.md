@@ -50,7 +50,7 @@
 - [ ] **[User]** Create app (bundle id, SKU, primary language) + 1.0.0 version
 - [ ] **[User]** Categories, age rating, App Privacy / data usage, App Review info
 - [ ] **[User]** Metadata (subtitle/description/keywords/what's-new/support+marketing URLs) + screenshots + 1024 icon
-- [ ] **[User]** Copy numeric Apple ID → `Constants.APPSTORE_APP_ID`
+- [ ] **[User]** Copy numeric Apple ID → `AppConfiguration.APPSTORE_APP_ID`
 
 ## 8. Google Play Console app — `setup-google-play`
 - [ ] **[User]** Create app
