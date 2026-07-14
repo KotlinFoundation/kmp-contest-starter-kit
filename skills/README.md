@@ -71,7 +71,7 @@ so a forgotten key is invisible in the build. Two tools make it visible:
 
 | Skill | Use when |
 |---|---|
-| [configure-environment](configure-environment/SKILL.md) | Figuring out where a config value / API key lives (local.properties, gradle.properties, Constants.kt) |
+| [configure-environment](configure-environment/SKILL.md) | Figuring out where a config value / API key lives (local.properties, gradle.properties, AppConfiguration.kt, Constants.kt) |
 | [setup-firebase](setup-firebase/SKILL.md) | Connecting the app to Firebase (project, apps, anonymous auth) |
 | [enable-auth](enable-auth/SKILL.md) | Adding Google / Apple social sign-in |
 | [integrate-web-proxy](integrate-web-proxy/SKILL.md) | Deploying the Cloud Functions AI proxy and calling it securely |

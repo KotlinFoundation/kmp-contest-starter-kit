@@ -70,7 +70,7 @@ review. Guide precisely, stage local files, then wait.
 
 ## Keys / secrets you'll need
 
-- **`Constants.kt` fields** (required) — set these before you ship:
+- **`AppConfiguration.kt` fields** (required) — set these before you ship:
   - `URL_PRIVACY_POLICY` + `URL_TERMS_CONDITIONS` — your published legal URLs.
   - `CONTACT_EMAIL` — your own support email (ships as boilerplate `support@example.com`).
   - `APPSTORE_APP_ID` — numeric App Store id for rate/review + manage-subscription deep links; set it
@@ -79,7 +79,7 @@ review. Guide precisely, stage local files, then wait.
   Store Connect API key, provisioning profiles, Play service account. All move into **GitHub Actions
   secrets**, never committed — see `setup-signing`.
 
-Verify Constants config: `./scripts/check_env.sh --phase publishing`.
+Verify AppConfiguration config: `./scripts/check_env.sh --phase publishing`.
 
 ## Checklist
 
@@ -124,8 +124,8 @@ Verify Constants config: `./scripts/check_env.sh --phase publishing`.
   exist for the key screens, then run `./scripts/generate_store_screenshots.sh`. Output lands
   at `distribution/store_screenshots/<locale>/<device>/`.
 
-### 6. Set store URLs + contact in `Constants.kt`
-- **Agent Action** — In `shared/src/commonMain/.../util/Constants.kt` set
+### 6. Set store URLs + contact in `AppConfiguration.kt`
+- **Agent Action** — In `shared/src/commonMain/.../root/AppConfiguration.kt` set
   `URL_PRIVACY_POLICY`, `URL_TERMS_CONDITIONS`, and `CONTACT_EMAIL`. These must be **real,
   reachable** pages — both stores reject placeholders. (`APPSTORE_APP_ID` is filled in step 7
   once the ASC app exists.)
@@ -160,7 +160,7 @@ Verify Constants config: `./scripts/check_env.sh --phase publishing`.
 
 ### 10. Validation gate
 - **Validation** — Run `./scripts/check_env.sh --phase publishing` from `MobileApp/` — the
-  `Constants.kt` legal URLs + `CONTACT_EMAIL` must be set (no `⚠️`), `APPSTORE_APP_ID` once ASC
+  `AppConfiguration.kt` legal URLs + `CONTACT_EMAIL` must be set (no `⚠️`), `APPSTORE_APP_ID` once ASC
   assigned it.
 - **Validation** — The signed release build **uploads to the Play internal track /
   TestFlight and appears in the console**. Run the `run-quality-gates` skill before tagging a

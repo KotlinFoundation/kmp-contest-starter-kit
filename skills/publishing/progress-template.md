@@ -42,7 +42,7 @@
 - [ ] **[Agent]** `@StoreScreenshot` previews exist for key screens
 - [ ] **[Agent]** `./scripts/generate_store_screenshots.sh` → `distribution/store_screenshots/<locale>/<device>/`
 
-## 6. Store URLs + contact in `Constants.kt`
+## 6. Store URLs + contact in `AppConfiguration.kt`
 - [ ] **[Agent]** Set `URL_PRIVACY_POLICY`, `URL_TERMS_CONDITIONS`, `CONTACT_EMAIL`
 - [ ] **[User]** Privacy + terms pages are published and reachable (no placeholders)
 
@@ -66,7 +66,7 @@
 - [ ] **[User]** Submit for review on both stores
 
 ## 10. Validation gate
-- [ ] **[Validate]** `./scripts/check_env.sh --phase publishing` — Constants legal URLs + `CONTACT_EMAIL` set
+- [ ] **[Validate]** `./scripts/check_env.sh --phase publishing` — AppConfiguration legal URLs + `CONTACT_EMAIL` set
 - [ ] **[Validate]** Signed build uploads to Play internal track / TestFlight and appears in the console
 - [ ] **[Validate]** Run the `run-quality-gates` skill
 

@@ -60,13 +60,13 @@ At the bottom of the version page:
   demo account is needed; if you enabled gated social login, provide a demo account.
 - **Notes** to the reviewer if any feature needs explanation.
 
-## 6. Grab the numeric App ID → `Constants.kt`
+## 6. Grab the numeric App ID → `AppConfiguration.kt`
 
 Once the app exists, its **Apple ID** (a numeric id, shown under *App Information → General
 Information → Apple ID*) goes into:
 
 ```
-shared/src/commonMain/.../util/Constants.kt → APPSTORE_APP_ID = "1234567890"
+shared/src/commonMain/.../root/AppConfiguration.kt → APPSTORE_APP_ID = "1234567890"
 ```
 
 Used by in-app "Rate us" / store deep-links.
