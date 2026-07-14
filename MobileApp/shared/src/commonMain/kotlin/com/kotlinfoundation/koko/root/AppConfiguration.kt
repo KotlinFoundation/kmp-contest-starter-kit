@@ -21,6 +21,19 @@ object AppConfiguration {
     const val APPSTORE_APP_ID = ""
 
     /**
+     * How AI (OpenAI/Replicate) calls are routed.
+     *
+     * - `null` (AUTO, default): use the Cloud Functions proxy, unless [CLOUD_FUNCTIONS_URL] is blank AND a
+     *   provider key is set in `local.properties` — then call the provider directly from the device.
+     * - `true`: always use the proxy.
+     * - `false`: always call the provider directly.
+     *
+     * Keep the proxy for production so API keys stay in Secret Manager, never in the app binary. Direct
+     * mode is a no-Firebase prototyping shortcut (the key ships in the app) — see `integrate-web-proxy`.
+     */
+    val USE_AI_PROXY_SERVER: Boolean? = null
+
+    /**
      * CLOUD_FUNCTIONS_URL should be something like: "https://REGION-PROJECT_ID.cloudfunctions.net"
      * Regions:
      * US(Default): us-central1
@@ -48,19 +61,6 @@ object AppConfiguration {
      * This is about premium *features*, not the app's price.
      */
     const val PREMIUM_FEATURES_ENABLED = true
-
-    /**
-     * How AI (OpenAI/Replicate) calls are routed.
-     *
-     * - `null` (AUTO, default): use the Cloud Functions proxy, unless [CLOUD_FUNCTIONS_URL] is blank AND a
-     *   provider key is set in `local.properties` — then call the provider directly from the device.
-     * - `true`: always use the proxy.
-     * - `false`: always call the provider directly.
-     *
-     * Keep the proxy for production so API keys stay in Secret Manager, never in the app binary. Direct
-     * mode is a no-Firebase prototyping shortcut (the key ships in the app) — see `integrate-web-proxy`.
-     */
-    val USE_AI_PROXY_SERVER: Boolean? = null
 
     /**
      * The subscription provider is chosen in ONE place — the `SUBSCRIPTION_PROVIDER`
