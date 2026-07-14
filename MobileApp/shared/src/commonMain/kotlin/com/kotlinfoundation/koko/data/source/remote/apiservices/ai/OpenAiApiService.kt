@@ -7,7 +7,7 @@ import com.kotlinfoundation.koko.data.source.remote.request.ai.openai.OpenAiCrea
 import com.kotlinfoundation.koko.data.source.remote.response.ai.AiApiBaseResponse
 import com.kotlinfoundation.koko.data.source.remote.response.ai.openai.OpenAiCreateChatResponse
 import com.kotlinfoundation.koko.data.source.remote.response.ai.openai.OpenAiCreateImageResponse
-import com.kotlinfoundation.koko.util.Constants
+import com.kotlinfoundation.koko.root.AppConfiguration
 import io.ktor.http.HttpMethod
 
 class OpenAiApiService(private val aiTransport: AiTransport) {
@@ -45,7 +45,7 @@ class OpenAiApiService(private val aiTransport: AiTransport) {
      */
     suspend fun createChat(requestBody: OpenAiCreateChatRequest): AiApiBaseResponse<OpenAiCreateChatResponse> = aiTransport.execute(
         method = HttpMethod.Post,
-        proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/openAiCreateTextCompletion",
+        proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/openAiCreateTextCompletion",
         direct = directSpec("https://api.openai.com/v1/chat/completions"),
         body = requestBody,
     )
@@ -58,7 +58,7 @@ class OpenAiApiService(private val aiTransport: AiTransport) {
      */
     suspend fun createImage(requestBody: OpenAiCreateImageRequest): AiApiBaseResponse<OpenAiCreateImageResponse> = aiTransport.execute(
         method = HttpMethod.Post,
-        proxyUrl = "${Constants.CLOUD_FUNCTIONS_URL}/openAiCreateImage",
+        proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/openAiCreateImage",
         direct = directSpec("https://api.openai.com/v1/images/generations"),
         body = requestBody,
     )

@@ -1,5 +1,6 @@
 package com.kotlinfoundation.koko.util
 
+import com.kotlinfoundation.koko.root.AppConfiguration
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
@@ -26,7 +27,7 @@ class AppUtilImpl : AppUtil {
     override fun openFeedbackMail() {
         val subject = "${getAppName()} Feedback/Bug Report"
         val uri = URI(
-            "mailto:${Constants.CONTACT_EMAIL}?subject=${encode(subject)}",
+            "mailto:${AppConfiguration.CONTACT_EMAIL}?subject=${encode(subject)}",
         )
 
         runCatching {

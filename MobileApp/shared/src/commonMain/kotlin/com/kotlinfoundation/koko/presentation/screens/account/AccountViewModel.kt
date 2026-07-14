@@ -14,7 +14,7 @@ import com.kotlinfoundation.koko.generated.resources.Res
 import com.kotlinfoundation.koko.generated.resources.help_and_support
 import com.kotlinfoundation.koko.generated.resources.logout
 import com.kotlinfoundation.koko.generated.resources.subscriptions
-import com.kotlinfoundation.koko.util.Constants
+import com.kotlinfoundation.koko.root.AppConfiguration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +45,7 @@ class AccountViewModel(
     private fun settingsItemsFor(isSignedIn: Boolean): List<SettingsItemUiState> = buildList {
         add(subscriptionsItem)
         add(supportItem)
-        if (Constants.AUTH_SOCIAL_LOGIN_ENABLED && isSignedIn) add(logoutItem)
+        if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED && isSignedIn) add(logoutItem)
     }
 
     private val _uiState = MutableStateFlow(AccountUiState())
@@ -57,7 +57,7 @@ class AccountViewModel(
         ) { currentUser, currentSubscription, uiState ->
             val user = currentUser.getOrNull()
             uiState.copy(
-                user = if (user?.isAnonymous == true && Constants.AUTH_SOCIAL_LOGIN_ENABLED) null else user,
+                user = if (user?.isAnonymous == true && AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) null else user,
                 settingsItemList = settingsItemsFor(isSignedIn = user != null),
                 showUpgradePremiumBanner = currentSubscription.isFree,
             )

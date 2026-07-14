@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.core.content.pm.PackageInfoCompat
+import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.util.logging.AppLogger
 
 class AppUtilImpl(private val context: Context) : AppUtil {
@@ -35,10 +36,10 @@ class AppUtilImpl(private val context: Context) : AppUtil {
             val appName = getAppName()
             val subject = "$appName Feedback/Bug Report"
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                putExtra(Intent.EXTRA_EMAIL, arrayOf(Constants.CONTACT_EMAIL))
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(AppConfiguration.CONTACT_EMAIL))
                 putExtra(Intent.EXTRA_SUBJECT, subject)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                data = Uri.parse("mailto:${Constants.CONTACT_EMAIL}?subject=${Uri.encode(subject)}")
+                data = Uri.parse("mailto:${AppConfiguration.CONTACT_EMAIL}?subject=${Uri.encode(subject)}")
             }
             context.startActivity(emailIntent)
         } catch (e: ActivityNotFoundException) {

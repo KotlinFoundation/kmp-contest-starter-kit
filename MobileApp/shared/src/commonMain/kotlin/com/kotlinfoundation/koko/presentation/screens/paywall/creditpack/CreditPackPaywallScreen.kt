@@ -48,8 +48,8 @@ import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallPackageUiSt
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallPreviewData
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiEvent
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiState
+import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.subscription.api.PurchasePackageId
-import com.kotlinfoundation.koko.util.Constants
 import com.kotlinfoundation.koko.util.StoreDevice
 import com.kotlinfoundation.koko.util.StoreScreenshot
 import org.jetbrains.compose.resources.painterResource
@@ -289,7 +289,7 @@ internal fun FooterLinksRow() {
         FooterLink(
             text = stringResource(Res.string.paywall_footer_privacy),
             onClick = {
-                if (Constants.URL_PRIVACY_POLICY.isNotEmpty()) uriHandler.openUri(Constants.URL_PRIVACY_POLICY)
+                if (AppConfiguration.URL_PRIVACY_POLICY.isNotEmpty()) uriHandler.openUri(AppConfiguration.URL_PRIVACY_POLICY)
             },
         )
         Text(
@@ -301,7 +301,7 @@ internal fun FooterLinksRow() {
         FooterLink(
             text = stringResource(Res.string.paywall_footer_terms),
             onClick = {
-                if (Constants.URL_TERMS_CONDITIONS.isNotEmpty()) uriHandler.openUri(Constants.URL_TERMS_CONDITIONS)
+                if (AppConfiguration.URL_TERMS_CONDITIONS.isNotEmpty()) uriHandler.openUri(AppConfiguration.URL_TERMS_CONDITIONS)
             },
         )
     }

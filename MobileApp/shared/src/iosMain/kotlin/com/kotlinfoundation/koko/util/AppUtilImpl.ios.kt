@@ -1,5 +1,6 @@
 package com.kotlinfoundation.koko.util
 
+import com.kotlinfoundation.koko.root.AppConfiguration
 import platform.Foundation.NSBundle
 import platform.Foundation.NSURL
 import platform.MessageUI.MFMailComposeViewController
@@ -20,11 +21,11 @@ class AppUtilImpl : AppUtil {
             val appName = getAppName()
             val mailComposeViewController = MFMailComposeViewController()
             mailComposeViewController.setSubject("$appName Feedback/Bug Report")
-            mailComposeViewController.setToRecipients(listOf(Constants.CONTACT_EMAIL))
+            mailComposeViewController.setToRecipients(listOf(AppConfiguration.CONTACT_EMAIL))
             val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
             rootViewController?.presentViewController(mailComposeViewController, true, {})
         } catch (e: Exception) {
-            val mailUrl = NSURL(string = "mailto:${Constants.CONTACT_EMAIL}")
+            val mailUrl = NSURL(string = "mailto:${AppConfiguration.CONTACT_EMAIL}")
             UIApplication.sharedApplication.openURL(mailUrl)
         }
     }
@@ -44,5 +45,5 @@ class AppUtilImpl : AppUtil {
         return "$versionName ($versionCode)"
     }
 
-    private fun getAppStoreLink(): String = "https://apps.apple.com/app/id${Constants.APPSTORE_APP_ID}"
+    private fun getAppStoreLink(): String = "https://apps.apple.com/app/id${AppConfiguration.APPSTORE_APP_ID}"
 }
