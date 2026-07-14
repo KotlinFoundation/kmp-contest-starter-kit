@@ -11,6 +11,7 @@ import com.kotlinfoundation.koko.domain.model.credit.CreditTransaction
 import com.kotlinfoundation.koko.domain.model.generation.GenerationInput
 import com.kotlinfoundation.koko.domain.model.generation.GenerationOutput
 import com.kotlinfoundation.koko.domain.usecase.AiGenerationProvider
+import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.util.analytics.Analytics
 import com.kotlinfoundation.koko.util.file.FileManager
 import com.kotlinfoundation.koko.util.logging.AppLogger
@@ -48,7 +49,10 @@ class GenerationRepository(
         }
 
     suspend fun generate(input: GenerationInput): Result<GenerationOutput> = backgroundExecutor.execute {
-        creditRepository.useCredits(CreditConstants.COST_GENERATION)
+        // Free app (no premium): generation is free — skip the credit spend (and its refund path).
+        if (AppConfiguration.PREMIUM_FEATURES_ENABLED) {
+            creditRepository.useCredits(CreditConstants.COST_GENERATION)
+        }
         analytics.logEvent(event = Analytics.EVENT_CLICKED_GENERATE)
         val updatedGenerationInput = input.uploadFilesIntoCloud()
 
@@ -66,7 +70,11 @@ class GenerationRepository(
         }.onFailure { error ->
             // The credit was spent up-front, so refund it when generation fails. Billing
             // exceptions are thrown before any credit is deducted, so they need no refund.
-            if (error !is PurchaseRequiredException && error !is CreditRequiredException) {
+            // Nothing is spent when premium is off, so nothing to refund either.
+            if (AppConfiguration.PREMIUM_FEATURES_ENABLED &&
+                error !is PurchaseRequiredException &&
+                error !is CreditRequiredException
+            ) {
                 creditRepository.addCredits(
                     amount = CreditConstants.COST_GENERATION,
                     type = CreditTransaction.Type.ADMIN_ADJUSTMENT,

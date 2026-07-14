@@ -14,6 +14,13 @@ import com.kotlinfoundation.koko.subscription.config.activeSubscriptionProviderF
  * - `FeatureFlagManager` — runtime flags controllable remotely via Firebase Remote Config.
  */
 object AppConfiguration {
+    /**
+     * Master switch for the whole monetization surface. `true` (default) = subscriptions + paywall +
+     * credits are on. Set `false` for a completely **free** app: no paywall, no subscriptions/upgrade UI,
+     * subscription SDK never initializes, and **credits are off** (generation is free, credit UI hidden).
+     */
+    const val PREMIUM_FEATURES_ENABLED = true
+
     const val URL_PRIVACY_POLICY = ""
     const val URL_TERMS_CONDITIONS = ""
     const val CONTACT_EMAIL = "support@example.com"
