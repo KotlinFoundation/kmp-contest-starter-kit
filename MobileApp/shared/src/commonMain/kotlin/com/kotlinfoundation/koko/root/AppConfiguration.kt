@@ -14,6 +14,28 @@ import com.kotlinfoundation.koko.subscription.config.activeSubscriptionProviderF
  * - `FeatureFlagManager` — runtime flags controllable remotely via Firebase Remote Config.
  */
 object AppConfiguration {
+
+    const val URL_PRIVACY_POLICY = ""
+    const val URL_TERMS_CONDITIONS = ""
+    const val CONTACT_EMAIL = "support@example.com"
+    const val APPSTORE_APP_ID = ""
+
+    /**
+     * CLOUD_FUNCTIONS_URL should be something like: "https://REGION-PROJECT_ID.cloudfunctions.net"
+     * Regions:
+     * US(Default): us-central1
+     * EU: europe-west1
+     *
+     * This is used AI proxy functions such as OpenAi, Replicate
+     */
+    const val CLOUD_FUNCTIONS_URL = ""
+
+    // Enables Apple and Google sign-in. If false, only anonymous login is supported.
+    // Default false — anonymous auth is the easiest path to a working app (just Firebase +
+    // Anonymous sign-in). Flip to true to add Google/Apple (see the enable-auth skill for the
+    // extra config: GOOGLE_WEB_CLIENT_ID, iOS Info.plist client IDs, Sign In with Apple capability).
+    const val AUTH_SOCIAL_LOGIN_ENABLED = false
+
     /**
      * Whether the app has any **premium (paid/gated) features**.
      *
@@ -26,27 +48,6 @@ object AppConfiguration {
      * This is about premium *features*, not the app's price.
      */
     const val PREMIUM_FEATURES_ENABLED = true
-
-    const val URL_PRIVACY_POLICY = ""
-    const val URL_TERMS_CONDITIONS = ""
-    const val CONTACT_EMAIL = "support@example.com"
-    const val APPSTORE_APP_ID = ""
-
-    // Enables Apple and Google sign-in. If false, only anonymous login is supported.
-    // Default false — anonymous auth is the easiest path to a working app (just Firebase +
-    // Anonymous sign-in). Flip to true to add Google/Apple (see the enable-auth skill for the
-    // extra config: GOOGLE_WEB_CLIENT_ID, iOS Info.plist client IDs, Sign In with Apple capability).
-    const val AUTH_SOCIAL_LOGIN_ENABLED = false
-
-    /**
-     * CLOUD_FUNCTIONS_URL should be something like: "https://REGION-PROJECT_ID.cloudfunctions.net"
-     * Regions:
-     * US(Default): us-central1
-     * EU: europe-west1
-     *
-     * This is used AI proxy functions such as OpenAi, Replicate
-     */
-    const val CLOUD_FUNCTIONS_URL = ""
 
     /**
      * How AI (OpenAI/Replicate) calls are routed.
