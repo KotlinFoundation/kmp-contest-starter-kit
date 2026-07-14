@@ -151,7 +151,7 @@ private fun initializeAuthentication() {
 }
 
 private fun KoinApplication.initializeInAppPurchase() {
-    // Free app (no premium): don't initialize billing or preload paywalls.
+    // No premium features (PREMIUM_FEATURES_ENABLED = false): don't initialize billing or preload paywalls.
     if (!AppConfiguration.PREMIUM_FEATURES_ENABLED) return
 
     val subscriptionProvider by this.koin.inject<SubscriptionProvider>()

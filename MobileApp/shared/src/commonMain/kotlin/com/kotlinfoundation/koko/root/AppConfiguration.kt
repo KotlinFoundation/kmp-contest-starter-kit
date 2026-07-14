@@ -15,9 +15,15 @@ import com.kotlinfoundation.koko.subscription.config.activeSubscriptionProviderF
  */
 object AppConfiguration {
     /**
-     * Master switch for the whole monetization surface. `true` (default) = subscriptions + paywall +
-     * credits are on. Set `false` for a completely **free** app: no paywall, no subscriptions/upgrade UI,
-     * subscription SDK never initializes, and **credits are off** (generation is free, credit UI hidden).
+     * Whether the app has any **premium (paid/gated) features**.
+     *
+     * - `true` (default): the app HAS premium features — subscriptions, paywall, and credits are
+     *   available to gate or limit features. (The app itself can still be free to download.)
+     * - `false`: **no premium features** — everything is unlocked and free. No paywall, no
+     *   subscriptions/upgrade UI, the subscription SDK never initializes, and credits are off
+     *   (generation is free, credit UI hidden).
+     *
+     * This is about premium *features*, not the app's price.
      */
     const val PREMIUM_FEATURES_ENABLED = true
 

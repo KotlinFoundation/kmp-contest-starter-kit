@@ -219,9 +219,9 @@ if phase_active publishing; then
   fi
 
   # Subscriptions — real provider keys (not the demo mock) are needed to process purchases.
-  # Skipped for a free app (PREMIUM_FEATURES_ENABLED = false — no monetization surface at all).
+  # N/A when the app has no premium features (PREMIUM_FEATURES_ENABLED = false — everything is free).
   if [ "$PREMIUM_ENABLED" != "true" ]; then
-    row optional "subscription keys" "n/a (free app)" "PREMIUM_FEATURES_ENABLED = false — no subscriptions/paywall/credits"
+    row optional "subscription keys" "n/a (no premium)" "PREMIUM_FEATURES_ENABLED = false — no premium features (all free); no subscriptions/paywall/credits"
   elif key_is_set "$SUB_ANDROID_KEY" || key_is_set "$SUB_IOS_KEY"; then
     row ok "subscription keys" "set"
   else

@@ -49,7 +49,8 @@ class GenerationRepository(
         }
 
     suspend fun generate(input: GenerationInput): Result<GenerationOutput> = backgroundExecutor.execute {
-        // Free app (no premium): generation is free — skip the credit spend (and its refund path).
+        // No premium features (PREMIUM_FEATURES_ENABLED = false): generation is free — skip the credit
+        // spend (and its refund path below).
         if (AppConfiguration.PREMIUM_FEATURES_ENABLED) {
             creditRepository.useCredits(CreditConstants.COST_GENERATION)
         }
@@ -70,7 +71,7 @@ class GenerationRepository(
         }.onFailure { error ->
             // The credit was spent up-front, so refund it when generation fails. Billing
             // exceptions are thrown before any credit is deducted, so they need no refund.
-            // Nothing is spent when premium is off, so nothing to refund either.
+            // Nothing is spent when premium features are off, so nothing to refund either.
             if (AppConfiguration.PREMIUM_FEATURES_ENABLED &&
                 error !is PurchaseRequiredException &&
                 error !is CreditRequiredException

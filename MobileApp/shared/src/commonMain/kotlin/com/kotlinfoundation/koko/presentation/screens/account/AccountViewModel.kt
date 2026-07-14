@@ -43,7 +43,7 @@ class AccountViewModel(
     )
 
     private fun settingsItemsFor(isSignedIn: Boolean): List<SettingsItemUiState> = buildList {
-        // Subscriptions row only when premium features are on (a free app has no subscriptions).
+        // Subscriptions row only when premium features are enabled.
         if (AppConfiguration.PREMIUM_FEATURES_ENABLED) add(subscriptionsItem)
         add(supportItem)
         if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED && isSignedIn) add(logoutItem)

@@ -163,7 +163,7 @@ fun HomeScreen(
         title = stringResource(Res.string.title_screen_home),
         includeBottomInsets = false, // Set to true if bottom nav is not visible
         toolbarExtraContent = {
-            // Credit chip only when premium features are on (a free app has no credits).
+            // Credit chip only when premium features are enabled.
             if (AppConfiguration.PREMIUM_FEATURES_ENABLED) {
                 Chip(
                     text = "${uiState.creditBalance}",
