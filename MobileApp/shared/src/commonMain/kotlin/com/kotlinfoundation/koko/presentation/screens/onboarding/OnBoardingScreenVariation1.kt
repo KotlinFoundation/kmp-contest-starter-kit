@@ -47,6 +47,7 @@ import com.kotlinfoundation.koko.generated.resources.btn_maybe_later
 import com.kotlinfoundation.koko.generated.resources.btn_next
 import com.kotlinfoundation.koko.generated.resources.btn_skip
 import com.kotlinfoundation.koko.presentation.components.premium.PremiumFeatureFactory
+import com.kotlinfoundation.koko.root.AppConfiguration
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -77,7 +78,8 @@ fun OnBoardingScreenVariation1(
         )
         val isLastPage = pagerState.currentPage == (pagerState.pageCount - 1)
         val isGetPremiumButtonVisible =
-            uiState.pages.getOrNull(pagerState.currentPage)?.isGetPremiumButtonVisible ?: false
+            AppConfiguration.PREMIUM_FEATURES_ENABLED &&
+                (uiState.pages.getOrNull(pagerState.currentPage)?.isGetPremiumButtonVisible ?: false)
 
         Row(
             modifier = Modifier.fillMaxWidth()

@@ -88,6 +88,7 @@ developer sets per app:
 
 | Field | Purpose |
 |-------|---------|
+| `PREMIUM_FEATURES_ENABLED` | Does the app have premium (paid/gated) features? `true` (default) = yes — subscriptions + paywall + credits available to gate/limit features (app can still be free to download). `false` = **no premium features**, everything free: no paywall/subscriptions/upgrade UI, billing never inits, credits off (generation free). |
 | `CLOUD_FUNCTIONS_URL` | Base URL of the deployed web proxy — `https://REGION-PROJECT_ID.cloudfunctions.net` (default region `us-central1`). Set in the `integrate-web-proxy` skill. |
 | `USE_AI_PROXY_SERVER` | `null` (auto) / `true` (force proxy) / `false` (force direct on-device AI). See `integrate-web-proxy`. |
 | `AUTH_SOCIAL_LOGIN_ENABLED` | `false` (default) = anonymous auth only, the easy path; `true` = also show Apple + Google sign-in (needs `GOOGLE_WEB_CLIENT_ID` + iOS config — see `enable-auth`). |

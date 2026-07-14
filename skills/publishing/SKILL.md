@@ -33,6 +33,8 @@ Every `⚠️` must be resolved before release. It covers:
   Production must deploy the web-proxy (`integrate-web-proxy`) and clear direct keys.
 - **Subscription keys are real, not the demo mock** — if you sell subscriptions/IAPs, set the real
   Adapty/RevenueCat SDK keys (`setup-subscriptions`); otherwise the paywall runs the client-only mock.
+  (Skip entirely if the app has **no premium features** — `AppConfiguration.PREMIUM_FEATURES_ENABLED = false`;
+  `check_env` then reports subscription keys as `n/a`.)
 - `AppConfiguration.APPSTORE_APP_ID` (set once App Store Connect assigns it).
 
 **B. Human-only readiness (can't be auto-checked)** — confirm each, sending the developer to the step/skill:

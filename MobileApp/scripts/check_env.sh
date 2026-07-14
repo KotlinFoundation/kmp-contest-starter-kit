@@ -115,6 +115,7 @@ CONTACT_EMAIL="$(const_string CONTACT_EMAIL)"
 APPSTORE_ID="$(const_string APPSTORE_APP_ID)"
 PROVIDER="$(prop "$GRADLE_PROPS" SUBSCRIPTION_PROVIDER)"; PROVIDER="${PROVIDER:-ADAPTY}"
 USE_AI_PROXY="$(const_tristate USE_AI_PROXY_SERVER)"
+PREMIUM_ENABLED="$(const_bool PREMIUM_FEATURES_ENABLED)"
 OPENAI_KEY="$(prop "$LOCAL_PROPS" OPENAI_API_KEY)"
 REPLICATE_KEY="$(prop "$LOCAL_PROPS" REPLICATE_API_KEY)"
 SUB_ANDROID_KEY="$(prop "$LOCAL_PROPS" SUBSCRIPTION_PROVIDER_ANDROID_API_KEY)"
@@ -218,7 +219,10 @@ if phase_active publishing; then
   fi
 
   # Subscriptions — real provider keys (not the demo mock) are needed to process purchases.
-  if key_is_set "$SUB_ANDROID_KEY" || key_is_set "$SUB_IOS_KEY"; then
+  # N/A when the app has no premium features (PREMIUM_FEATURES_ENABLED = false — everything is free).
+  if [ "$PREMIUM_ENABLED" != "true" ]; then
+    row optional "subscription keys" "n/a (no premium)" "PREMIUM_FEATURES_ENABLED = false — no premium features (all free); no subscriptions/paywall/credits"
+  elif key_is_set "$SUB_ANDROID_KEY" || key_is_set "$SUB_IOS_KEY"; then
     row ok "subscription keys" "set"
   else
     row optional "subscription keys" "mock (unset)" "$PROVIDER SDK keys not set → the paywall runs the demo mock; set real keys before selling subscriptions/IAPs (setup-subscriptions)"

@@ -14,6 +14,19 @@ import com.kotlinfoundation.koko.subscription.config.activeSubscriptionProviderF
  * - `FeatureFlagManager` — runtime flags controllable remotely via Firebase Remote Config.
  */
 object AppConfiguration {
+    /**
+     * Whether the app has any **premium (paid/gated) features**.
+     *
+     * - `true` (default): the app HAS premium features — subscriptions, paywall, and credits are
+     *   available to gate or limit features. (The app itself can still be free to download.)
+     * - `false`: **no premium features** — everything is unlocked and free. No paywall, no
+     *   subscriptions/upgrade UI, the subscription SDK never initializes, and credits are off
+     *   (generation is free, credit UI hidden).
+     *
+     * This is about premium *features*, not the app's price.
+     */
+    const val PREMIUM_FEATURES_ENABLED = true
+
     const val URL_PRIVACY_POLICY = ""
     const val URL_TERMS_CONDITIONS = ""
     const val CONTACT_EMAIL = "support@example.com"

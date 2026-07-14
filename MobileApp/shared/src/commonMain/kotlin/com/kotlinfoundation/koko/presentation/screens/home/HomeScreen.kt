@@ -53,6 +53,7 @@ import com.kotlinfoundation.koko.generated.resources.home_prompt_label
 import com.kotlinfoundation.koko.generated.resources.home_prompt_placeholder
 import com.kotlinfoundation.koko.generated.resources.home_reference_image_label
 import com.kotlinfoundation.koko.generated.resources.title_screen_home
+import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.util.StoreDevice
 import com.kotlinfoundation.koko.util.StoreScreenshot
 import com.kotlinfoundation.koko.util.file.openCameraPicker
@@ -162,15 +163,18 @@ fun HomeScreen(
         title = stringResource(Res.string.title_screen_home),
         includeBottomInsets = false, // Set to true if bottom nav is not visible
         toolbarExtraContent = {
-            Chip(
-                text = "${uiState.creditBalance}",
-                style = ChipStyle.FILLED_ALPHA,
-                size = ChipSize.SMALL,
-                startIconRes = UiRes.drawable.ic_coin_credits,
-                onClick = {
-                    onUiEvent(HomeUiEvent.OnClickToolbarCredits)
-                },
-            )
+            // Credit chip only when premium features are enabled.
+            if (AppConfiguration.PREMIUM_FEATURES_ENABLED) {
+                Chip(
+                    text = "${uiState.creditBalance}",
+                    style = ChipStyle.FILLED_ALPHA,
+                    size = ChipSize.SMALL,
+                    startIconRes = UiRes.drawable.ic_coin_credits,
+                    onClick = {
+                        onUiEvent(HomeUiEvent.OnClickToolbarCredits)
+                    },
+                )
+            }
         },
     ) {
         Column(

@@ -20,6 +20,12 @@ A shipping app that can take money: subscriptions **and** credit-pack in-app pur
 **Adapty** — the default — or **RevenueCat**), a paywall wired to a real offer, and AdMob ads
 enabled where they fit. The exit gate is a **completed sandbox/test purchase that unlocks premium**.
 
+> **No premium features? Skip this phase.** If nothing in the app is paid or gated, set
+> `AppConfiguration.PREMIUM_FEATURES_ENABLED = false` — that drops the whole monetization surface
+> (no paywall, no subscriptions/upgrade UI, credits off / generation free) and `check_env --phase
+> publishing` stops asking for subscription keys. `true` (default) keeps premium gating available —
+> the app can still be free to download. (Ads are independent — see `enable-ads`.)
+
 ## Prerequisite
 
 Store presence must already exist — the **App Store Connect** app record and the **Google Play

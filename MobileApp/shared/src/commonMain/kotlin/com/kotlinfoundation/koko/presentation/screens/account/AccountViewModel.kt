@@ -43,7 +43,8 @@ class AccountViewModel(
     )
 
     private fun settingsItemsFor(isSignedIn: Boolean): List<SettingsItemUiState> = buildList {
-        add(subscriptionsItem)
+        // Subscriptions row only when premium features are enabled.
+        if (AppConfiguration.PREMIUM_FEATURES_ENABLED) add(subscriptionsItem)
         add(supportItem)
         if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED && isSignedIn) add(logoutItem)
     }
@@ -59,7 +60,7 @@ class AccountViewModel(
             uiState.copy(
                 user = if (user?.isAnonymous == true && AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) null else user,
                 settingsItemList = settingsItemsFor(isSignedIn = user != null),
-                showUpgradePremiumBanner = currentSubscription.isFree,
+                showUpgradePremiumBanner = AppConfiguration.PREMIUM_FEATURES_ENABLED && currentSubscription.isFree,
             )
         }.stateIn(viewModelScope, WhileSubscribed(5000), _uiState.value)
 
