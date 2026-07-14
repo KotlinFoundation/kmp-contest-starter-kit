@@ -1,20 +1,22 @@
 ---
 name: setup-signing
-description: Create the Android upload keystore + iOS signing identities and move all signing secrets out of the committed app into CI (GitHub Actions) secrets. Use when the user needs release signing, a keystore, provisioning profiles, or to secure signing keys before publishing.
+description: Create the Android upload keystore + iOS signing identities, kept gitignored + backed up (never committed); optionally add them to CI (GitHub Actions) secrets for CI-driven releases. Use when the user needs release signing, a keystore, provisioning profiles, or to secure signing keys before publishing.
 ---
 
-# Set up release signing (and move keys out of the app)
+# Set up release signing
 
 Release builds must be **signed**, and the signing material must **never** live in the
 committed repo. This skill (1) generates the Android upload keystore, (2) wires it via a
 gitignored properties file, (3) sets up iOS certificates + provisioning profiles, and
-(4) moves everything into GitHub Actions secrets so CI can sign without secrets on disk.
+(4) — **only if you publish via CI** — adds everything to GitHub Actions secrets so CI can
+sign. A local keystore + manual store upload is a fully valid path; the CI step is optional.
 
 > Security principle: the keystore `.jks`, `keystore.properties`, the iOS `.p12`, the App
-> Store Connect API key, and any embedded API keys must be **gitignored on disk** and stored
-> as **CI secrets** (or a backend) — never committed. The starter kit's `.gitignore` already
-> excludes `distribution/android/keystore/keystore.jks`, `keystore.properties`, `*.aab`,
-> `*.ipa`, and `local.properties`. Keep it that way.
+> Store Connect API key, and any embedded API keys must be **gitignored on disk** and backed
+> up somewhere safe (password manager) — never committed. If you publish through CI, they also
+> go in as **CI secrets**. The starter kit's `.gitignore` already excludes
+> `distribution/android/keystore/keystore.jks`, `keystore.properties`, `*.aab`, `*.ipa`, and
+> `local.properties`. Keep it that way.
 
 ## Android — upload keystore
 
@@ -89,11 +91,12 @@ identities):
 3. **Xcode** — In the `iosApp` target → *Signing & Capabilities*, select the correct team
    and profiles for Debug and Release.
 
-## Move all secrets into CI (GitHub Actions)
+## (Optional) Add secrets to CI (GitHub Actions)
 
-Add these under **repo Settings → Secrets and variables → Actions**. This is what removes
-the keys from developer machines and lets `publish_android_playstore.yml` /
-`publish_ios_appstore.yml` sign in CI.
+**Skip this for a manual store upload** — a local keystore already signs `bundleRelease`.
+Do it only if you publish through the CI workflows: add these under **repo Settings → Secrets
+and variables → Actions** so `publish_android_playstore.yml` / `publish_ios_appstore.yml` can
+sign in CI without keys on the runner.
 
 **Android** (base64-encode the gitignored files):
 
@@ -133,14 +136,14 @@ Create the ASC API key at App Store Connect → **Users and Access → Integrati
 ## Other embedded secrets — out of the app too
 
 Runtime API keys (`GOOGLE_WEB_CLIENT_ID`, subscription provider keys, AdMob IDs, etc.) live
-in gitignored `MobileApp/local.properties` on disk and as GitHub secrets for CI — never in
-committed source. Server-side keys (OpenAI/Replicate) stay in the backend / Secret Manager,
-never in the app binary.
+in gitignored `MobileApp/local.properties` on disk (and as GitHub secrets too if you build in
+CI) — never in committed source. Server-side keys (OpenAI/Replicate) stay in the backend /
+Secret Manager, never in the app binary.
 
 ## Validate
 
 - Android: `./gradlew :androidApp:bundleRelease` from `MobileApp/` produces a **signed** AAB
   at `androidApp/build/outputs/bundle/release/androidApp-release.aab`. Verify the signer:
   `keytool -printcert -jarfile <aab>` shows your certificate (not the Android debug cert).
-- CI: confirm the required secrets exist in repo settings; a tagged release build
+- CI (only if used): confirm the secrets exist in repo settings; a tagged release build
   (see `publish-release`) signs and uploads without any keys committed.
