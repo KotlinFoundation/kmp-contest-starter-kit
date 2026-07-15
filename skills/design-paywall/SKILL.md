@@ -71,6 +71,16 @@ Once `paywall.md` has **no** remaining `TAILOR PER APP` markers, the offer is de
 **`setup-subscriptions`** (subscriptions) and **`enable-credits`** (credit packs) to create the matching
 products.
 
+## When to run this — split across two phases
+
+The kit ships a working paywall, so it shows boilerplate until you brand it:
+
+- **Phase 1 (`build-features`)** — the **primary model + benefit copy** (`paywall_*` strings). Fully
+  testable now: the **mock provider** runs paywall → purchase → unlock with **no account, no keys**.
+- **Phase 4 (`monetization`)** — the **numbers**: prices & packages, trial length, credit-pack sizes.
+  Set them when you create the real store products (they're marked `TODO(monetization)` in
+  `AiGuidelines/project/paywall.md` until then).
+
 ## Related skills
 
 `setup-subscriptions` · `enable-credits` · `store-screenshots` (paywall PNGs) ·

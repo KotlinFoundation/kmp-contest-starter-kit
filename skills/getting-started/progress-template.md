@@ -22,19 +22,18 @@
 - [ ] **Validation** — App still builds after the rename.
 
 ## C. Define the product
-- [ ] **Agent** — Fill `AiGuidelines/project/prd.md`.
-- [ ] **Agent** — Fill `AiGuidelines/project/user_flow.md`.
+- [ ] **Agent** — Product defined by the `new-app` skill: `prd.md`, `user_flow.md`, `ui_ux.md` filled + confirmed.
+- [ ] **Agent** — App name/id decided; deferred decisions marked `TODO(<phase>)` in `root/AppConfiguration.kt`.
 
-## D. Local loop
-- [ ] **Agent** — Add a screen (`new-screen` skill) and implement its UI.
-- [ ] **Agent** — Persist a model locally (`new-local-model` skill).
-- [ ] **Agent** — Add a network request (`add-api-service` skill).
-- [ ] **Agent** — Store a setting (`save-preferences` skill).
-- [ ] **Agent** — Request a device permission (`add-permission` skill).
+## D. Build your features — `build-features`
+> Per-feature status lives in **`PROGRESS_FEATURES.md`** (repo root), not here. This is just the gate.
+- [ ] **Agent** — Plan derived from `prd.md`/`user_flow.md`, confirmed, and written to `PROGRESS_FEATURES.md`.
+- [ ] **Agent** — Every model + screen in `PROGRESS_FEATURES.md` is checked off.
+- [ ] **Agent** — Shipped onboarding + paywall screens branded to this product.
 
 ## E. Validate
 - [ ] **Agent** — Run quality gates (`run-quality-gates` skill).
-- [ ] **User** — Re-run the app; confirm new screen/data/preference/permission work on a device.
+- [ ] **User** — Re-run the app; confirm your features work on a device.
 
 ## Gate
 - [ ] App launches on at least one platform and shows the Home screen; quality gates pass.

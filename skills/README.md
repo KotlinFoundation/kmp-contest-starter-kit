@@ -28,6 +28,11 @@ checklist whose steps are tagged **Agent Action** (an agent/dev does it: code, s
 moving on). An agent following a guide **stops at each User Action** and waits for you. Copy the
 guide's `progress-template.md` into your repo to track where you are.
 
+**Progress files** live at your repo root and get committed, so any session resumes where the last one
+stopped: **`PROGRESS_FEATURES.md`** (what's actually built — each model/screen from the PRD, written by
+[build-features](build-features/SKILL.md)) and **`PROGRESS_P1…P5`** (each phase guide's steps). The rule:
+read the file first, continue from the first unchecked item, tick items off as you go.
+
 **Task skills** do one job each and are usable standalone. The guides call them by name.
 
 ## Environment keys (don't get silently skipped)
@@ -44,9 +49,14 @@ so a forgotten key is invisible in the build. Two tools make it visible:
 
 ## The journey (5 phases)
 
+**Starting from an idea?** Run **[new-app](new-app/SKILL.md)** first — it interviews you, writes the
+PRD / user flow / UI direction, and records the decisions you can defer. It then hands straight to the
+Phase 1 guide. No accounts needed to get going: the kit ships a mock subscription provider and a
+no-Firebase AI path, so Firebase / Adapty / store accounts wait until the phase that needs them.
+
 | Phase | Guide | You end with |
 |---|---|---|
-| 1 · First Run | [getting-started](getting-started/SKILL.md) | The app **running on your own device**, rebranded, driven purely locally — no cloud. |
+| 1 · First Run | [getting-started](getting-started/SKILL.md) | The app **running on your own device**, rebranded, with **your MVP features** built — no cloud. |
 | 2 · Integrations | [integrations](integrations/SKILL.md) | Firebase + auth + the web-proxy backend wired; real remote calls work. |
 | 3 · Publication | [publishing](publishing/SKILL.md) | Icons, release signing (keys in CI, not the app), store listings, first build in review. |
 | 4 · Monetization | [monetization](monetization/SKILL.md) | Subscriptions + credit-pack IAPs + paywall + ads; a test purchase unlocks premium. |
@@ -58,6 +68,8 @@ so a forgotten key is invisible in the build. Two tools make it visible:
 
 | Skill | Use when |
 |---|---|
+| [new-app](new-app/SKILL.md) | Starting from an idea — interview, write the PRD/user-flow/UI docs, pick name + id, record deferred decisions |
+| [build-features](build-features/SKILL.md) | Building your app's real features from the PRD (also later: "add streaks to my habit tracker") |
 | [run-the-app](run-the-app/SKILL.md) | Building/running the app on Android, Desktop, Web, or iOS for the first time |
 | [refactor-package](refactor-package/SKILL.md) | Renaming the package / applicationId / bundle ID / display name (rebrand) |
 | [new-screen](new-screen/SKILL.md) | Adding a screen (scaffolds UI + route + DI wiring) |

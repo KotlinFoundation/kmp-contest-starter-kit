@@ -15,9 +15,17 @@ import com.kotlinfoundation.koko.subscription.config.activeSubscriptionProviderF
  */
 object AppConfiguration {
 
+    // TODO(publish): your live privacy policy URL — stores reject placeholders (`publishing` skill).
     const val URL_PRIVACY_POLICY = ""
+
+    // TODO(publish): your live terms & conditions URL (`publishing` skill).
     const val URL_TERMS_CONDITIONS = ""
+
+    // TODO(publish): your real support email — ships as boilerplate (`publishing` skill).
     const val CONTACT_EMAIL = "support@example.com"
+
+    // TODO(publish): numeric App Store id, available once the app exists in App Store Connect
+    // (`setup-appstore-connect` skill).
     const val APPSTORE_APP_ID = ""
 
     /**
@@ -41,6 +49,8 @@ object AppConfiguration {
      *
      * This is used AI proxy functions such as OpenAi, Replicate
      */
+    // TODO(integrations): deployed Cloud Functions base URL. Blank is fine to start — direct mode
+    // works without Firebase (`integrate-web-proxy` skill).
     const val CLOUD_FUNCTIONS_URL = ""
 
     // Enables Apple and Google sign-in. If false, only anonymous login is supported.

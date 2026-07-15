@@ -42,5 +42,9 @@ UiState + ViewModel, wired into navigation + DI).
   measurable.
 
 ## Done
-Onboarding runs end to end, captures the goal, delivers a first taste, and primes permissions. This is
-the `design-onboarding` step of the `growth` phase.
+Onboarding runs end to end, captures the goal, delivers a first taste, and primes permissions.
+
+**When to run this:** the kit ships an onboarding flow already, so it shows boilerplate until you brand
+it — do that in **Phase 1** (`build-features`), since it's the first thing every user sees. The
+**`growth`** phase revisits it later to *optimize* activation (funnel events, priming, A/B copy) — not
+to design it from scratch.

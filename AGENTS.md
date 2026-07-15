@@ -336,6 +336,17 @@ Two layers:
 - **Guides** — one per phase of the developer journey. Each is an ordered checklist whose steps are tagged **Agent Action** / **User Action** / **Validation**; stop at each **User Action** and wait for the developer. Copy the guide's `progress-template.md` to track progress.
 - **Task skills** — one job each, usable standalone; the guides call them by name.
 
+**Progress tracking (read these before resuming any work):** progress files live at the repo root, are committed, and are how a new session learns what's already done.
+
+| File | Tracks | Written by |
+|---|---|---|
+| `PROGRESS_FEATURES.md` | **What's actually built** — each model/screen from the PRD, plus the branded onboarding/paywall | `build-features` |
+| `PROGRESS_P1_GETTING_STARTED.md` … `PROGRESS_P5_GROWTH.md` | The *guide's* steps for each phase | the phase guides |
+
+**Resume rule:** before building, read the relevant progress file and continue from the **first unchecked item**. Never redo checked work; never re-derive a plan while unchecked items remain. Tick items off as you finish them, not at the end.
+
+**Starting from an idea** ("build me a habit tracker"): run **`skills/new-app/`** first — it interviews the developer, writes `AiGuidelines/project/{prd,user_flow,ui_ux}.md`, picks the app name/id, and records deferred decisions as `TODO(<phase>)` markers in `root/AppConfiguration.kt`. It then hands off to Phase 1. Phase 1 needs **no Firebase, no subscription provider, no store account** (mock provider + direct-mode AI cover it).
+
 **Developer journey (walk the guides in order):**
 
 | Phase | Guide | Goal |
@@ -347,7 +358,7 @@ Two layers:
 | 5 · Growth | `skills/growth/` | Analytics/Crashlytics/RemoteConfig, push, onboarding, virality loops |
 
 **Task skills** (grouped by phase):
-- **P1** `run-the-app`, `refactor-package`, `new-screen`, `new-local-model`, `add-api-service`, `save-preferences`, `add-permission`, `new-module`
+- **P1** `new-app`, `build-features`, `run-the-app`, `refactor-package`, `new-screen`, `new-local-model`, `add-api-service`, `save-preferences`, `add-permission`, `new-module`
 - **P2** `configure-environment`, `setup-firebase`, `enable-auth`, `integrate-web-proxy`
 - **P3** `generate-app-icons`, `bump-version`, `setup-signing`, `store-screenshots`, `setup-appstore-connect`, `setup-google-play`, `publish-release`
 - **P4** `design-paywall`, `setup-subscriptions`, `enable-credits`, `enable-ads`
