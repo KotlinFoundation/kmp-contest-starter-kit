@@ -73,6 +73,8 @@ Reach for these only if the feature actually needs them:
 - **`add-api-service`** — a remote call (any public URL; no backend needed).
 - **`save-preferences`** — a simple setting/flag.
 - **`add-permission`** — camera/notifications/etc.
+- **`new-module`** — only if the code genuinely belongs outside `shared/` (a reusable library, or a
+  second implementation behind an API). Most features do **not** need this.
 
 ## 4. Brand the screens that already ship — **Agent Action**
 

@@ -53,3 +53,9 @@ Do NOT run iOS builds for routine validation — they are slow. Only when the ch
 - Slowest builds are the first one (dependency + JDK download) and iOS — this is expected.
 
 Desktop (`:desktopApp:run`) is the quickest sanity check that the app builds and shows the Home screen.
+
+## Next
+
+Once it runs, you're at step A of the **`getting-started`** guide — continue there: rebrand with
+**`refactor-package`**, then build your features with **`build-features`**. If you don't have a product
+defined yet (`AiGuidelines/project/prd.md` is still blank), start with the **`new-app`** skill.
