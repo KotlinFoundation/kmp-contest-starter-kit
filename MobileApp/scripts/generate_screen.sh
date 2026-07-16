@@ -25,6 +25,42 @@ if [ -z "$SCREEN_NAME" ]; then
   exit 1
 fi
 
+# Add `import <fqn>` to a file, in the alphabetical slot ktlint expects. No-op if already there.
+insert_import() {
+  file=$1
+  fqn=$2
+
+  if grep -q "^import $fqn$" "$file"; then
+    return 0
+  fi
+
+  # First existing import that sorts after the new one — insert above it.
+  target_line=$(grep -n '^import ' "$file" |
+    awk -F: -v new="import $fqn" '{ text = substr($0, index($0, ":") + 1); if (text > new) { print $1; exit } }')
+
+  if [ -n "$target_line" ]; then
+    sed -i '' "${target_line}i\\
+import $fqn
+" "$file"
+    return 0
+  fi
+
+  # Sorts last: append after the final import.
+  last_import=$(grep -n '^import ' "$file" | tail -1 | cut -d: -f1)
+  if [ -n "$last_import" ]; then
+    sed -i '' "${last_import}a\\
+import $fqn
+" "$file"
+    return 0
+  fi
+
+  # No imports at all: open a block below `package`, keeping the blank line between them.
+  sed -i '' "/^package /a\\
+\\
+import $fqn
+" "$file"
+}
+
 # Capitalize the first letter, leave the rest alone.
 SCREEN_BASE="$(printf '%s' "${SCREEN_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${SCREEN_NAME:1}"
 
@@ -61,7 +97,7 @@ else
   cat > "$UI_STATE_FILE" <<EOF
 package $SCREENS_PACKAGE
 
-class $UI_STATE_CLASS()
+class $UI_STATE_CLASS
 
 sealed class $UI_EVENT_CLASS {
     data object OnClick : $UI_EVENT_CLASS()
@@ -84,7 +120,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class $VIEWMODEL_CLASS() : ViewModel() {
+class $VIEWMODEL_CLASS : ViewModel() {
     private val _uiState = MutableStateFlow($UI_STATE_CLASS())
     val uiState: StateFlow<$UI_STATE_CLASS> = _uiState.asStateFlow()
 
@@ -128,7 +164,7 @@ fun $SCREEN_CLASS(
     $SCREEN_CLASS(
         modifier = modifier.fillMaxSize(),
         uiState = uiState,
-        onUiEvent = viewModel::onUiEvent
+        onUiEvent = viewModel::onUiEvent,
     )
 }
 
@@ -136,13 +172,13 @@ fun $SCREEN_CLASS(
 fun $SCREEN_CLASS(
     modifier: Modifier = Modifier,
     uiState: $UI_STATE_CLASS,
-    onUiEvent: ($UI_EVENT_CLASS) -> Unit
+    onUiEvent: ($UI_EVENT_CLASS) -> Unit,
 ) {
     ScreenWithToolbar(
         modifier = modifier,
         isScrollableContent = true, // Set to false if content itself has scrollable content such as LazyColumn
         title = "$SCREEN_CLASS",
-        includeBottomInsets = true // Set to false if bottom nav is visible
+        includeBottomInsets = true, // Set to false if bottom nav is visible
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.sectionSpacing)) {
             Text("$SCREEN_CLASS")
@@ -185,16 +221,8 @@ fi
 ################################
 if [ -f "$APPNAV_FILE" ]; then
   # Imports (idempotent)
-  if ! grep -q "^import $SCREENS_PACKAGE.$SCREEN_CLASS$" "$APPNAV_FILE"; then
-    sed -i '' "/^package /a\\
-import $SCREENS_PACKAGE.$SCREEN_CLASS
-" "$APPNAV_FILE"
-  fi
-  if ! grep -q "^import $SCREENS_PACKAGE.$VIEWMODEL_CLASS$" "$APPNAV_FILE"; then
-    sed -i '' "/^package /a\\
-import $SCREENS_PACKAGE.$VIEWMODEL_CLASS
-" "$APPNAV_FILE"
-  fi
+  insert_import "$APPNAV_FILE" "$SCREENS_PACKAGE.$SCREEN_CLASS"
+  insert_import "$APPNAV_FILE" "$SCREENS_PACKAGE.$VIEWMODEL_CLASS"
 
   # Entry block (idempotent)
   if grep -q "entry<$ROUTE_CLASS>" "$APPNAV_FILE"; then
@@ -202,19 +230,14 @@ import $SCREENS_PACKAGE.$VIEWMODEL_CLASS
   elif ! grep -q "// Add new screen entries below" "$APPNAV_FILE"; then
     echo "⚠️ Marker '// Add new screen entries below' missing in AppNavigation.kt — add it before re-running."
   else
-    # Insert lines bottom-up (each /i\\ goes right before the previous insert).
+    # One insert for the whole block: every `i\` anchors on the marker, so splitting this into
+    # several seds would stack the lines up in reverse order.
     sed -i '' "/\/\/ Add new screen entries below/i\\
+    entry<$ROUTE_CLASS> {\\
+        val viewModel = koinViewModel<$VIEWMODEL_CLASS>()\\
+        $SCREEN_CLASS(viewModel = viewModel)\\
     }\\
 
-" "$APPNAV_FILE"
-    sed -i '' "/\/\/ Add new screen entries below/i\\
-        $SCREEN_CLASS(viewModel = viewModel)
-" "$APPNAV_FILE"
-    sed -i '' "/\/\/ Add new screen entries below/i\\
-        val viewModel = koinViewModel<$VIEWMODEL_CLASS>()
-" "$APPNAV_FILE"
-    sed -i '' "/\/\/ Add new screen entries below/i\\
-    entry<$ROUTE_CLASS> {
 " "$APPNAV_FILE"
     echo "Updated: $APPNAV_FILE"
   fi
@@ -226,11 +249,7 @@ fi
 # 6. Di.kt — import + viewModelOf
 ################################
 if [ -f "$DI_FILE" ]; then
-  if ! grep -q "^import $SCREENS_PACKAGE.$VIEWMODEL_CLASS$" "$DI_FILE"; then
-    sed -i '' "/^package /a\\
-import $SCREENS_PACKAGE.$VIEWMODEL_CLASS
-" "$DI_FILE"
-  fi
+  insert_import "$DI_FILE" "$SCREENS_PACKAGE.$VIEWMODEL_CLASS"
 
   if grep -q "viewModelOf(::$VIEWMODEL_CLASS)" "$DI_FILE"; then
     echo "Skipping DI registration (already present): $VIEWMODEL_CLASS"
