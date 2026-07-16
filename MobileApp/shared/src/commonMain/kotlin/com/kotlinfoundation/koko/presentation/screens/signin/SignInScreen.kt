@@ -109,18 +109,13 @@ fun SignInScreen(
         modifier = modifier.fillMaxSize().background(AppTheme.colors.background),
         title = stringResource(if (signInMode) Res.string.title_sign_in else Res.string.title_sign_up),
         includeBottomInsets = true,
-        // Scrolling is handled below instead of by the toolbar: BoxWithConstraints has to sit
-        // OUTSIDE the scroll to read the real screen height (inside one, maxHeight is Infinity).
+        // Scrolls below instead: BoxWithConstraints must sit outside the scroll to read a real height.
         isScrollableContent = false,
         navigationIcon = UiRes.drawable.ic_back,
         onNavigationIconClick = { onNavigateBack() },
     ) {
         BoxWithConstraints {
-            // `heightIn(min = maxHeight)` + SpaceBetween, NOT Spacer(weight(1f)): inside a
-            // verticalScroll the height constraint is Infinity, so Column resolves weights to 0 and
-            // the content collapses to the top, leaving the lower half blank. Arrangement runs after
-            // the Column's height is settled, so it distributes correctly — while content taller than
-            // the screen still scrolls, keeping every button reachable on small devices.
+            // Not Spacer(weight(1f)) — verticalScroll gives infinite height, so weights resolve to 0.
             Column(
                 modifier = Modifier
                     .verticalScroll(scrollState)
@@ -128,7 +123,6 @@ fun SignInScreen(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // Top block — brand + title.
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     LogoImage(
                         modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)
@@ -140,7 +134,6 @@ fun SignInScreen(
                     )
                 }
 
-                // Bottom block — actions + legal, within thumb reach.
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     // Google/Apple buttons only when social login is enabled; otherwise anonymous-only.
                     if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) {
@@ -175,8 +168,7 @@ fun SignInScreen(
                     AppButton(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(Res.string.btn_continue_as_guest),
-                        // With social login off this is the only way in, so it has to look like the primary
-                        // action rather than a link. When Google/Apple are shown they lead, and this steps back.
+                        // Secondary to Google/Apple when they're shown; the only way in when they're not.
                         style = if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) ButtonStyle.TEXT else ButtonStyle.PRIMARY,
                         isLoading = isGuestLoading,
                         onClick = {
