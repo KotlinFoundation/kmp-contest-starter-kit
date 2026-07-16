@@ -1,13 +1,19 @@
 ---
 name: getting-started
-description: Phase-1 blueprint for the KMP starter kit — get the app running locally on your own device, rebrand it, and drive it with a screen, a Room model, a preference, a network call, and a permission (all LOCAL-only). Use when getting started with the KMP contest starter kit / on first run / initial setup, before touching Firebase, backend, or publishing.
+description: Phase-1 blueprint for the KMP starter kit — get the app running locally on your own device, rebrand it, and build your MVP features from the PRD (all LOCAL-only, no accounts). Use when getting started with the KMP contest starter kit / on first run / initial setup, before touching Firebase, backend, or publishing.
 ---
 
 # Getting Started — Phase 1 (First Run, LOCAL-ONLY)
 
-**Goal:** get the app **running on your own device/emulator**, rebranded to your app, and driven
-**purely locally** — one screen, one Room model, one preference, one plain network request, one device
-permission. Prove the loop end-to-end before adding any cloud services.
+**Goal:** get the app **running on your own device/emulator**, rebranded to your app, with **your MVP
+features built** — all **purely locally**. Prove the loop end-to-end before adding any cloud services.
+
+**Start here?** If the developer arrived with an *idea* and no product docs yet ("build me a habit
+tracker"), run the **`new-app`** skill first — it interviews them and writes `prd.md` / `user_flow.md` /
+`ui_ux.md` plus the app name/id this guide needs. `new-app` hands straight back here.
+
+**No accounts needed in this phase.** No Firebase, no Adapty/RevenueCat, no Play/App Store account —
+the kit's mock subscription provider and direct-mode AI cover it.
 
 **Explicitly deferred to later phases** (do NOT do these now):
 - Firebase (Analytics, Messaging, Crashlytics, RemoteConfig), authentication, backend / web-proxy → the **`integrations`** guide.
@@ -54,7 +60,7 @@ Verify: `./scripts/check_env.sh --phase getting-started`.
 
 ### B. Rebrand to your app
 
-5. **Agent Action** — Rename the package / applicationId / iOS bundle ID + display name with the **`refactor-package`** skill:
+5. **Agent Action** — Rename the package / applicationId / iOS bundle ID + display name with the **`refactor-package`** skill, using the **app id + name decided in `new-app`** (if the developer hasn't picked one yet, ask — offer 3 suggestions with one recommended):
    ```bash
    ./scripts/refactor_package.sh --app-id com.example.newapp --app-name NewApp
    ```
@@ -62,21 +68,20 @@ Verify: `./scripts/check_env.sh --phase getting-started`.
 
 ### C. Define the product (grounds everything downstream)
 
-7. **Agent Action** — Fill `AiGuidelines/project/prd.md` (what the app is, who it's for, scope, core value). Search for `TAILOR PER APP` markers.
-8. **Agent Action** — Fill `AiGuidelines/project/user_flow.md` (primary flows + screen sequence).
+7. **Agent Action** — The product should already be defined by the **`new-app`** skill: `AiGuidelines/project/prd.md`, `user_flow.md`, and `ui_ux.md` filled, name/id decided, deferred decisions marked `TODO(<phase>)` in `root/AppConfiguration.kt`.
+   - If those files are still blank (just a heading), **stop and run `new-app` first** — it interviews the developer and writes them. Never invent the product yourself.
 
-### D. Build the local loop
+### D. Build your features
 
-9. **Agent Action** — Add a screen with the **`new-screen`** skill (`./scripts/generate_screen.sh YourScreenName` — scaffolds Screen + UiState + ViewModel and wires route + DI). Implement the UI.
-10. **Agent Action** — Persist data locally with the **`new-local-model`** skill (`./scripts/make_local.sh ModelName` — Room entity + DAO + DB registration + Koin). Add real columns and use it from a repository/ViewModel.
-11. **Agent Action** — Add a network request with the **`add-api-service`** skill (DTOs → API service → repository via `backgroundExecutor.execute { }` → ViewModel). Any public URL works — no project backend needed.
-12. **Agent Action** — Store a setting with the **`save-preferences`** skill (add a key to `UserPreferences.Keys`, read/write via the injected `UserPreferences`).
-13. **Agent Action** — Ask for a device permission with the **`add-permission`** skill (`rememberCameraPermissionState()` etc. or `rememberAppPermissionState(...)`; add iOS `NS*UsageDescription` if needed).
+8. **Agent Action** — Build the MVP with the **`build-features`** skill: it derives the screens + local models from `prd.md`/`user_flow.md`, scaffolds them (`make_local.sh` / `generate_screen.sh`, **run sequentially** — they patch shared files), implements the UI per `ui_ux.md`, and brands the onboarding + paywall screens that already ship.
+   - It records every model/screen in **`PROGRESS_FEATURES.md`** at the repo root and ticks them off as it goes — so if a session stops, the next one resumes from the first unchecked item instead of guessing.
+   - Underlying skills it uses: **`new-local-model`**, **`new-screen`**, and — only if a feature needs them — **`add-api-service`** (any public URL, no backend), **`save-preferences`**, **`add-permission`**.
+   - Everything stays local: **no Firebase, no provider account, no store account** in this phase. The paywall runs on the mock provider if you touch it.
 
 ### E. Validate
 
-14. **Agent Action** — Run the **`run-quality-gates`** skill (`spotlessApply`/`spotlessCheck`, `:shared:jvmTest :shared:testAndroidHostTest`, `:androidApp:assembleDebug`).
-15. **User Action** — Re-run the app and confirm the new screen + data/preference/permission behave as expected on a device.
+9. **Agent Action** — Run the **`run-quality-gates`** skill (`spotlessApply`/`spotlessCheck`, `:shared:jvmTest :shared:testAndroidHostTest`, `:androidApp:assembleDebug`).
+10. **User Action** — Re-run the app and confirm your features behave as expected on a device.
 
 ---
 

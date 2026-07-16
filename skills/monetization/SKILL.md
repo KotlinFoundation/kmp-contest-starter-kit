@@ -57,15 +57,18 @@ Verify: `./scripts/check_env.sh --phase monetization`.
 
 ## Ordered checklist
 
-### 1. Design the offer
+### 1. Complete the offer — the numbers
 
-- [ ] **Agent Action** — Run the **`design-paywall`** skill. This hands the developer the paywall
-      designer role prompt and the `paywall.md` fill-in template so they author the offer
-      architecture (primary model, prices, trial framing, credit packs) *before* any product is
-      created. Products are shaped by the offer, so this comes first.
-- [ ] **User Action** — Fill in the `TAILOR PER APP` blanks in `AiGuidelines/project/paywall.md`
-      (primary model, monthly/annual/lifetime prices, trial length, credit-pack sizes).
-- [ ] **Validation** — `AiGuidelines/project/paywall.md` has no remaining `TAILOR PER APP` markers.
+The **primary model + benefit copy** were already decided in Phase 1 (`new-app` / `build-features`), and
+the paywall has been running on the **mock provider** since then. What's missing are the numbers, which
+shape the store products — so settle them before creating any product.
+
+- [ ] **Agent Action** — Run the **`design-paywall`** skill and open `AiGuidelines/project/paywall.md`.
+      The primary model should already be filled; the remaining blanks are marked `TODO(monetization)`.
+- [ ] **User Action** — Fill the remaining `TAILOR PER APP` blanks: **prices & packages**
+      (monthly/annual/lifetime), **trial length**, **credit-pack sizes**.
+- [ ] **Validation** — `AiGuidelines/project/paywall.md` has no remaining `TAILOR PER APP` /
+      `TODO(monetization)` markers.
 
 ### 2. Set up subscriptions
 

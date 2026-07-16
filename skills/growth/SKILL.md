@@ -63,11 +63,14 @@ Verify: `./scripts/check_env.sh --phase growth`.
   token (logged as `Firebase onNewToken`). **Stop and confirm.**
 - **Validation** — The test push is received on a real device.
 
-### 3. Polish onboarding — `design-onboarding`
-- **Agent Action** — Read the `design-onboarding` skill. Fill the `TAILOR PER APP` markers in
-  `AiGuidelines/project/onboarding.md` (goal-capture question, first-taste moment, permission
-  priming), then build/refine the onboarding screens via the `new-screen` skill. Tie the
-  notification-permission priming step to step 2.
+### 3. Optimize onboarding — `design-onboarding`
+
+Onboarding was designed and built in Phase 1 (`new-app` wrote `onboarding.md`, `build-features` branded
+the screens). This step **optimizes activation**, it doesn't design from scratch.
+
+- **Agent Action** — Read the `design-onboarding` skill. Instrument each step with screen-view/funnel
+  events, tie the **notification-permission priming** to step 2, and refine the copy against real
+  drop-off. If `AiGuidelines/project/onboarding.md` still has `TAILOR PER APP` markers, fill them now.
 - **Validation** — Onboarding runs end to end; screen-view events for each step land in DebugView.
 
 ### 4. Add virality + review loops — `add-virality-loop`
