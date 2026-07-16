@@ -216,6 +216,18 @@ tasks.withType<Test>().configureEach {
         "generateStoreScreenshots",
         providers.gradleProperty("generateStoreScreenshots").orElse("false").get(),
     )
+
+    // Run tests on JDK 21 while everything still COMPILES against 17 (jvmToolchain(17)).
+    // Robolectric loads real dependency bytecode, and filekit >= 0.14 ships Java 21 class
+    // files (major 65). On a 17 test JVM the preview scanner dies with
+    // `UnsupportedClassVersionError: io/github/vinceglb/filekit/PlatformFile`, which takes
+    // out the whole Roborazzi run. The foojay resolver in settings.gradle.kts provisions
+    // the JDK automatically, so no manual install is needed.
+    javaLauncher.set(
+        javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        },
+    )
 }
 
 tasks.register("generateStoreScreenshots") {
