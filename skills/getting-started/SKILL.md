@@ -80,7 +80,7 @@ Verify: `./scripts/check_env.sh --phase getting-started`.
 
 ### E. Validate
 
-9. **Agent Action** — Run the **`run-quality-gates`** skill (`spotlessApply`/`spotlessCheck`, `:shared:jvmTest :shared:testAndroidHostTest`, `:androidApp:assembleDebug`).
+9. **Agent Action** — Verify the UI with the **`verify-ui`** skill (headless Compose test for behaviour ~2s + render a `@Preview` to a PNG and look at it), then run the **`run-quality-gates`** skill (`spotlessApply`/`spotlessCheck`, `:shared:jvmTest :shared:testAndroidHostTest`, `:androidApp:assembleDebug`).
 10. **User Action** — Re-run the app and confirm your features behave as expected on a device.
 
 ---

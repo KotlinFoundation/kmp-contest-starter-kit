@@ -1,9 +1,14 @@
 ---
 name: verify-ui
-description: Verify a screen or component actually works — behaviour via headless Compose UI tests, and appearance by rendering it to a PNG and looking at it. Use after building or changing any UI, or when asked to check/verify/confirm a screen renders and behaves correctly.
+description: Render any screen or component to a PNG you can look at or send, and verify its behaviour with headless Compose UI tests. Use after building/changing UI, when asked to check/verify/confirm a screen works — and whenever someone asks to SEE the UI ("show me the onboarding screens", "send me a picture/screenshot of the paywall", "what does the home screen look like?").
 ---
 
 # Verify UI — fast and accurate
+
+**Someone asked to *see* a screen** ("show me the onboarding screens", "send me a screenshot of the
+paywall")? You can produce that yourself — jump to [§2](#2-appearance--roborazzi-then-look-at-the-png):
+add a `@Preview` if none exists, run the record task, and read/attach the PNG. No emulator, no device,
+no manual screenshotting.
 
 Two tools, two questions. Use both when you changed how something **looks**; the first alone is
 enough when you only changed **behaviour**.
@@ -72,6 +77,20 @@ private fun MyScreenPreview() {
     AppTheme { MyScreen(uiState = MyUiState(count = 42), onUiEvent = {}) }
 }
 ```
+
+### Showing a screen to the developer
+
+When asked to **see** a screen (rather than verify it), same mechanism:
+
+1. Find the previews for it — they're named `<Class>_<method>.png`:
+   ```bash
+   ./gradlew :shared:recordRoborazziAndroidHostTest
+   ls shared/src/androidHostTest/snapshots/ | grep -i onboarding
+   ```
+2. If the screen has **no** `@Preview` yet, add one next to it (pure overload + `AppTheme`, as above),
+   re-record, and it appears.
+3. **Read the PNG** and describe/attach it. Multiple previews (e.g. each onboarding page, or
+   light/dark) each produce their own file.
 
 To catch regressions against previously recorded goldens:
 

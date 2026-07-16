@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kotlinfoundation.koko.designsystem.components.LogoImage
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
@@ -115,5 +116,33 @@ private fun SplashLogo(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         LogoImage(modifier = Modifier.scale(scale))
+    }
+}
+
+// Snapshotted by PreviewScreenshotTest — `./gradlew :shared:recordRoborazziAndroidHostTest`
+// renders these to shared/src/androidHostTest/snapshots/. See the `verify-ui` skill.
+// `isLoading = false` skips the splash so the actual onboarding content renders.
+
+@Preview
+@Composable
+private fun OnBoardingScreenStyle1Preview() {
+    AppTheme {
+        OnBoardingScreen(
+            style = OnBoardingScreenStyle.STYLE1,
+            uiState = OnBoardingUiState(isLoading = false),
+            onUiEvent = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun OnBoardingScreenStyle2Preview() {
+    AppTheme {
+        OnBoardingScreen(
+            style = OnBoardingScreenStyle.STYLE2,
+            uiState = OnBoardingUiState(isLoading = false),
+            onUiEvent = {},
+        )
     }
 }

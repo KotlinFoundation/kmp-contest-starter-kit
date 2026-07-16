@@ -32,7 +32,8 @@ Insertion points in those three files are marked with
 1. Edit the generated `entry<>` block in `AppNavigation.kt` to add the navigation callbacks the screen needs (`navigator.navigate(...)`, `navigator.goBack()`, ...).
 2. Implement the UI in the pure-composable overload; keep logic in the ViewModel.
 3. Feature folders contain **only** `*Screen.kt`, `*UiState.kt`, `*ViewModel.kt` — never a `*ScreenRoute.kt` (routes live in `Routes.kt`).
-4. Validate with the `run-quality-gates` skill.
+4. Verify it with the **`verify-ui`** skill — a headless Compose test for behaviour (the generated dual-overload makes this possible), plus a `@Preview` rendered to a PNG you can actually look at.
+5. Validate with the `run-quality-gates` skill.
 
 ---
 

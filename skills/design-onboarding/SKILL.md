@@ -48,3 +48,7 @@ Onboarding runs end to end, captures the goal, delivers a first taste, and prime
 it — do that in **Phase 1** (`build-features`), since it's the first thing every user sees. The
 **`growth`** phase revisits it later to *optimize* activation (funnel events, priming, A/B copy) — not
 to design it from scratch.
+
+**See what it looks like:** use the **`verify-ui`** skill to render each onboarding page to a PNG
+(`./gradlew :shared:recordRoborazziAndroidHostTest` → `snapshots/*OnBoarding*.png`) and look at it.
+That's also how to answer "show me the onboarding screens" — no emulator needed.
