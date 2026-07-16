@@ -100,6 +100,12 @@ the developer will hit them the moment they run the app, so fix them now, not at
 
 ## 5. Validate — **Agent Action → User confirms**
 
+Verify each screen you built with the **`verify-ui`** skill *before* handing back:
+- **Behaviour** — a headless `runComposeUiTest` against the screen's pure `(uiState, onUiEvent)`
+  overload (~2s): state renders, clicks emit the right events.
+- **Appearance** — add a `@Preview`, run `./gradlew :shared:recordRoborazziAndroidHostTest`, and
+  **look at the PNG**. This is what catches layout/spacing/theming mistakes that tests pass right over.
+
 ```bash
 ./gradlew spotlessApply
 ```

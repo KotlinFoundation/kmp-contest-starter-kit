@@ -34,6 +34,10 @@ Rules:
 - `@StoreScreenshot` previews are excluded from regression screenshot tests and only render when the script sets `-PgenerateStoreScreenshots=true` — don't try to run them via the normal test tasks.
 - The annotation + `StoreDevice` enum live at `shared/src/commonMain/.../util/StoreScreenshot.kt`.
 
+> **Just want to *see* a screen** (not produce storefront assets)? That's the **`verify-ui`** skill —
+> it renders any `@Preview` to a PNG at normal size. This skill is only for the huge, marketing-ready
+> storefront images.
+
 ---
 
 *Phase 3 · Publication — part of the [publishing](../publishing/SKILL.md) guide.*

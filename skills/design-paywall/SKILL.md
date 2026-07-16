@@ -83,5 +83,6 @@ The kit ships a working paywall, so it shows boilerplate until you brand it:
 
 ## Related skills
 
-`setup-subscriptions` · `enable-credits` · `store-screenshots` (paywall PNGs) ·
+`verify-ui` (render the paywall to a PNG and look at it — also how to answer "show me the paywall") ·
+`setup-subscriptions` · `enable-credits` · `store-screenshots` (paywall PNGs for the storefront) ·
 `monetization` (phase guide).

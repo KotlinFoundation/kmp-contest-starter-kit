@@ -45,7 +45,7 @@ MobileApp/
 │   ├── src/jsMain/          # js createSQLiteWorker() actual (js("…") worker factory)
 │   ├── src/nonWebMain/      # Code shared across non-web platforms (FileManager.nonWeb, etc.)
 │   ├── src/jvmMain/         # Desktop DatabaseProvider + Platform.jvm.kt etc.
-│   ├── src/commonTest/      # Shared tests (screentest/ for UI tests)
+│   ├── src/commonTest/      # Shared tests (JVM + Android host)
 │   ├── src/jvmTest/         # JVM-only tests (e.g. Compose UI tests via runComposeUiTest)
 │   ├── src/androidHostTest/ # Robolectric host tests + optional Roborazzi screenshot tooling
 │   └── src/commonMain/.../util/StoreScreenshot.kt # @StoreScreenshot annotation + StoreDevice enum
@@ -126,8 +126,9 @@ All Gradle commands run from `MobileApp/`.
 
 ### Test layout
 - Unit / Flow / ViewModel tests: `shared/src/commonTest/kotlin/`. Use `kotlinx-coroutines-test` for `runTest` + `StandardTestDispatcher`/`UnconfinedTestDispatcher`. No Turbine — collect `Flow` emissions via `launch { flow.toList(emissions) }` if needed.
-- Compose UI tests: `shared/src/commonTest/screentest/` (multiplatform via `runComposeUiTest`) for tests runnable on both JVM and Android host, or `shared/src/jvmTest/` for JVM-only Compose UI tests.
-- Screenshot tests (optional, local only — NOT a PR gate, goldens are not committed): Roborazzi auto-generates a parameterized Robolectric test from the `roborazzi { generateComposePreviewRobolectricTests { … } }` block in `shared/build.gradle.kts`. Record baselines with `./gradlew :shared:recordRoborazziAndroidHostTest`, compare with `./gradlew :shared:verifyRoborazziAndroidHostTest`.
+- Compose UI tests: `shared/src/commonTest/kotlin/` (multiplatform via `runComposeUiTest`, runs on both JVM and Android host) or `shared/src/jvmTest/kotlin/` for JVM-only ones. Screens expose a **pure `(uiState, onUiEvent)` overload** so they render with no ViewModel/Koin — see `SampleComposeUiTest` for the template, and the **`verify-ui`** skill.
+- Screenshot tests (optional, local only — NOT a PR gate, goldens are not committed): **every `@Preview`** under `com.kotlinfoundation.koko` is snapshotted by the parameterized `PreviewScreenshotTest` (`shared/src/androidHostTest/`), which discovers previews via ComposablePreviewScanner. Record with `./gradlew :shared:recordRoborazziAndroidHostTest` → PNGs in `shared/src/androidHostTest/snapshots/`; compare with `./gradlew :shared:verifyRoborazziAndroidHostTest`.
+- Tests run on a **JDK 21** JVM (`tasks.withType<Test>` in `shared/build.gradle.kts`) while code compiles against 17. Robolectric loads real dependency bytecode and `filekit` ≥ 0.14 ships Java 21 class files, so a 17 test JVM fails the preview scan with `UnsupportedClassVersionError`. The foojay resolver provisions the JDK automatically.
 
 ### `@Preview` annotation
 Always use `androidx.compose.ui.tooling.preview.Preview`, NOT `org.jetbrains.compose.ui.tooling.preview.Preview` (the latter is deprecated as of CMP 1.10 and not discovered by ComposablePreviewScanner). The multiplatform-aware AndroidX import comes from `org.jetbrains.compose.ui:ui-tooling-preview` (already wired in `shared` and `designsystem`).
@@ -363,7 +364,7 @@ Two layers:
 - **P3** `generate-app-icons`, `bump-version`, `setup-signing`, `store-screenshots`, `setup-appstore-connect`, `setup-google-play`, `publish-release`
 - **P4** `design-paywall`, `setup-subscriptions`, `enable-credits`, `enable-ads`
 - **P5** `setup-analytics`, `enable-notifications`, `design-onboarding`, `add-virality-loop`
-- **Cross-phase** `run-quality-gates`
+- **Cross-phase** `verify-ui` (behaviour via headless Compose tests + appearance via a rendered PNG), `run-quality-gates`
 
 ### Screen Generation
 **Whenever the user asks for a new screen, run this from `MobileApp/`** instead of hand-creating files:

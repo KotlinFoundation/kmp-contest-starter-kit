@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kotlinfoundation.koko.designsystem.components.LogoImage
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
@@ -48,6 +49,26 @@ fun OnBoardingScreen(
         }
     }
 
+    OnBoardingScreen(
+        modifier = modifier,
+        style = style,
+        uiState = uiState,
+        onUiEvent = viewModel::onUiEvent,
+    )
+}
+
+/**
+ * Pure overload — no ViewModel, so it renders from plain state in
+ * `runComposeUiTest` and `@Preview`. Navigation side effects stay in the
+ * ViewModel overload above.
+ */
+@Composable
+fun OnBoardingScreen(
+    modifier: Modifier = Modifier,
+    style: OnBoardingScreenStyle,
+    uiState: OnBoardingUiState,
+    onUiEvent: (OnBoardingUiEvent) -> Unit,
+) {
     Crossfade(
         targetState = uiState.isLoading,
         animationSpec = tween(durationMillis = 500),
@@ -62,7 +83,7 @@ fun OnBoardingScreen(
                     OnBoardingScreenVariation1(
                         modifier = Modifier.fillMaxSize(),
                         uiState = uiState,
-                        onUiEvent = viewModel::onUiEvent,
+                        onUiEvent = onUiEvent,
                     )
                 }
 
@@ -70,7 +91,7 @@ fun OnBoardingScreen(
                     OnBoardingScreenVariation2(
                         modifier = Modifier.fillMaxSize(),
                         uiState = uiState,
-                        onUiEvent = viewModel::onUiEvent,
+                        onUiEvent = onUiEvent,
                     )
                 }
             }
@@ -95,5 +116,33 @@ private fun SplashLogo(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         LogoImage(modifier = Modifier.scale(scale))
+    }
+}
+
+// Snapshotted by PreviewScreenshotTest — `./gradlew :shared:recordRoborazziAndroidHostTest`
+// renders these to shared/src/androidHostTest/snapshots/. See the `verify-ui` skill.
+// `isLoading = false` skips the splash so the actual onboarding content renders.
+
+@Preview
+@Composable
+private fun OnBoardingScreenStyle1Preview() {
+    AppTheme {
+        OnBoardingScreen(
+            style = OnBoardingScreenStyle.STYLE1,
+            uiState = OnBoardingUiState(isLoading = false),
+            onUiEvent = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun OnBoardingScreenStyle2Preview() {
+    AppTheme {
+        OnBoardingScreen(
+            style = OnBoardingScreenStyle.STYLE2,
+            uiState = OnBoardingUiState(isLoading = false),
+            onUiEvent = {},
+        )
     }
 }

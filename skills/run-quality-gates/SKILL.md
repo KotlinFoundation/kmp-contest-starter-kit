@@ -35,6 +35,7 @@ gates below will pass regardless.
 
 Rules:
 
+- **Changed UI?** These gates prove it compiles and behaves — they do **not** prove it *looks* right (screenshot tests aren't a PR gate). Use the **`verify-ui`** skill to render the screen to a PNG and check it.
 - Do NOT run iOS builds/tests for routine validation — they are slow. Only when the change is iOS-specific or the user asks.
 - Web check when web code changed: `./gradlew :shared:compileKotlinWasmJs :shared:compileKotlinJs`.
 - Quick iOS-code compile check without a full build: `./gradlew :shared:compileAppleMainKotlinMetadata`.
