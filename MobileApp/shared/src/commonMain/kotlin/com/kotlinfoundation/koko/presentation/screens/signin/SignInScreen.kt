@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,88 +109,105 @@ fun SignInScreen(
         modifier = modifier.fillMaxSize().background(AppTheme.colors.background),
         title = stringResource(if (signInMode) Res.string.title_sign_in else Res.string.title_sign_up),
         includeBottomInsets = true,
-        isScrollableContent = true,
+        // Scrolling is handled below instead of by the toolbar: BoxWithConstraints has to sit
+        // OUTSIDE the scroll to read the real screen height (inside one, maxHeight is Infinity).
+        isScrollableContent = false,
         navigationIcon = UiRes.drawable.ic_back,
         onNavigationIconClick = { onNavigateBack() },
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            LogoImage(
-                modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp)
-                    .padding(AppTheme.spacing.defaultSpacing),
-            )
-            Spacer(modifier = Modifier.weight(1f))
-
-            TitleText(
-                modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing),
-                isSignIn = signInMode,
-            )
-
-            // Google/Apple buttons only when social login is enabled; otherwise anonymous-only.
-            if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) {
-                AuthUIHelperButtons(
-                    linkAccount = signInMode.not(),
-                    modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing).fillMaxWidth(),
-                ) { result ->
-                    result.onSuccess {
-                        AppLogger.d("Successful sign in")
-                        onOauthSigned()
-                        onSuccessfulSignIn()
-                    }.onFailure { error ->
-                        AppLogger.e("Error occurred while signing in, $error")
-                        if (error is UserAlreadyExistsException) {
-                            signInMode = true
-                            coroutineScope.launch {
-                                AppGlobalUiState.showUiMessage(
-                                    UiMessage.Resource(Res.string.auth_user_already_exists_message),
-                                )
-                            }
-                        } else {
-                            coroutineScope.launch {
-                                AppGlobalUiState.showUiMessage(UiMessage.Message(error.message))
-                            }
-                        }
-                    }
+        BoxWithConstraints {
+            // `heightIn(min = maxHeight)` + SpaceBetween, NOT Spacer(weight(1f)): inside a
+            // verticalScroll the height constraint is Infinity, so Column resolves weights to 0 and
+            // the content collapses to the top, leaving the lower half blank. Arrangement runs after
+            // the Column's height is settled, so it distributes correctly — while content taller than
+            // the screen still scrolls, keeping every button reachable on small devices.
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .heightIn(min = maxHeight),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                // Top block — brand + title.
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    LogoImage(
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)
+                            .padding(AppTheme.spacing.defaultSpacing),
+                    )
+                    TitleText(
+                        modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing),
+                        isSignIn = signInMode,
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(AppTheme.spacing.defaultSpacing))
-            }
-
-            AppButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.btn_continue_as_guest),
-                style = ButtonStyle.TEXT,
-                isLoading = isGuestLoading,
-                onClick = {
-                    isGuestLoading = true
-                    coroutineScope.launch {
-                        continueAsGuest()
-                            .onSuccess { onSuccessfulSignIn() }
-                            .onFailure { error ->
-                                AppLogger.e("Continue as guest failed: ${error.message}")
-                                AppGlobalUiState.showUiMessage(
-                                    UiMessage.Resource(Res.string.auth_continue_as_guest_failed),
-                                )
+                // Bottom block — actions + legal, within thumb reach.
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // Google/Apple buttons only when social login is enabled; otherwise anonymous-only.
+                    if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) {
+                        AuthUIHelperButtons(
+                            linkAccount = signInMode.not(),
+                            modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing).fillMaxWidth(),
+                        ) { result ->
+                            result.onSuccess {
+                                AppLogger.d("Successful sign in")
+                                onOauthSigned()
+                                onSuccessfulSignIn()
+                            }.onFailure { error ->
+                                AppLogger.e("Error occurred while signing in, $error")
+                                if (error is UserAlreadyExistsException) {
+                                    signInMode = true
+                                    coroutineScope.launch {
+                                        AppGlobalUiState.showUiMessage(
+                                            UiMessage.Resource(Res.string.auth_user_already_exists_message),
+                                        )
+                                    }
+                                } else {
+                                    coroutineScope.launch {
+                                        AppGlobalUiState.showUiMessage(UiMessage.Message(error.message))
+                                    }
+                                }
                             }
-                        isGuestLoading = false
+                        }
+
+                        Spacer(modifier = Modifier.height(AppTheme.spacing.defaultSpacing))
                     }
-                },
-            )
 
-            AuthModeToggle(
-                modifier = Modifier.padding(top = AppTheme.spacing.defaultSpacing).fillMaxWidth(),
-                isSignIn = signInMode,
-                onToggle = { signInMode = !signInMode },
-            )
+                    AppButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(Res.string.btn_continue_as_guest),
+                        // With social login off this is the only way in, so it has to look like the primary
+                        // action rather than a link. When Google/Apple are shown they lead, and this steps back.
+                        style = if (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED) ButtonStyle.TEXT else ButtonStyle.PRIMARY,
+                        isLoading = isGuestLoading,
+                        onClick = {
+                            isGuestLoading = true
+                            coroutineScope.launch {
+                                continueAsGuest()
+                                    .onSuccess { onSuccessfulSignIn() }
+                                    .onFailure { error ->
+                                        AppLogger.e("Continue as guest failed: ${error.message}")
+                                        AppGlobalUiState.showUiMessage(
+                                            UiMessage.Resource(Res.string.auth_continue_as_guest_failed),
+                                        )
+                                    }
+                                isGuestLoading = false
+                            }
+                        },
+                    )
 
-            AgreePrivacyPolicyTermsConditionsText(
-                modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing).fillMaxWidth(),
-                privacyPolicyUrl = AppConfiguration.URL_PRIVACY_POLICY,
-                termsConditionsUrl = AppConfiguration.URL_TERMS_CONDITIONS,
-            )
+                    AuthModeToggle(
+                        modifier = Modifier.padding(top = AppTheme.spacing.defaultSpacing).fillMaxWidth(),
+                        isSignIn = signInMode,
+                        onToggle = { signInMode = !signInMode },
+                    )
+
+                    AgreePrivacyPolicyTermsConditionsText(
+                        modifier = Modifier.padding(top = AppTheme.spacing.largeSpacing).fillMaxWidth(),
+                        privacyPolicyUrl = AppConfiguration.URL_PRIVACY_POLICY,
+                        termsConditionsUrl = AppConfiguration.URL_TERMS_CONDITIONS,
+                    )
+                }
+            }
         }
     }
 }
