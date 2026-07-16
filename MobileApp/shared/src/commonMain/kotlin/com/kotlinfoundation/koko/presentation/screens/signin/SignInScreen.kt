@@ -28,6 +28,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kotlinfoundation.koko.data.repository.UserRepository
 import com.kotlinfoundation.koko.designsystem.components.AgreePrivacyPolicyTermsConditionsText
@@ -70,6 +71,30 @@ fun SignInScreen(
 ) {
     val userRepository = koinInject<UserRepository>()
 
+    SignInScreen(
+        isSignIn = isSignIn,
+        modifier = modifier,
+        onSuccessfulSignIn = onSuccessfulSignIn,
+        onNavigateBack = onNavigateBack,
+        onOauthSigned = userRepository::onSuccessfulOauthSign,
+        continueAsGuest = userRepository::continueAsGuest,
+    )
+}
+
+/**
+ * Pure overload — the two account actions come in as lambdas instead of injecting
+ * [UserRepository], so this renders in `@Preview` and `runComposeUiTest` with no Koin.
+ * The ViewModel-less overload above wires the real repository.
+ */
+@Composable
+fun SignInScreen(
+    isSignIn: Boolean,
+    modifier: Modifier = Modifier,
+    onSuccessfulSignIn: () -> Unit,
+    onNavigateBack: () -> Unit,
+    onOauthSigned: () -> Unit,
+    continueAsGuest: suspend () -> Result<Unit>,
+) {
     val scrollState = rememberScrollState()
     LaunchedEffect(true) {
         scrollState.animateScrollTo(scrollState.maxValue, tween(500))
@@ -110,7 +135,7 @@ fun SignInScreen(
                 ) { result ->
                     result.onSuccess {
                         AppLogger.d("Successful sign in")
-                        userRepository.onSuccessfulOauthSign()
+                        onOauthSigned()
                         onSuccessfulSignIn()
                     }.onFailure { error ->
                         AppLogger.e("Error occurred while signing in, $error")
@@ -140,7 +165,7 @@ fun SignInScreen(
                 onClick = {
                     isGuestLoading = true
                     coroutineScope.launch {
-                        userRepository.continueAsGuest()
+                        continueAsGuest()
                             .onSuccess { onSuccessfulSignIn() }
                             .onFailure { error ->
                                 AppLogger.e("Continue as guest failed: ${error.message}")
@@ -222,4 +247,32 @@ private fun TitleText(modifier: Modifier, isSignIn: Boolean) {
         fontWeight = FontWeight.Medium,
         style = AppTheme.typography.h3,
     )
+}
+
+@Preview
+@Composable
+private fun SignInScreenSignInPreview() {
+    AppTheme {
+        SignInScreen(
+            isSignIn = true,
+            onSuccessfulSignIn = {},
+            onNavigateBack = {},
+            onOauthSigned = {},
+            continueAsGuest = { Result.success(Unit) },
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SignInScreenSignUpPreview() {
+    AppTheme {
+        SignInScreen(
+            isSignIn = false,
+            onSuccessfulSignIn = {},
+            onNavigateBack = {},
+            onOauthSigned = {},
+            continueAsGuest = { Result.success(Unit) },
+        )
+    }
 }

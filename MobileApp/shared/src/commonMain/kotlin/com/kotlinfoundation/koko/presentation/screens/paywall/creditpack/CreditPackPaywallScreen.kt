@@ -331,3 +331,15 @@ private fun CreditPackPaywallStoreScreenshot_iPhone_en() {
         CreditPackPaywallScreen(uiState = PaywallPreviewData.creditPackState(), onUiEvent = {})
     }
 }
+
+@Preview
+@Composable
+private fun CreditPackPaywallScreenPreview() {
+    AppTheme {
+        CreditPackPaywallScreen(
+            uiState = PaywallPreviewData.creditPackState(),
+            onUiEvent = {},
+            onDismiss = {},
+        )
+    }
+}

@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kotlinfoundation.koko.designsystem.components.AsyncImageWithShimmer
 import com.kotlinfoundation.koko.designsystem.components.CircularActionButton
@@ -152,6 +153,18 @@ private fun ActionButtons(
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
                 onUiEvent(GenerationResultUiEvent.OnClickReport)
             },
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun GenerationResultScreenPreview() {
+    AppTheme {
+        GenerationResultScreen(
+            uiState = GenerationResultUiState(),
+            onUiEvent = {},
+            onNavigateToBack = {},
         )
     }
 }

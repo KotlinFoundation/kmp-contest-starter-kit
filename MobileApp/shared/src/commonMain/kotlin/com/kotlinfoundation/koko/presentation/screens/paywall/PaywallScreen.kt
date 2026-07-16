@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kotlinfoundation.koko.designsystem.components.DemoBanner
 import com.kotlinfoundation.koko.designsystem.components.LoadingProgress
@@ -115,5 +116,17 @@ fun PaywallScreen(
                 onDismiss = onDismiss,
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun PaywallScreenPreview() {
+    AppTheme {
+        PaywallScreen(
+            uiState = PaywallPreviewData.subscriptionState(),
+            onUiEvent = {},
+            onDismiss = {},
+        )
     }
 }

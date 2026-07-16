@@ -12,11 +12,20 @@ import com.github.takahirom.roborazzi.RoborazziComposeOptions
 import com.github.takahirom.roborazzi.RoborazziComposePreviewTestCategory
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.composeTestRule
+import com.kotlinfoundation.koko.data.source.featureflag.FeatureFlagManager
+import com.kotlinfoundation.koko.data.source.featureflag.NoImplFeatureFlagManager
+import com.kotlinfoundation.koko.util.AppUtil
 import com.kotlinfoundation.koko.util.StoreScreenshot
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -68,6 +77,50 @@ class PreviewScreenshotTest(
     companion object {
         private const val PACKAGE_ROOT = "com.kotlinfoundation.koko"
         private const val GENERATE_STOREFRONT_FLAG = "generateStoreScreenshots"
+
+        /**
+         * A few composables reach into Koin via `koinInject<T>()` rather than taking the dependency
+         * as a parameter — the AdMob banner rendered by `HomeScreen` injects [FeatureFlagManager],
+         * and `HelpAndSupportScreen` injects [AppUtil]. Nothing else in the test suite starts Koin,
+         * so without this those previews fail with `KoinApplication has not been started`.
+         *
+         * Start one minimal container for the class with preview-safe stand-ins, and stop it after —
+         * the lifecycle Koin's testing docs ask for. Deliberately NOT `KoinTestRule`: that starts and
+         * stops per test method, which for a parameterized preview run means restarting a two-binding
+         * container ~50 times for no benefit. Reach for `koin-test` if a future test needs
+         * `declareMock` / `KoinTest.inject()`.
+         *
+         * Bind only what composables actually inject — this is not the app graph.
+         */
+        @BeforeClass
+        @JvmStatic
+        fun startKoinForPreviews() {
+            if (GlobalContext.getOrNull() != null) return
+            startKoin {
+                modules(
+                    module {
+                        single<FeatureFlagManager> { NoImplFeatureFlagManager }
+                        single<AppUtil> { PreviewAppUtil }
+                    },
+                )
+            }
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun stopKoinAfterPreviews() {
+            if (GlobalContext.getOrNull() != null) stopKoin()
+        }
+
+        private object PreviewAppUtil : AppUtil {
+            override fun getAppName(): String = "Koko"
+
+            override fun shareApp() = Unit
+
+            override fun openFeedbackMail() = Unit
+
+            override fun getAppVersionInfo(): String = "1.0.0"
+        }
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
