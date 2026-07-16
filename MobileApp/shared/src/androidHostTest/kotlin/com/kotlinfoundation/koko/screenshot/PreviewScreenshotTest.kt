@@ -12,6 +12,7 @@ import com.github.takahirom.roborazzi.RoborazziComposeOptions
 import com.github.takahirom.roborazzi.RoborazziComposePreviewTestCategory
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.composeTestRule
+import com.github.takahirom.roborazzi.previewDevice
 import com.kotlinfoundation.koko.data.source.featureflag.FeatureFlagManager
 import com.kotlinfoundation.koko.data.source.featureflag.NoImplFeatureFlagManager
 import com.kotlinfoundation.koko.util.AppUtil
@@ -64,9 +65,17 @@ class PreviewScreenshotTest(
         val ruleForOptions =
             composeRule as
                 AndroidComposeTestRule<ActivityScenarioRule<out ComponentActivity>, *>
+
+        // Pair `previewDevice` with `composeTestRule` so Roborazzi sizes the activity window before
+        // rendering. Without a device spec Robolectric falls back to its legacy default screen
+        // (~320x470dp — a 2010-era mdpi phone), which renders every screen cramped and clips
+        // anything taller off the captured bitmap. A `@Preview(device = ...)` alone does NOT fix
+        // that: Robolectric never reads the annotation unless it's applied here.
+        val deviceSpec = preview.previewInfo.device.takeIf { it.isNotBlank() } ?: DEFAULT_DEVICE_SPEC
         val composeOptions =
             RoborazziComposeOptions {
                 composeTestRule(ruleForOptions)
+                previewDevice(deviceSpec)
             }
         preview.captureRoboImage(
             filePath = "src/androidHostTest/snapshots/${preview.declaringClass}_${preview.methodName}.png",
@@ -77,6 +86,13 @@ class PreviewScreenshotTest(
     companion object {
         private const val PACKAGE_ROOT = "com.kotlinfoundation.koko"
         private const val GENERATE_STOREFRONT_FLAG = "generateStoreScreenshots"
+
+        /**
+         * Screen size used when a `@Preview` doesn't name a device — a typical modern phone
+         * (roughly Pixel 5). Set `@Preview(device = "spec:width=...")` on an individual preview to
+         * render it at a different size, e.g. a tablet.
+         */
+        private const val DEFAULT_DEVICE_SPEC = "spec:width=411dp,height=891dp,dpi=420"
 
         /**
          * A few composables reach into Koin via `koinInject<T>()` rather than taking the dependency
