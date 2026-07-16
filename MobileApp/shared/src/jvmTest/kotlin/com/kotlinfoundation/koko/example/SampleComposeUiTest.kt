@@ -1,60 +1,61 @@
 package com.kotlinfoundation.koko.example
 
-import androidx.compose.foundation.clickable
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import com.kotlinfoundation.koko.designsystem.theme.AppTheme
+import com.kotlinfoundation.koko.presentation.screens.home.HomeScreen
+import com.kotlinfoundation.koko.presentation.screens.home.HomeUiEvent
+import com.kotlinfoundation.koko.presentation.screens.home.HomeUiState
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
- * Demonstrates a multiplatform Compose UI test using the new `runComposeUiTest` API
- * from `org.jetbrains.compose.ui:ui-test`. Runs headlessly on JVM as part of
- * `:shared:jvmTest`.
+ * Template for verifying a REAL app screen headlessly — copy this shape for new screens.
+ *
+ * How it works: every screen has a **pure overload** taking `uiState` + `onUiEvent` instead of a
+ * ViewModel, so a test can render it with no Koin, no ViewModel, no device and no browser. Queries
+ * go through Compose's semantics tree (the same data a screen reader uses), so
+ * `onNodeWithText("42")` matches real rendered text rather than a pixel guess.
+ *
+ * Run: `./gradlew :shared:jvmTest` — ~2s warm, and part of the PR gate.
+ *
+ * This covers behaviour. For *visual* checks (layout, spacing, theming) add a `@Preview` — it is
+ * snapshotted automatically by `PreviewScreenshotTest`; see the `verify-ui` skill.
  */
 @OptIn(ExperimentalTestApi::class)
 class SampleComposeUiTest {
     @Test
-    fun `clicking a labeled clickable invokes the callback exactly once`() = runComposeUiTest {
-        var clickCount = 0
-
+    fun `home screen renders the credit balance from uiState`() = runComposeUiTest {
         setContent {
-            ClickableLabel(
-                text = "Tap me",
-                onClick = { clickCount++ },
-            )
+            AppTheme {
+                HomeScreen(uiState = HomeUiState(creditBalance = 42), onUiEvent = {})
+            }
         }
 
-        onNodeWithText("Tap me")
+        // The toolbar credit chip reflects state directly.
+        onNodeWithText("42").assertExists()
+    }
+
+    @Test
+    fun `clicking the credit chip emits OnClickToolbarCredits`() = runComposeUiTest {
+        val events = mutableListOf<HomeUiEvent>()
+
+        setContent {
+            AppTheme {
+                HomeScreen(uiState = HomeUiState(creditBalance = 7), onUiEvent = { events += it })
+            }
+        }
+
+        onNodeWithText("7")
             .assertIsEnabled()
             .performClick()
 
-        assertTrue(clickCount == 1, "expected exactly one click, got $clickCount")
-    }
-
-    @Composable
-    private fun ClickableLabel(
-        text: String,
-        onClick: () -> Unit,
-    ) {
-        Text(
-            text = text,
-            modifier =
-            Modifier
-                .semantics {
-                    role = Role.Button
-                    contentDescription = text
-                }
-                .clickable(onClick = onClick),
+        assertTrue(
+            events.any { it is HomeUiEvent.OnClickToolbarCredits },
+            "expected OnClickToolbarCredits, got $events",
         )
     }
 }

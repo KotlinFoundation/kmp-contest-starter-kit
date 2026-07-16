@@ -48,6 +48,26 @@ fun OnBoardingScreen(
         }
     }
 
+    OnBoardingScreen(
+        modifier = modifier,
+        style = style,
+        uiState = uiState,
+        onUiEvent = viewModel::onUiEvent,
+    )
+}
+
+/**
+ * Pure overload — no ViewModel, so it renders from plain state in
+ * `runComposeUiTest` and `@Preview`. Navigation side effects stay in the
+ * ViewModel overload above.
+ */
+@Composable
+fun OnBoardingScreen(
+    modifier: Modifier = Modifier,
+    style: OnBoardingScreenStyle,
+    uiState: OnBoardingUiState,
+    onUiEvent: (OnBoardingUiEvent) -> Unit,
+) {
     Crossfade(
         targetState = uiState.isLoading,
         animationSpec = tween(durationMillis = 500),
@@ -62,7 +82,7 @@ fun OnBoardingScreen(
                     OnBoardingScreenVariation1(
                         modifier = Modifier.fillMaxSize(),
                         uiState = uiState,
-                        onUiEvent = viewModel::onUiEvent,
+                        onUiEvent = onUiEvent,
                     )
                 }
 
@@ -70,7 +90,7 @@ fun OnBoardingScreen(
                     OnBoardingScreenVariation2(
                         modifier = Modifier.fillMaxSize(),
                         uiState = uiState,
-                        onUiEvent = viewModel::onUiEvent,
+                        onUiEvent = onUiEvent,
                     )
                 }
             }
