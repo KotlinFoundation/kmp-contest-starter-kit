@@ -80,13 +80,17 @@ class PreviewScreenshotTest(
 
         /**
          * A few composables reach into Koin via `koinInject<T>()` rather than taking the dependency
-         * as a parameter — e.g. the AdMob banner inside [HomeScreen] injects [FeatureFlagManager],
-         * and `HelpAndSupportScreen` injects [AppUtil]. Without a Koin context those previews fail
-         * with `KoinApplication has not been started`, and because previews share one JVM the
-         * failure depends on test order, which made it look intermittent.
+         * as a parameter — the AdMob banner rendered by `HomeScreen` injects [FeatureFlagManager],
+         * and `HelpAndSupportScreen` injects [AppUtil]. Nothing else in the test suite starts Koin,
+         * so without this those previews fail with `KoinApplication has not been started`.
          *
-         * Start a minimal container with preview-safe stand-ins so every preview renders
-         * deterministically. Only bind what composables actually inject — this is not the app graph.
+         * Start one minimal container for the class with preview-safe stand-ins, and stop it after —
+         * the lifecycle Koin's testing docs ask for. Deliberately NOT `KoinTestRule`: that starts and
+         * stops per test method, which for a parameterized preview run means restarting a two-binding
+         * container ~50 times for no benefit. Reach for `koin-test` if a future test needs
+         * `declareMock` / `KoinTest.inject()`.
+         *
+         * Bind only what composables actually inject — this is not the app graph.
          */
         @BeforeClass
         @JvmStatic
