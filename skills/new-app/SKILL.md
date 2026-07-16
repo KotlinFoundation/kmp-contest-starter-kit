@@ -83,7 +83,7 @@ right phase picks it up. Everything here is **safe to defer** — the app runs w
 | Does the app have **premium (paid) features**? | `root/AppConfiguration.kt` → `PREMIUM_FEATURES_ENABLED` | `true` ✅ (paywall + credits available; app still free to download) |
 | **Subscription provider** | `MobileApp/gradle.properties` → `SUBSCRIPTION_PROVIDER` | `ADAPTY` ✅ — **mock provider runs until a real key is set, so no account is needed now** |
 | **Google/Apple sign-in**? | `AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED` | `false` ✅ (anonymous auth is enough; revisit in `integrations`) |
-| **Backend / AI proxy** | `AppConfiguration.CLOUD_FUNCTIONS_URL` | `""` ✅ (direct mode works without Firebase; set in `integrations`) |
+| **Backend / AI proxy** | `AppConfiguration.CLOUD_FUNCTIONS_URL` | `""` ✅ — **if the app uses AI**, direct mode works right now with **no Firebase**: put `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `MobileApp/local.properties` and leave this blank. The proxy (keys off-device) comes in `integrations` before you publish. |
 | **Legal URLs, support email, App Store id** | `AppConfiguration.{URL_PRIVACY_POLICY, URL_TERMS_CONDITIONS, CONTACT_EMAIL, APPSTORE_APP_ID}` | leave as-is ✅ — **required only to publish** |
 
 For every **deferred** item, leave a marker on the field in `root/AppConfiguration.kt` so the owning

@@ -73,6 +73,10 @@ Reach for these only if the feature actually needs them:
 - **`add-api-service`** — a remote call (any public URL; no backend needed).
 - **`save-preferences`** — a simple setting/flag.
 - **`add-permission`** — camera/notifications/etc.
+- **AI (OpenAI / Replicate)** — works in this phase with **no Firebase**: put `OPENAI_API_KEY` and/or
+  `REPLICATE_API_KEY` in `MobileApp/local.properties` and leave `AppConfiguration.CLOUD_FUNCTIONS_URL`
+  blank — `AiTransport` then calls the provider straight from the device. The key ships in the binary,
+  so it's **prototyping only**: `integrate-web-proxy` moves it off-device before you publish.
 - **`new-module`** — only if the code genuinely belongs outside `shared/` (a reusable library, or a
   second implementation behind an API). Most features do **not** need this.
 
