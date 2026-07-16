@@ -276,3 +276,11 @@ private fun HomeStoreScreenshot_iPhone_en() {
         HomeScreen(uiState = HomeUiState(creditBalance = 12), onUiEvent = {})
     }
 }
+
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    AppTheme {
+        HomeScreen(uiState = HomeUiState(creditBalance = 12), onUiEvent = {})
+    }
+}

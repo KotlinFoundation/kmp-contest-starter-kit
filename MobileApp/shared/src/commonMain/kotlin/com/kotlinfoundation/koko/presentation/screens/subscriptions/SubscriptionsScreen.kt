@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kotlinfoundation.koko.designsystem.components.LoadingProgress
@@ -123,5 +124,13 @@ private fun SubscriptionsScreen(
                 },
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SubscriptionsScreenPreview() {
+    AppTheme {
+        SubscriptionsScreen(uiState = SubscriptionsUiState(), onUiEvent = {})
     }
 }

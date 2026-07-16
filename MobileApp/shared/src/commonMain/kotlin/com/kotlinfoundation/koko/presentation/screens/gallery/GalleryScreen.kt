@@ -170,3 +170,11 @@ private fun GalleryStoreScreenshot_iPhone_en() {
         GalleryScreen(uiState = GalleryUiState(), onUiEvent = {})
     }
 }
+
+@Preview
+@Composable
+private fun GalleryScreenPreview() {
+    AppTheme {
+        GalleryScreen(uiState = GalleryUiState(), onUiEvent = {})
+    }
+}

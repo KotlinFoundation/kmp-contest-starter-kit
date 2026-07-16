@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import com.kotlinfoundation.koko.designsystem.components.ScreenWithToolbar
 import com.kotlinfoundation.koko.designsystem.components.SettingItemListContainer
 import com.kotlinfoundation.koko.designsystem.components.SettingsItemUiState
@@ -61,5 +62,13 @@ fun HelpAndSupportScreen(
                 }
             },
         )
+    }
+}
+
+@Preview
+@Composable
+private fun HelpAndSupportScreenPreview() {
+    AppTheme {
+        HelpAndSupportScreen(onNavigateBack = {})
     }
 }

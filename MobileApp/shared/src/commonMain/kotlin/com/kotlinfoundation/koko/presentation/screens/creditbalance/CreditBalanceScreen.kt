@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -332,4 +333,12 @@ private fun motivationalMessageRes(credits: Int): StringResource = when {
     credits == 1 -> Res.string.credit_motivational_one
     credits <= 5 -> Res.string.credit_motivational_low
     else -> Res.string.credit_motivational_plenty
+}
+
+@Preview
+@Composable
+private fun CreditBalanceScreenPreview() {
+    AppTheme {
+        CreditBalanceScreen(uiState = CreditBalanceUiState(), onUiEvent = {})
+    }
 }

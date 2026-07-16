@@ -28,6 +28,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kotlinfoundation.koko.data.repository.UserRepository
 import com.kotlinfoundation.koko.designsystem.components.AgreePrivacyPolicyTermsConditionsText
@@ -223,3 +224,9 @@ private fun TitleText(modifier: Modifier, isSignIn: Boolean) {
         style = AppTheme.typography.h3,
     )
 }
+
+// No @Preview here yet: this screen calls `koinInject<UserRepository>()` internally, and
+// UserRepository is a concrete class with its own constructor dependencies, so a preview cannot
+// supply a stand-in the way FeatureFlagManager/AppUtil can (see PreviewScreenshotTest). To make
+// this previewable, extract a stateless overload that takes the sign-in state/callbacks as
+// parameters, the way the other screens do.

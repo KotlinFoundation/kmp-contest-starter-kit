@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -171,5 +172,16 @@ fun UserInputWithLabel(
             color = AppTheme.colors.text.primary,
         )
         userInput()
+    }
+}
+
+@Preview
+@Composable
+private fun ProfileScreenPreview() {
+    AppTheme {
+        ProfileScreen(
+            currentUser = User(id = "1", displayName = "Jane Doe", email = "jane@example.com"),
+            onUiEvent = {},
+        )
     }
 }
