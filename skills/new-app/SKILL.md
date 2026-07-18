@@ -75,13 +75,14 @@ Then **summarize the product back in a few lines and get an explicit confirm** b
 
 ### 4. Decisions checkpoint — **Agent asks / User picks or defers**
 
-Ask each with options + ✅ recommended + *"later"*. Record the answer immediately as described, so the
-right phase picks it up. Everything here is **safe to defer** — the app runs without any of it.
+Ask each in order, with options + ✅ recommended + *"later"*. Record the answer immediately as
+described, so the right phase picks it up. Everything here is **safe to defer** — the app runs without
+any of it. Skip any row whose stated condition isn't met.
 
 | Decision | Where it goes | Default if deferred |
 |---|---|---|
 | Does the app have **premium (paid) features**? | `root/AppConfiguration.kt` → `PREMIUM_FEATURES_ENABLED` | `true` ✅ (paywall + credits available; app still free to download) |
-| **Subscription provider** | `MobileApp/gradle.properties` → `SUBSCRIPTION_PROVIDER` | `ADAPTY` ✅ — **mock provider runs until a real key is set, so no account is needed now** |
+| **Subscription provider** — **only ask if premium is `true`**; ask it as a plain two-way pick, **Adapty ✅ or RevenueCat**, with no comparison | `MobileApp/gradle.properties` → `SUBSCRIPTION_PROVIDER` | `ADAPTY` ✅ — **mock provider runs until a real key is set, so no account is needed now** |
 | **Google/Apple sign-in**? | `AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED` | `false` ✅ (anonymous auth is enough; revisit in `integrations`) |
 | **Backend / AI proxy** | `AppConfiguration.CLOUD_FUNCTIONS_URL` | `""` ✅ — **if the app uses AI**, direct mode works right now with **no Firebase**: put `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `MobileApp/local.properties` and leave this blank. The proxy (keys off-device) comes in `integrations` before you publish. |
 | **Legal URLs, support email, App Store id** | `AppConfiguration.{URL_PRIVACY_POLICY, URL_TERMS_CONDITIONS, CONTACT_EMAIL, APPSTORE_APP_ID}` | leave as-is ✅ — **required only to publish** |
