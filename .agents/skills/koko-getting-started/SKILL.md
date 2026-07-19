@@ -18,11 +18,11 @@ To work effectively with this monorepo, we recommend the Two-Window Approach in 
 2. **Window 2 (new window): Mobile Application (`MobileApp/`)**
     * **Purpose**: Active development of the Kotlin Multiplatform app.
     * **Features**: Compose Previews, Android/iOS/Desktop/Web targets, and mobile-specific debugging.
-    * **Getting Started**: Open the `MobileApp/` directory in a new Android Studio window and type "Run @koko-skills" to load [**koko-skills**](../../../MobileApp/.agents/skills/koko-skills/SKILL.md) — environment setup plus the full index of mobile development skills.
+    * **Getting Started**: Open the `MobileApp/` directory in a new Android Studio window and type `Proceed with @koko-mobileapp-getting-started` into the agent's chat panel to begin the Phase 1 developer journey guide.
 
 > [!IMPORTANT]
-> **CRITICAL AGENT INSTRUCTION**: Whenever a developer says "please proceed with koko-getting-started", "getting started", or asks to start Phase 1, the agent's very first step and response MUST explicitly instruct the developer to open a new Android Studio window for the `MobileApp/` directory. The agent must state this clearly:
-> *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open the `MobileApp/` directory (at the repository root) in a new window and type 'Run @koko-skills' there to get the mobile environment loaded!"*
+> **CRITICAL AGENT INSTRUCTION**: Whenever a developer says `please proceed with @koko-getting-started`, "getting started", or asks to start Phase 1, the agent's very first step and response MUST explicitly instruct the developer to open a new Android Studio window for the `MobileApp/` directory. The agent must state this clearly:
+> *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open the `MobileApp/` directory (at the repository root) in a new window and type `Proceed with @koko-mobileapp-getting-started` into the agent's chat panel there to get the mobile environment loaded!"*
 
 
 ---
@@ -32,8 +32,8 @@ To work effectively with this monorepo, we recommend the Two-Window Approach in 
 This monorepo uses skills in the root level `skills` directory. A summary of available skills can be found by activating the `koko-skills` skill in the `MobileApp` directory. 
 
 ### 📱 Mobile Development
-For all mobile-specific tasks (UI, Data, Navigation, Monetization, etc.), use:
-- [**koko-skills**](../../../MobileApp/.agents/skills/koko-skills/SKILL.md)
+For all mobile-specific tasks (UI, Data, Navigation, Monetization, etc.), use the `MobileApp/` window and load the specific skill you need. The phase 1 developer journey is managed via:
+- [**koko-mobileapp-getting-started**](../../../MobileApp/.agents/skills/koko-mobileapp-getting-started/SKILL.md)
 
 ### 🌐 Web & Backend
 Once the KMP app is ready (the getting started skill mentioned above is complete), start working on the `integrations` skill in this window to complete tasks related to Firebase Hosting, Cloud Functions, etc. 
