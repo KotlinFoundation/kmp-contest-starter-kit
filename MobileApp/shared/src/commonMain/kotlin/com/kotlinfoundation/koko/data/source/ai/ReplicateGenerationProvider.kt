@@ -12,7 +12,6 @@ import com.kotlinfoundation.koko.util.file.FileManager
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
-import com.kotlinfoundation.koko.data.source.remote.request.ai.replicate.ReplicateInputRequest
 
 /**
  * [AiGenerationProvider] backed by Replicate. Maps a [GenerationInput] to the model's request
@@ -41,9 +40,7 @@ class ReplicateGenerationProvider(
     override suspend fun generate(input: GenerationInput): Result<GenerationOutput> {
         val userInputParam = input.params[PROMPT_KEY_PARAM]
         val updatedGenerationInput = input.copy(userInput = userInputParam?.value ?: "")
-
-        // Use the strongly typed ReplicateInputRequest
-        val requestBody = ReplicateInputRequest(prompt = updatedGenerationInput.fullPrompt())
+        val requestBody = updatedGenerationInput.toReplicateRequestBody()
 
         val replicateResponse = when {
             IS_OFFICIAL_MODEL -> {
