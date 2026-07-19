@@ -32,6 +32,7 @@ When the user asks to "proceed with koko-mobileapp-getting-started" or "get star
    - Review `PROGRESS_P1_GETTING_STARTED.md` and build out the local loops (Room, Preferences, API service, permissions, etc.).
    - Follow the **STOP rule**: stop and wait for confirmation whenever a step is a **User Action**.
    - Keep `PROGRESS_P1_GETTING_STARTED.md` updated as you complete tasks.
+   - **Environment Quirk:** If you need to run any `./gradlew` commands and you encounter an error about "different paths to the Android Preferences folder" (ANDROID_PREFS_ROOT vs ANDROID_USER_HOME), always prefix your commands with `unset ANDROID_PREFS_ROOT &&` (e.g., `unset ANDROID_PREFS_ROOT && ./gradlew assembleDebug`).
 
 4. **Phase 1 Hand-Off:**
    Once all Phase 1 tasks are complete and verified, present a clear next-step message to the developer:

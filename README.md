@@ -2,6 +2,12 @@
 
 **Koko** is the KMP contest starter kit — a Kotlin Multiplatform + Compose Multiplatform boilerplate for building Android and iOS apps with a shared codebase.
 
+## Getting Started
+
+We have built the KMP Contest Starter Kit (nicknamed Koko) as the fastest way to transform your idea from a production-grade app on Google Play and the App Store.
+
+To get started, open this project in Android Studio and type `Proceed with @koko-getting-started` into the agent's chat panel.
+
 Documentation: [docs.kappmaker.com](https://docs.kappmaker.com)
 
 ## Project Structure
@@ -58,6 +64,10 @@ Documentation: [docs.kappmaker.com](https://docs.kappmaker.com)
 - **[Fastlane](https://docs.kappmaker.com/production/fastlane)** — Pre-configured lanes for Play Store & App Store publishing
 - **[Scripts](https://docs.kappmaker.com/features/scripts)** — Helper scripts for package/app-ID refactor, version bumps, keystore generation, module creation, ASO metadata, store-screenshot rendering
 
+## Contributing
+
+We welcome contributions from the community! If you'd like to help improve the Koko template, please review our [Contributing Guidelines](CONTRIBUTING.md) for information on our workflow, code style, and how to submit a Pull Request.
+
 ### Production
 - **[Pre-Publishing Checklist](https://docs.kappmaker.com/production/pre-publishing-checklist)** — Step-by-step checklist for app icons, API keys, signing, and store setup
 - **[Android Production](https://docs.kappmaker.com/production/android)** — Android keystore and Play Store publishing
@@ -79,7 +89,6 @@ For more details, visit the [full documentation](https://docs.kappmaker.com).
 - **Subscriptions**: Adapty (default) / RevenueCat (switchable)
 - **Quality**: Spotless 8.4.0 + ktlint 1.7.1, Roborazzi 1.60.0 + ComposablePreviewScanner 0.9.0 (screenshot tests)
 
-## Getting Started
 
 | Project | Details |
 |---------|---------|
