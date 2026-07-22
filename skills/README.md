@@ -28,10 +28,13 @@ checklist whose steps are tagged **Agent Action** (an agent/dev does it: code, s
 moving on). An agent following a guide **stops at each User Action** and waits for you. Copy the
 guide's `progress-template.md` into your repo to track where you are.
 
-**Progress files** live at your repo root and get committed, so any session resumes where the last one
-stopped: **`PROGRESS_FEATURES.md`** (what's actually built — each model/screen from the PRD, written by
-[build-features](build-features/SKILL.md)) and **`PROGRESS_P1…P5`** (each phase guide's steps). The rule:
-read the file first, continue from the first unchecked item, tick items off as you go.
+**Progress files** live at your **git repo root** — the folder that contains `MobileApp/`, **not** inside
+it (if you opened `MobileApp/` in the IDE, they're one level up at `../PROGRESS_*.md`) — and get committed,
+so any session resumes where the last one stopped: **`PROGRESS_FEATURES.md`** (what's actually built — each
+model/screen from the PRD, written by [build-features](build-features/SKILL.md)) and **`PROGRESS_P1…P5`**
+(each phase guide's steps). The rule: read the file first, continue from the first unchecked item, tick
+items off as you go. If an agent stalls mid-guide, tell it **"continue @koko-mobileapp-getting-started"**
+(or the relevant guide) — it re-reads the progress file and picks up at the first unchecked item.
 
 **Task skills** do one job each and are usable standalone. The guides call them by name.
 
