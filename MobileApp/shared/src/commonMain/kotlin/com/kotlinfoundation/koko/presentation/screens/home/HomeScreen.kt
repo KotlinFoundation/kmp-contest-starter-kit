@@ -63,8 +63,9 @@ import com.kotlinfoundation.koko.util.logging.AppLogger
 import com.kotlinfoundation.koko.util.permissions.RequestPermissionOnEntry
 import com.kotlinfoundation.koko.util.permissions.rememberNotificationPermissionState
 import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.FileKitMode
 import io.github.vinceglb.filekit.dialogs.FileKitType
-import io.github.vinceglb.filekit.dialogs.openFilePicker
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -211,6 +212,12 @@ private fun HomeMainContent(
     uiState: HomeUiState,
     onUiEvent: (HomeUiEvent) -> Unit,
 ) {
+    val galleryLauncher = rememberFilePickerLauncher(
+        type = FileKitType.Image,
+        mode = FileKitMode.Single,
+    ) { file ->
+        onUiEvent(HomeUiEvent.OnReferenceImageSelected(file))
+    }
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -230,12 +237,7 @@ private fun HomeMainContent(
                         onUiEvent(HomeUiEvent.OnReferenceImageSelected(file))
                     }
                 },
-                onClickSelectFromGallery = {
-                    coroutineScope.launch {
-                        val file = FileKit.openFilePicker(type = FileKitType.Image)
-                        onUiEvent(HomeUiEvent.OnReferenceImageSelected(file))
-                    }
-                },
+                onClickSelectFromGallery = { galleryLauncher.launch() },
                 onFileRemoved = { onUiEvent(HomeUiEvent.OnReferenceImageRemoved(it)) },
                 isCaptureSupported = isCameraCaptureSupported(),
             )
