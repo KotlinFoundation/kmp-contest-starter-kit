@@ -11,3 +11,5 @@ actual suspend fun FileKit.shareFileCommon(file: PlatformFile) {
 }
 
 actual suspend fun FileKit.openCameraPicker(): PlatformFile? = FileKit.openCameraPicker(cameraFacing = FileKitCameraFacing.Back)
+
+actual fun isCameraCaptureSupported(): Boolean = true

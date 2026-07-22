@@ -56,6 +56,7 @@ import com.kotlinfoundation.koko.generated.resources.title_screen_home
 import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.util.StoreDevice
 import com.kotlinfoundation.koko.util.StoreScreenshot
+import com.kotlinfoundation.koko.util.file.isCameraCaptureSupported
 import com.kotlinfoundation.koko.util.file.openCameraPicker
 import com.kotlinfoundation.koko.util.inappreview.rememberInAppReviewTrigger
 import com.kotlinfoundation.koko.util.logging.AppLogger
@@ -238,6 +239,7 @@ private fun HomeMainContent(
                 },
                 onClickSelectFromGallery = { galleryLauncher.launch() },
                 onFileRemoved = { onUiEvent(HomeUiEvent.OnReferenceImageRemoved(it)) },
+                isCaptureSupported = isCameraCaptureSupported(),
             )
             Text(
                 text = stringResource(Res.string.home_reference_image_label),

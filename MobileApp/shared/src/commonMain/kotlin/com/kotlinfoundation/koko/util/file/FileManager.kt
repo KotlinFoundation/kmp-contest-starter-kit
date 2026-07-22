@@ -44,6 +44,13 @@ interface FileManager {
         fileExtension: String,
     ): Result<String>
 
+    /**
+     * Reads the raw bytes of a file stored under [fileNameWithExtension] in the internal directory.
+     * Prefer this over [getPlatformFile] for cross-platform byte access — the web target has no file
+     * handles, only bytes.
+     */
+    suspend fun readInternalFileBytes(fileNameWithExtension: String): ByteArray
+
     suspend fun shareFile(absoluteFilePath: String): Result<Unit> {
         FileKit.shareFileCommon(file = getPlatformFile(absoluteFilePath))
         return Result.success(Unit)
@@ -84,8 +91,28 @@ suspend fun FileManager.saveImageToGalleryFromNetwork(
     }
 }
 
+/** Best-effort MIME type derived from a file name's extension, for uploads/downloads. */
+fun mimeTypeForFileName(fileName: String): String = when (fileName.substringAfterLast('.', "").lowercase()) {
+    "png" -> "image/png"
+    "jpg", "jpeg" -> "image/jpeg"
+    "webp" -> "image/webp"
+    "gif" -> "image/gif"
+    "bmp" -> "image/bmp"
+    "svg" -> "image/svg+xml"
+    "mp4" -> "video/mp4"
+    "mov" -> "video/quicktime"
+    "webm" -> "video/webm"
+    else -> "application/octet-stream"
+}
+
 expect suspend fun FileKit.shareFileCommon(file: PlatformFile)
 expect suspend fun PlatformFile.absolutePathCommon(): String
 
 /** Opens the device camera to capture a photo. Returns null if cancelled or unsupported (desktop/web). */
 expect suspend fun FileKit.openCameraPicker(): PlatformFile?
+
+/**
+ * Whether in-app camera capture is available on this platform. False on desktop/web, where
+ * [openCameraPicker] is a no-op — callers should hide the capture action and use the file picker.
+ */
+expect fun isCameraCaptureSupported(): Boolean
