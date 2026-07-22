@@ -1,6 +1,7 @@
 package com.kotlinfoundation.koko.util.file
 
 import com.kotlinfoundation.koko.data.BackgroundExecutor
+import com.kotlinfoundation.koko.util.Constants
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.download
@@ -10,15 +11,28 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.readRawBytes
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * Web (js/wasmJs) file manager. The browser has no filesystem paths, so this keeps file bytes in an
  * in-memory map keyed by the same unique names the other platforms use, and resolves a name to a
- * `data:` URL for display (Coil on web loads it through the Ktor/fetch engine). Byte storage is
- * **session-scoped** — images do not survive a page reload (Room rows do, but their bytes are gone).
+ * `data:` URL for display (Coil on web loads it through the Ktor/fetch engine).
+ *
+ * The map is a **cache over OPFS**, not the source of truth: writes also persist to OPFS (see
+ * [WebFileStore]) and a warm-up on construction reloads every persisted file back into the map, so
+ * images survive a page reload / new tab (matching the OPFS-backed Room database). The warm-up races the
+ * first render — a not-yet-loaded image resolves to an empty string until the map fills — but boot +
+ * navigation is far slower than reading a handful of files, so in practice the map is warm before any
+ * gallery read.
  *
  * Any string that leaves this class as an "absolute path" is a `data:` URL, and any web-internal
  * resolution accepts either such a URL or a bare store name.
@@ -31,6 +45,13 @@ class FileManagerImpl(
 ) : FileManager {
 
     private val store = mutableMapOf<String, ByteArray>()
+
+    // SupervisorJob: a failed OPFS write must not tear down the warm-up or later persists.
+    private val scope = CoroutineScope(SupervisorJob() + defaultDispatcher)
+
+    init {
+        scope.launch { warmUpFromOpfs() }
+    }
 
     override fun getAbsoluteFilePathRelativeToInternal(relativePathToInternal: String): String {
         val bytes = store[relativePathToInternal] ?: return ""
@@ -45,7 +66,7 @@ class FileManagerImpl(
             ?: return@execute Result.failure(Exception("No file to copy for: $originalFileAbsolutePath"))
         val extension = originalFileAbsolutePath.fileExtension().ifEmpty { "png" }
         val name = newFileName ?: createNewUniqueFileNameWithExtension(extension)
-        store[name] = bytes
+        put(name, bytes)
         Result.success(name)
     }
 
@@ -56,7 +77,7 @@ class FileManagerImpl(
         val bytes = base64Image.decodeBase64OrNull()
             ?: return@execute Result.failure(Exception("Invalid base64 image"))
         val name = createNewUniqueFileNameWithExtension(fileExtension = imageExtension)
-        store[name] = bytes
+        put(name, bytes)
         Result.success(name)
     }.getOrNull()
 
@@ -79,7 +100,7 @@ class FileManagerImpl(
             ?: return@execute Result.failure(Exception("Failed to download. Please specify file extension"))
         val bytes = httpClient.get(url.throughDevProxy()).readRawBytes()
         val name = createNewUniqueFileNameWithExtension(fileExtension = extension)
-        store[name] = bytes
+        put(name, bytes)
         Result.success(name)
     }
 
@@ -94,6 +115,24 @@ class FileManagerImpl(
     override suspend fun readInternalFileBytes(fileNameWithExtension: String): ByteArray = resolveBytes(fileNameWithExtension) ?: error("No file bytes for: $fileNameWithExtension")
 
     override fun getPlatformFile(absoluteFilePath: String): PlatformFile = throw UnsupportedOperationException("getPlatformFile is not supported on web")
+
+    /** Cache the bytes in memory and persist them to OPFS (fire-and-forget) so they survive a reload. */
+    private fun put(name: String, bytes: ByteArray) {
+        store[name] = bytes
+        scope.launch { opfsWriteFile(Constants.WEB_INTERNAL_FILES_DIR_NAME, name, Base64.encode(bytes)) }
+    }
+
+    /** Reload every OPFS-persisted file into the in-memory cache. Best-effort — a failure leaves the map empty. */
+    private suspend fun warmUpFromOpfs() {
+        val json = opfsReadAllFiles(Constants.WEB_INTERNAL_FILES_DIR_NAME)
+        val entries = runCatching { Json.parseToJsonElement(json).jsonArray }.getOrNull() ?: return
+        entries.forEach { entry ->
+            val obj = entry.jsonObject
+            val name = obj["n"]?.jsonPrimitive?.content ?: return@forEach
+            val bytes = obj["d"]?.jsonPrimitive?.content?.decodeBase64OrNull() ?: return@forEach
+            store.getOrPut(name) { bytes } // don't clobber a write that landed during warm-up
+        }
+    }
 
     private fun resolveBytes(pathOrDataUrl: String): ByteArray? = when {
         pathOrDataUrl.startsWith("data:") -> pathOrDataUrl.substringAfter(',', "").decodeBase64OrNull()

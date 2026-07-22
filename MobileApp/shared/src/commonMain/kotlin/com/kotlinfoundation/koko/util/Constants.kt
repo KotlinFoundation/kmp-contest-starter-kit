@@ -59,6 +59,8 @@ object Constants {
     // DataStore requires the file name to end with ".preferences_pb"
     const val PREFERENCES_STORAGE_NAME = "user_preferences.preferences_pb"
 
+    const val WEB_INTERNAL_FILES_DIR_NAME = "internal_files"
+
     val subscriptionUrl =
         if (isAndroid) {
             "https://play.google.com/store/account/subscriptions"
