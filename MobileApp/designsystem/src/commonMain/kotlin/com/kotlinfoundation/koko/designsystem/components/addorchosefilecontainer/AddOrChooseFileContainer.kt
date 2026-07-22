@@ -84,6 +84,7 @@ fun AddOrChooseFileContainer(
     onClickCaptureOrRecord: () -> Unit = {},
     onClickSelectFromGallery: () -> Unit = {},
     onFileRemoved: (FileItemUiState) -> Unit = {},
+    isCaptureSupported: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val fileSelectionMode = uiState.mode
@@ -164,6 +165,7 @@ fun AddOrChooseFileContainer(
             onDismiss = { isChooseFileSourceModalVisible = false },
             type = fileSelectionMode.type,
             isTipsTextVisible = uiState.isHintTextVisible,
+            isCaptureSupported = isCaptureSupported,
             hintUiText = uiState.hintUiText,
             onClickCaptureOrRecord = {
                 isChooseFileSourceModalVisible = false

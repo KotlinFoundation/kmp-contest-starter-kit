@@ -9,3 +9,5 @@ actual suspend fun FileKit.shareFileCommon(file: PlatformFile) {
 
 // Camera capture is not available on desktop/web — use the gallery / file picker instead.
 actual suspend fun FileKit.openCameraPicker(): PlatformFile? = null
+
+actual fun isCameraCaptureSupported(): Boolean = false

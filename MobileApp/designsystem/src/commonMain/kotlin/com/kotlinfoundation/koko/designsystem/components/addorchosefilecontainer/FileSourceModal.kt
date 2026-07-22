@@ -31,6 +31,7 @@ fun FileSourceModal(
     onClickCaptureOrRecord: () -> Unit,
     onClickSelectFromGallery: () -> Unit,
     isTipsTextVisible: Boolean = true,
+    isCaptureSupported: Boolean = true,
     hintUiText: UiText? = null,
 ) {
     val modalTitle =
@@ -67,13 +68,16 @@ fun FileSourceModal(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.groupedVerticalElementSpacing),
         ) {
-            AppButton(
-                size = ButtonSize.SMALL,
-                modifier = Modifier.fillMaxWidth(),
-                text = btnRecordOrCaptureNowText,
-                startIcon = btnRecordOrCaptureNowIcon,
-                onClick = onClickCaptureOrRecord,
-            )
+            // Hidden on platforms without in-app capture (desktop/web) — the picker is the only path there.
+            if (isCaptureSupported) {
+                AppButton(
+                    size = ButtonSize.SMALL,
+                    modifier = Modifier.fillMaxWidth(),
+                    text = btnRecordOrCaptureNowText,
+                    startIcon = btnRecordOrCaptureNowIcon,
+                    onClick = onClickCaptureOrRecord,
+                )
+            }
 
             AppButton(
                 size = ButtonSize.SMALL,

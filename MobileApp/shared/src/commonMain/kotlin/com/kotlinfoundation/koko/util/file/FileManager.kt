@@ -89,3 +89,9 @@ expect suspend fun PlatformFile.absolutePathCommon(): String
 
 /** Opens the device camera to capture a photo. Returns null if cancelled or unsupported (desktop/web). */
 expect suspend fun FileKit.openCameraPicker(): PlatformFile?
+
+/**
+ * Whether in-app camera capture is available on this platform. False on desktop/web, where
+ * [openCameraPicker] is a no-op — callers should hide the capture action and use the file picker.
+ */
+expect fun isCameraCaptureSupported(): Boolean
