@@ -20,6 +20,7 @@ import com.kotlinfoundation.koko.util.logging.AppLogger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Orchestrates one AI generation: spend a credit, upload input files to the cloud, call the
@@ -102,13 +103,18 @@ class GenerationRepository(
         params = params.mapValues { (_, param) ->
             param.mapFileUploadUrls { fileNameWithExtension ->
                 val fileBytes = fileManager.readInternalFileBytes(fileNameWithExtension)
-                val uploadedUrl = runCatching {
+                val uploadedUrl = try {
                     temporaryFileUploadApiService.upload(
                         bytes = fileBytes,
                         fileNameWithExtension = fileNameWithExtension,
                         contentType = mimeTypeForFileName(fileNameWithExtension),
                     ).asDownloadUrl()
-                }.onFailure { AppLogger.e("File upload failed: $it") }.getOrNull()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    AppLogger.e("File upload failed: ${e.message}")
+                    null
+                }
                 AppLogger.d("File uploaded. Url: $uploadedUrl")
                 uploadedUrl ?: ""
             }
