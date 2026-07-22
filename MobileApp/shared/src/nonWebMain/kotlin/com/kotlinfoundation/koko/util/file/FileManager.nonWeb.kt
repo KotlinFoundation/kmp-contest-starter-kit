@@ -10,6 +10,7 @@ import io.github.vinceglb.filekit.dialogs.openFileSaver
 import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.nameWithoutExtension
+import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.saveImageToGallery
 import io.github.vinceglb.filekit.sink
 import io.github.vinceglb.filekit.size
@@ -164,6 +165,8 @@ class FileManagerImpl(
     private fun extractFileExtensionFromUrl(url: String): String? = url.substringAfterLast('.', "").takeIf { it.isNotEmpty() && it.length <= 5 }
 
     override fun getPlatformFile(absoluteFilePath: String): PlatformFile = PlatformFile(absoluteFilePath)
+
+    override suspend fun readInternalFileBytes(fileNameWithExtension: String): ByteArray = PlatformFile(getAbsoluteFilePathRelativeToInternal(fileNameWithExtension)).readBytes()
 }
 
 actual suspend fun PlatformFile.absolutePathCommon(): String = absolutePath()

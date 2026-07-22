@@ -14,13 +14,11 @@ import com.kotlinfoundation.koko.domain.usecase.AiGenerationProvider
 import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.util.analytics.Analytics
 import com.kotlinfoundation.koko.util.file.FileManager
+import com.kotlinfoundation.koko.util.file.mimeTypeForFileName
 import com.kotlinfoundation.koko.util.logging.AppLogger
 import com.mmk.kmpstorage.core.FileUploadProgress
 import com.mmk.kmpstorage.core.KMPStorage
 import com.mmk.kmpstorage.core.extensions.putFile
-import io.github.vinceglb.filekit.mimeType
-import io.github.vinceglb.filekit.nameWithoutExtension
-import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -104,18 +102,16 @@ class GenerationRepository(
     private suspend fun GenerationInput.uploadFilesIntoCloud(): GenerationInput = copy(
         params = params.mapValues { (_, param) ->
             param.mapFileUploadUrls { fileNameWithExtension ->
-                val fileAbsolutePath =
-                    fileManager.getAbsoluteFilePathRelativeToInternal(fileNameWithExtension)
-                val file = fileManager.getPlatformFile(fileAbsolutePath)
-                val fileBytes = file.readBytes()
+                // Read bytes (not a PlatformFile) — web has no file handles, and KMPStorage takes bytes.
+                val fileBytes = fileManager.readInternalFileBytes(fileNameWithExtension)
 
                 val fileUploadProgress = KMPStorage.putFile {
                     source { bytes(fileBytes) }
                     destination {
                         folder = "temporary_files"
-                        fileName = file.nameWithoutExtension
+                        fileName = fileNameWithExtension.substringBeforeLast('.')
                     }
-                    contentType = file.mimeType().toString()
+                    contentType = mimeTypeForFileName(fileNameWithExtension)
                 }
                 val uploadedUrl =
                     (fileUploadProgress as? FileUploadProgress.Completed)?.result?.url

@@ -35,7 +35,7 @@ class FileManagerImpl(
 
     override fun getAbsoluteFilePathRelativeToInternal(relativePathToInternal: String): String {
         val bytes = store[relativePathToInternal] ?: return ""
-        return bytes.toDataUrl(mimeTypeForExtension(relativePathToInternal.fileExtension()))
+        return bytes.toDataUrl(mimeTypeForFileName(relativePathToInternal))
     }
 
     override suspend fun copyFileToInternalDirectory(
@@ -93,8 +93,10 @@ class FileManagerImpl(
     // Sharing on web is a download.
     override suspend fun shareFile(absoluteFilePath: String): Result<Unit> = saveImageToGallery(absoluteFilePath)
 
-    // Uploading a picked file to cloud storage (Firebase) is an integrations-phase concern and is not
-    // wired for web. The in-session pick -> display and generate -> display flows never call this.
+    override suspend fun readInternalFileBytes(fileNameWithExtension: String): ByteArray = resolveBytes(fileNameWithExtension) ?: error("No file bytes for: $fileNameWithExtension")
+
+    // Web has no file handles. The upload path reads bytes via readInternalFileBytes and sharing is a
+    // download, so nothing in the app calls this on web.
     override fun getPlatformFile(absoluteFilePath: String): PlatformFile = throw UnsupportedOperationException("getPlatformFile is not supported on web")
 
     private fun resolveBytes(pathOrDataUrl: String): ByteArray? = when {
@@ -107,18 +109,6 @@ class FileManagerImpl(
     private fun String.decodeBase64OrNull(): ByteArray? = runCatching { Base64.decode(this) }.getOrNull()
 
     private fun String.fileExtension(): String = substringAfterLast('.', "").substringBefore(';').lowercase()
-
-    private fun mimeTypeForExtension(extension: String): String = when (extension) {
-        "png" -> "image/png"
-        "jpg", "jpeg" -> "image/jpeg"
-        "webp" -> "image/webp"
-        "gif" -> "image/gif"
-        "bmp" -> "image/bmp"
-        "svg" -> "image/svg+xml"
-        "mp4" -> "video/mp4"
-        "webm" -> "video/webm"
-        else -> "application/octet-stream"
-    }
 }
 
 // The picked PlatformFile's bytes become a self-contained data: URL — usable both as an immediate
@@ -126,12 +116,5 @@ class FileManagerImpl(
 @OptIn(ExperimentalEncodingApi::class)
 actual suspend fun PlatformFile.absolutePathCommon(): String {
     val bytes = readBytes()
-    val mime = when (name.substringAfterLast('.', "").lowercase()) {
-        "png" -> "image/png"
-        "jpg", "jpeg" -> "image/jpeg"
-        "webp" -> "image/webp"
-        "gif" -> "image/gif"
-        else -> "application/octet-stream"
-    }
-    return "data:$mime;base64,${Base64.encode(bytes)}"
+    return "data:${mimeTypeForFileName(name)};base64,${Base64.encode(bytes)}"
 }
