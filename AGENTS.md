@@ -350,14 +350,21 @@ Two layers:
 - **Guides** — one per phase of the developer journey. Each is an ordered checklist whose steps are tagged **Agent Action** / **User Action** / **Validation**; stop at each **User Action** and wait for the developer. Copy the guide's `progress-template.md` to track progress.
 - **Task skills** — one job each, usable standalone; the guides call them by name.
 
-**Progress tracking (read these before resuming any work):** progress files live at the repo root, are committed, and are how a new session learns what's already done.
+**Progress tracking (read these before resuming any work):** progress files live at the **git repository root**, are committed, and are how a new session learns what's already done.
+
+> **Where exactly is "the repo root"?** It is the folder that **contains** `MobileApp/`, `Web/`, and
+> `Documentation/` (the git root) — **not** inside `MobileApp/`. This matters because the developer
+> usually opens `MobileApp/` in Android Studio (the "MobileApp Window"), so from that window the progress
+> files are **one level up**: read/write them at `../PROGRESS_*.md`. Never create them inside `MobileApp/`
+> — that scatters duplicates and later sessions look in the wrong place. If you can't find them, look at
+> the git root before assuming they don't exist (`git rev-parse --show-toplevel`).
 
 | File | Tracks | Written by |
 |---|---|---|
 | `PROGRESS_FEATURES.md` | **What's actually built** — each model/screen from the PRD, plus the branded onboarding/paywall | `build-features` |
 | `PROGRESS_P1_GETTING_STARTED.md` … `PROGRESS_P5_GROWTH.md` | The *guide's* steps for each phase | the phase guides |
 
-**Resume rule:** before building, read the relevant progress file and continue from the **first unchecked item**. Never redo checked work; never re-derive a plan while unchecked items remain. Tick items off as you finish them, not at the end.
+**Resume rule:** before building, read the relevant progress file and continue from the **first unchecked item**. Never redo checked work; never re-derive a plan while unchecked items remain. Tick items off as you finish them, not at the end. If you finish a chunk (e.g. onboarding screens) and the guide has more unchecked items, **keep going through the guide** — do not stop and ask "what next"; the next step is the next unchecked item.
 
 **Starting from an idea** ("build me a habit tracker"): run **`skills/new-app/`** first — it interviews the developer, writes `AiGuidelines/project/{prd,user_flow,ui_ux}.md`, picks the app name/id, and records deferred decisions as `TODO(<phase>)` markers in `root/AppConfiguration.kt`. It then hands off to Phase 1. Phase 1 needs **no Firebase, no subscription provider, no store account** (mock provider + direct-mode AI cover it).
 

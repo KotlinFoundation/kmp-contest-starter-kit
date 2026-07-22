@@ -15,12 +15,16 @@ All commands run from `MobileApp/`.
 
 ## 0. Resume before you build — **Agent Action, always first**
 
-**`PROGRESS_FEATURES.md`** at the repository root is the record of what has actually been built.
+**`PROGRESS_FEATURES.md`** at the **git repository root** is the record of what has actually been built.
+"Repo root" = the folder that contains `MobileApp/` — **not** inside `MobileApp/`. You're most likely
+running from the MobileApp Window, so it's **one level up**: `../PROGRESS_FEATURES.md`. Confirm the root
+with `git rev-parse --show-toplevel` before deciding the file is missing.
 
 - **If it exists:** read it and **continue from the first unchecked item**. Do **not** re-derive the
   plan and do **not** redo checked work.
 - **If it doesn't:** copy [`progress-template.md`](progress-template.md) (next to this file) to
-  `PROGRESS_FEATURES.md` at the repo root, then derive the plan (step 1) and fill it in.
+  `PROGRESS_FEATURES.md` at the git repo root (`../PROGRESS_FEATURES.md` from the MobileApp Window — never
+  inside `MobileApp/`), then derive the plan (step 1) and fill it in.
 
 **Tick items off as you finish them, not at the end** — a session can stop at any point, and this file
 is the only thing that tells the next one what's left. Commit it with the code.

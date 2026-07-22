@@ -31,6 +31,12 @@ the kit's mock subscription provider and direct-mode AI cover it.
 > If this skill is executed from the **Root Window**, the very first step is to instruct the developer to open a new Android Studio window pointing to the `MobileApp/` directory:
 > *"Our first step involves opening up a new Android Studio window for the MobileApp directory, so we can utilize the Two-Window Approach. Please open the `MobileApp/` directory (at the repository root) in a new window and type 'Run @koko-mobileapp-getting-started' there to load the client environment and begin building the local loop!"*
 
+> **Progress files still live at the repo root.** Even though Phase 1 is driven from the **MobileApp
+> Window**, the `PROGRESS_*.md` files belong at the **git repo root** (the folder containing `MobileApp/`),
+> so from this window write/read them **one level up** (`../PROGRESS_FEATURES.md`,
+> `../PROGRESS_P1_GETTING_STARTED.md`). Never create them inside `MobileApp/` — a later session (or the
+> Root Window) will look at the root and think nothing was done.
+
 > **STOP rule:** When the next unchecked item is a **User Action**, stop and wait for the developer to confirm they've done it before continuing. Never fabricate device state or credentials.
 
 ## Role labels
@@ -74,7 +80,7 @@ Verify: `./scripts/check_env.sh --phase getting-started`.
 ### D. Build your features
 
 8. **Agent Action** — Build the MVP with the **`build-features`** skill: it derives the screens + local models from `prd.md`/`user_flow.md`, scaffolds them (`make_local.sh` / `generate_screen.sh`, **run sequentially** — they patch shared files), implements the UI per `ui_ux.md`, and brands the onboarding + paywall screens that already ship.
-   - It records every model/screen in **`PROGRESS_FEATURES.md`** at the repo root and ticks them off as it goes — so if a session stops, the next one resumes from the first unchecked item instead of guessing.
+   - It records every model/screen in **`PROGRESS_FEATURES.md`** at the **git repo root** (the folder that contains `MobileApp/` — from the MobileApp Window that's one level up, `../PROGRESS_FEATURES.md`; never inside `MobileApp/`) and ticks them off as it goes — so if a session stops, the next one resumes from the first unchecked item instead of guessing.
    - Underlying skills it uses: **`new-local-model`**, **`new-screen`**, and — only if a feature needs them — **`add-api-service`** (any public URL, no backend), **`save-preferences`**, **`add-permission`**.
    - Everything stays local: **no Firebase, no provider account, no store account** in this phase. The paywall runs on the mock provider if you touch it.
 
@@ -89,7 +95,21 @@ Verify: `./scripts/check_env.sh --phase getting-started`.
 
 > **App launches on at least one platform and shows the Home screen; quality gates pass.**
 
-Progress is tracked in `PROGRESS_P1_GETTING_STARTED.md` at the root folder.
+Progress is tracked in `PROGRESS_P1_GETTING_STARTED.md` at the **git repo root** (the folder containing
+`MobileApp/`; from the MobileApp Window it's `../PROGRESS_P1_GETTING_STARTED.md` — never inside `MobileApp/`).
+
+## If the agent stalls or loses its place
+
+This guide is a single ordered checklist — after finishing any step (e.g. the onboarding screens), the
+agent should continue to the **next unchecked item**, not stop and ask "what's next". If it does stall,
+finishes prematurely, or can't find the progress files:
+
+- **Developer:** just say **"continue @koko-mobileapp-getting-started"** (in the MobileApp Window). That
+  reloads this guide; the agent then re-reads the progress files and resumes at the first unchecked item.
+- **Agent, on resume:** first locate the progress files at the **git repo root** — `git rev-parse
+  --show-toplevel`, then read `../PROGRESS_FEATURES.md` and `../PROGRESS_P1_GETTING_STARTED.md`. If they
+  genuinely don't exist yet, create them there (copy `progress-template.md`) — do **not** create them
+  inside `MobileApp/`, and do **not** re-derive a plan or redo checked work.
 
 ## Done → next phase
 
