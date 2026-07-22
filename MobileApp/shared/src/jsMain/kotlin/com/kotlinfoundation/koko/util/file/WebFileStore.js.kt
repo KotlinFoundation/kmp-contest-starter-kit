@@ -6,10 +6,10 @@ import kotlin.js.Promise
 // Kotlin/JS `js(...)` does not support async/await, so these use plain Promise chains (the wasmJs actual
 // can use async/await via @JsFun).
 
-private fun opfsWriteFileJs(name: String, b64: String): Promise<Unit> = js(
+private fun opfsWriteFileJs(dirName: String, name: String, b64: String): Promise<Unit> = js(
     """
     navigator.storage.getDirectory()
-      .then(function (root) { return root.getDirectoryHandle('koko_files', { create: true }); })
+      .then(function (root) { return root.getDirectoryHandle(dirName, { create: true }); })
       .then(function (dir) { return dir.getFileHandle(name, { create: true }); })
       .then(function (fh) { return fh.createWritable(); })
       .then(function (w) {
@@ -21,14 +21,14 @@ private fun opfsWriteFileJs(name: String, b64: String): Promise<Unit> = js(
     """,
 )
 
-internal actual suspend fun opfsWriteFile(name: String, base64: String) {
-    opfsWriteFileJs(name, base64).await()
+internal actual suspend fun opfsWriteFile(dirName: String, name: String, base64: String) {
+    opfsWriteFileJs(dirName, name, base64).await()
 }
 
-private fun opfsReadAllFilesJs(): Promise<String> = js(
+private fun opfsReadAllFilesJs(dirName: String): Promise<String> = js(
     """
     navigator.storage.getDirectory()
-      .then(function (root) { return root.getDirectoryHandle('koko_files', { create: true }); })
+      .then(function (root) { return root.getDirectoryHandle(dirName, { create: true }); })
       .then(function (dir) {
         var it = dir.entries();
         var out = [];
@@ -53,4 +53,4 @@ private fun opfsReadAllFilesJs(): Promise<String> = js(
     """,
 )
 
-internal actual suspend fun opfsReadAllFiles(): String = opfsReadAllFilesJs().await()
+internal actual suspend fun opfsReadAllFiles(dirName: String): String = opfsReadAllFilesJs(dirName).await()

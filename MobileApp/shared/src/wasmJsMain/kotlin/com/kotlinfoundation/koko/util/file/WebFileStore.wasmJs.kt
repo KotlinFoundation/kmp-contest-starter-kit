@@ -6,9 +6,9 @@ import kotlin.js.Promise
 @OptIn(ExperimentalWasmJsInterop::class)
 @JsFun(
     """
-    (name, b64) => (async () => {
+    (dirName, name, b64) => (async () => {
       const root = await navigator.storage.getDirectory();
-      const dir = await root.getDirectoryHandle('koko_files', { create: true });
+      const dir = await root.getDirectoryHandle(dirName, { create: true });
       const fh = await dir.getFileHandle(name, { create: true });
       const w = await fh.createWritable();
       const bin = atob(b64);
@@ -19,18 +19,18 @@ import kotlin.js.Promise
     })()
     """,
 )
-private external fun opfsWriteFileJs(name: String, b64: String): Promise<JsAny?>
+private external fun opfsWriteFileJs(dirName: String, name: String, b64: String): Promise<JsAny?>
 
-internal actual suspend fun opfsWriteFile(name: String, base64: String) {
-    opfsWriteFileJs(name, base64).await()
+internal actual suspend fun opfsWriteFile(dirName: String, name: String, base64: String) {
+    opfsWriteFileJs(dirName, name, base64).await()
 }
 
 @OptIn(ExperimentalWasmJsInterop::class)
 @JsFun(
     """
-    () => (async () => {
+    (dirName) => (async () => {
       const root = await navigator.storage.getDirectory();
-      const dir = await root.getDirectoryHandle('koko_files', { create: true });
+      const dir = await root.getDirectoryHandle(dirName, { create: true });
       const out = [];
       for await (const [n, h] of dir.entries()) {
         if (h.kind !== 'file') continue;
@@ -44,6 +44,6 @@ internal actual suspend fun opfsWriteFile(name: String, base64: String) {
     })()
     """,
 )
-private external fun opfsReadAllFilesJs(): Promise<JsString>
+private external fun opfsReadAllFilesJs(dirName: String): Promise<JsString>
 
-internal actual suspend fun opfsReadAllFiles(): String = opfsReadAllFilesJs().await().toString()
+internal actual suspend fun opfsReadAllFiles(dirName: String): String = opfsReadAllFilesJs(dirName).await().toString()

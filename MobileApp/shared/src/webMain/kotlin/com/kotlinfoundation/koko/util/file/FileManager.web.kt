@@ -1,6 +1,7 @@
 package com.kotlinfoundation.koko.util.file
 
 import com.kotlinfoundation.koko.data.BackgroundExecutor
+import com.kotlinfoundation.koko.util.Constants
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.download
@@ -118,12 +119,12 @@ class FileManagerImpl(
     /** Cache the bytes in memory and persist them to OPFS (fire-and-forget) so they survive a reload. */
     private fun put(name: String, bytes: ByteArray) {
         store[name] = bytes
-        scope.launch { opfsWriteFile(name, Base64.encode(bytes)) }
+        scope.launch { opfsWriteFile(Constants.WEB_INTERNAL_FILES_DIR_NAME, name, Base64.encode(bytes)) }
     }
 
     /** Reload every OPFS-persisted file into the in-memory cache. Best-effort — a failure leaves the map empty. */
     private suspend fun warmUpFromOpfs() {
-        val json = opfsReadAllFiles()
+        val json = opfsReadAllFiles(Constants.WEB_INTERNAL_FILES_DIR_NAME)
         val entries = runCatching { Json.parseToJsonElement(json).jsonArray }.getOrNull() ?: return
         entries.forEach { entry ->
             val obj = entry.jsonObject

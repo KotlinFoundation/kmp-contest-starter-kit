@@ -5,11 +5,12 @@ package com.kotlinfoundation.koko.util.file
  * saved images survive a page reload or a new tab — the in-memory map alone is session-scoped.
  *
  * Bytes cross the JS boundary as **base64 strings** (clean on both js and wasmJs; avoids typed-array
- * interop differences). Files live under an `koko_files/` OPFS subdirectory so they don't collide with
- * the SQLite database file at the OPFS root. The only per-target difference is these two functions
- * (`@JsFun` on wasmJs, `js("…")` on js) — same split as `createSQLiteWorker()`.
+ * interop differences). Files live under a [dirName] OPFS subdirectory so they don't collide with the
+ * SQLite database file at the OPFS root. [dirName] is passed in (not a literal in the JS) so it stays a
+ * Kotlin constant — see `Constants.WEB_INTERNAL_FILES_DIR_NAME`. The only per-target difference is these
+ * two functions (`@JsFun` on wasmJs, `js("…")` on js) — same split as `createSQLiteWorker()`.
  */
-internal expect suspend fun opfsWriteFile(name: String, base64: String)
+internal expect suspend fun opfsWriteFile(dirName: String, name: String, base64: String)
 
 /** Reads every persisted file back as a JSON array `[{ "n": name, "d": base64 }, …]` (for warm-up). */
-internal expect suspend fun opfsReadAllFiles(): String
+internal expect suspend fun opfsReadAllFiles(dirName: String): String
