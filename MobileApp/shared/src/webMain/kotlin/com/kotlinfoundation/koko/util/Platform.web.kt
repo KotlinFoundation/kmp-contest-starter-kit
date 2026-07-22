@@ -26,7 +26,9 @@ internal actual val platformModule: Module = module {
     includes(webDatabaseModule)
     singleOf(::PreferencesDataStoreProviderImpl) bind PreferencesDataStoreProvider::class
     factoryOf(::AppUtilImpl) bind AppUtil::class
-    factoryOf(::FileManagerImpl) bind FileManager::class
+    // Singleton, not factory: the web FileManager holds an in-memory byte store, so every
+    // consumer must share the same instance (a fresh factory instance would be empty).
+    singleOf(::FileManagerImpl) bind FileManager::class
     single { NoImplFeatureFlagManager } bind FeatureFlagManager::class
     single { NoImplAnalytics } bind Analytics::class
     single { NoImplAdsManager } bind AdsManager::class
