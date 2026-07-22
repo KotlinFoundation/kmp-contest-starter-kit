@@ -187,6 +187,9 @@ class HomeViewModel(
 
     companion object {
         const val KEY_PROMPT = "prompt"
-        const val KEY_REFERENCE_IMAGE = "reference_image"
+
+        // The Replicate model's input field for images. google/nano-banana expects `image_input`;
+        // change this to match your model's schema.
+        const val KEY_REFERENCE_IMAGE = "image_input"
     }
 }
