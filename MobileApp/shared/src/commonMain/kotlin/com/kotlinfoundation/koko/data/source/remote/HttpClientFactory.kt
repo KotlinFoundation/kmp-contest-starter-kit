@@ -37,11 +37,11 @@ object HttpClientFactory {
     fun noAuth() = jsonClient()
 
     /**
-     * Client for multipart file uploads (e.g. hosting the reference image). Same timeouts/logging/JSON
-     * as the others but WITHOUT the default `application/json` content type — a multipart request sets
-     * its own, and a stray default header corrupts the body.
+     * Client for multipart file uploads (e.g. hosting the reference image). Same logging/JSON as the
+     * others but WITHOUT the default `application/json` content type — a multipart request sets its own,
+     * and a stray default header corrupts the body — and a longer timeout, since image uploads can be slow.
      */
-    fun fileUpload() = HttpClient { installCommonPlugins() }
+    fun fileUpload() = HttpClient { installCommonPlugins(timeoutMillis = 5 * 60000) }
 
     private fun jsonClient() = HttpClient {
         defaultRequest {
@@ -51,11 +51,11 @@ object HttpClientFactory {
         installCommonPlugins()
     }
 
-    private fun HttpClientConfig<*>.installCommonPlugins() {
+    private fun HttpClientConfig<*>.installCommonPlugins(timeoutMillis: Long = 60000) {
         install(HttpTimeout) {
-            requestTimeoutMillis = 60000 // Total request timeout: 60 seconds
+            requestTimeoutMillis = timeoutMillis // Total request timeout
             connectTimeoutMillis = 10000 // Connection establishment timeout: 10 seconds
-            socketTimeoutMillis = 60000 // Inactivity timeout: 60 seconds
+            socketTimeoutMillis = timeoutMillis // Inactivity timeout
         }
 
         install(Logging) {
