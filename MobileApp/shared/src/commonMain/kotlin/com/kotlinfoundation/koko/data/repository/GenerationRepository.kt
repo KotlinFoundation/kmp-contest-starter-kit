@@ -12,13 +12,11 @@ import com.kotlinfoundation.koko.domain.model.generation.GenerationInput
 import com.kotlinfoundation.koko.domain.model.generation.GenerationOutput
 import com.kotlinfoundation.koko.domain.usecase.AiGenerationProvider
 import com.kotlinfoundation.koko.root.AppConfiguration
+import com.kotlinfoundation.koko.util.TempFileUploader
 import com.kotlinfoundation.koko.util.analytics.Analytics
 import com.kotlinfoundation.koko.util.file.FileManager
 import com.kotlinfoundation.koko.util.file.mimeTypeForFileName
 import com.kotlinfoundation.koko.util.logging.AppLogger
-import com.mmk.kmpstorage.core.FileUploadProgress
-import com.mmk.kmpstorage.core.KMPStorage
-import com.mmk.kmpstorage.core.extensions.putFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -36,6 +34,7 @@ class GenerationRepository(
     private val fileManager: FileManager,
     private val analytics: Analytics,
     private val backgroundExecutor: BackgroundExecutor,
+    private val tempFileUploader: TempFileUploader,
 ) {
     private val cachedOutputMap = linkedMapOf<String, GenerationOutput>()
 
@@ -103,19 +102,15 @@ class GenerationRepository(
         params = params.mapValues { (_, param) ->
             param.mapFileUploadUrls { fileNameWithExtension ->
                 val fileBytes = fileManager.readInternalFileBytes(fileNameWithExtension)
-
-                val fileUploadProgress = KMPStorage.putFile {
-                    source { bytes(fileBytes) }
-                    destination {
-                        folder = "temporary_files"
-                        fileName = fileNameWithExtension.substringBeforeLast('.')
-                    }
-                    contentType = mimeTypeForFileName(fileNameWithExtension)
-                }
-                val uploadedUrl =
-                    (fileUploadProgress as? FileUploadProgress.Completed)?.result?.url
-                AppLogger.d("File is uploaded in cloud. Url: $uploadedUrl")
-                uploadedUrl ?: ""
+                runCatching {
+                    tempFileUploader.upload(
+                        bytes = fileBytes,
+                        fileNameWithExtension = fileNameWithExtension,
+                        contentType = mimeTypeForFileName(fileNameWithExtension),
+                    )
+                }.onSuccess { AppLogger.d("File uploaded. Url: $it") }
+                    .onFailure { AppLogger.e("File upload failed: $it") }
+                    .getOrDefault("")
             }
         },
     )

@@ -40,7 +40,6 @@ lifecycleViewmodelNav3 = "2.10.0"
 nav3 = "1.1.1"
 coreKtx = "1.19.0"
 filekit = "0.14.1"
-kmpstorage = "0.0.4-alpha04"
 spotless = "8.6.0"
 ktlint = "1.8.0"
 roborazzi = "1.64.0"
@@ -60,8 +59,6 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kmpnotifier-push-firebase = { module = "io.github.mirzemehdi:kmpnotifier-push-firebase", version.ref = "kmpnotifier" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
-kmpstorage-core = { module = "io.github.mirzemehdi:kmpstorage-core", version.ref = "kmpstorage" }
-kmpstorage-http = { module = "io.github.mirzemehdi:kmpstorage-http", version.ref = "kmpstorage" }
 kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
 kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
 kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }

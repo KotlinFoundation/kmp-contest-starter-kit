@@ -36,6 +36,7 @@ import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderFactory
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderUi
 import com.kotlinfoundation.koko.util.ApplicationScope
 import com.kotlinfoundation.koko.util.Constants
+import com.kotlinfoundation.koko.util.TempFileUploader
 import com.kotlinfoundation.koko.util.defaultAsyncDispatcher
 import com.kotlinfoundation.koko.util.extensions.nowEpochMillis
 import com.kotlinfoundation.koko.util.isAndroid
@@ -79,6 +80,7 @@ private val dataModule = module {
     single { HttpClientFactory.default(get()) }
     single(named("aiDirectClient")) { HttpClientFactory.direct() }
     single { AiTransport(proxyClient = get(), directClient = get(named("aiDirectClient"))) }
+    single { TempFileUploader() }
 
     factoryOf(::ApiService)
     factoryOf(::OpenAiApiService)
@@ -122,7 +124,7 @@ private val dataModule = module {
     // Repositories
     single { UserRepository(get(), get(), get(), get(), get()) }
     single { SubscriptionRepository(get(), get(), get(), get()) }
-    single { GenerationRepository(get(), get(), get(), get(), get(), get()) }
+    single { GenerationRepository(get(), get(), get(), get(), get(), get(), get()) }
 
     // Loggers
     factory { TelegramLogger(get(), get(), get()) } bind Logger::class

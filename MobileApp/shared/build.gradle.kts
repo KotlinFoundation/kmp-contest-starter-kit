@@ -85,8 +85,6 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.ui.tooling.preview)
-            implementation(libs.kmpstorage.core)
-            implementation(libs.kmpstorage.http)
             implementation(libs.kmpauth.google)
             implementation(libs.napier)
             implementation(libs.room.runtime)

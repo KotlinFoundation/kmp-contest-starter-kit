@@ -15,15 +15,12 @@ import com.kotlinfoundation.koko.util.isAndroid
 import com.kotlinfoundation.koko.util.isDebug
 import com.kotlinfoundation.koko.util.logging.AppLogger
 import com.kotlinfoundation.koko.util.onApplicationStartPlatformSpecific
-import com.kotlinfoundation.koko.util.tempFileStorageProvider
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import com.mmk.kmpnotifier.KMPNotifier
 import com.mmk.kmpnotifier.notification.PayloadData
 import com.mmk.kmpnotifier.push.PushListener
 import com.mmk.kmpnotifier.push.firebase.addPushListener
-import com.mmk.kmpstorage.core.KMPStorage
-import com.mmk.kmpstorage.http.SimpleHttpStorageProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,7 +52,6 @@ object AppInitializer {
         refreshFeatureFlags()
         initializeAnalytics()
         initializeNotification()
-        initializeStorage()
         initializeAuthentication()
         initializeInAppPurchase()
         initializeAds()
@@ -131,15 +127,6 @@ private fun initializeNotification() {
             AppLogger.d("Firebase onPushNotification: title: $title, body: $body, data: $data")
         }
     })
-}
-
-private fun initializeStorage() {
-    KMPStorage.configure {
-        defaultProviderName = SimpleHttpStorageProvider.NAME
-        provider {
-            tempFileStorageProvider()
-        }
-    }
 }
 
 private fun initializeAuthentication() {
