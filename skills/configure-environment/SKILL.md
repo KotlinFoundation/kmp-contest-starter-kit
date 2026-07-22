@@ -41,7 +41,6 @@ credentials, IDs, and toggles.
 | `ADMOB_BANNER_AD_ID_IOS` | Banner ad unit (iOS) | AdMob console | monetization |
 | `ADMOB_INTERSTITIAL_AD_ID_IOS` | Interstitial ad unit (iOS) | AdMob console | monetization |
 | `ADMOB_REWARDED_AD_ID_IOS` | Rewarded ad unit (iOS) | AdMob console | monetization |
-| `IMGBB_TOKEN` | Image hosting/upload token | https://api.imgbb.com/ account | when using image upload |
 | `OPENAI_API_KEY` | Direct OpenAI calls (no proxy, no Firebase) | https://platform.openai.com/ | **phase 1** if the app uses AI (direct) · proxied in integrations — see note |
 | `REPLICATE_API_KEY` | Direct Replicate calls (no proxy, no Firebase) | https://replicate.com/account/api-tokens | **phase 1** if the app uses AI (direct) · proxied in integrations — see note |
 

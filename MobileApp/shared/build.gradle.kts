@@ -269,7 +269,6 @@ buildConfig {
         "GOOGLE_WEB_CLIENT_ID",
         getRequiredProperty(key = "GOOGLE_WEB_CLIENT_ID", defaultValue = "testValue"),
     )
-    buildConfigField("IMGBB_TOKEN", getRequiredProperty(key = "IMGBB_TOKEN", defaultValue = "testValue"))
 
     // Direct-AI (no-Firebase) provider keys. Empty by default → the app uses the Cloud Functions proxy.
     // Setting one (with a blank CLOUD_FUNCTIONS_URL) makes AiTransport call the provider directly.

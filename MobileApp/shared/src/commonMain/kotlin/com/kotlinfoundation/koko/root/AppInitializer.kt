@@ -15,6 +15,7 @@ import com.kotlinfoundation.koko.util.isAndroid
 import com.kotlinfoundation.koko.util.isDebug
 import com.kotlinfoundation.koko.util.logging.AppLogger
 import com.kotlinfoundation.koko.util.onApplicationStartPlatformSpecific
+import com.kotlinfoundation.koko.util.tempFileStorageProvider
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import com.mmk.kmpnotifier.KMPNotifier
@@ -23,13 +24,11 @@ import com.mmk.kmpnotifier.push.PushListener
 import com.mmk.kmpnotifier.push.firebase.addPushListener
 import com.mmk.kmpstorage.core.KMPStorage
 import com.mmk.kmpstorage.http.SimpleHttpStorageProvider
-import com.mmk.kmpstorage.http.extensions.imgBBStorageProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * App bootstrap: starts Koin with all modules and runs one-time startup side effects
@@ -138,10 +137,7 @@ private fun initializeStorage() {
     KMPStorage.configure {
         defaultProviderName = SimpleHttpStorageProvider.NAME
         provider {
-            imgBBStorageProvider(
-                token = BuildConfig.IMGBB_TOKEN,
-                expiration = 10.minutes.inWholeSeconds.toInt(),
-            )
+            tempFileStorageProvider()
         }
     }
 }

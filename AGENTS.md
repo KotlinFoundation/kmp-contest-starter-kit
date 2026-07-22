@@ -189,8 +189,23 @@ directly. It picks between two backends and adapts the response so the DTOs + `A
   Prototyping only — direct-mode keys ship in the app
   binary; production keeps the proxy (keys in Secret Manager). `AiTransport` is **provider-agnostic**: each
   service supplies its own `directUrl` + headers + key-readiness, so a new provider needs no `AiTransport`
-  change. Text→image is fully Firebase-free; image-editing still hosts the input image via
-  `KMPStorage`/Firebase Storage (an ImgBB host swap is the follow-up).
+  change. Text→image is fully Firebase-free; image-editing hosts the input image via `KMPStorage`
+  (see **File hosting** below) so the provider can fetch it by URL — no Firebase.
+
+### File hosting (KMPStorage)
+
+When a flow needs a **public URL** for a local file (today: the reference image handed to an AI
+provider), it uploads through **KMPStorage** (`com.mmk.kmpstorage`). One provider is registered in
+`AppInitializer.initializeStorage()`, and `GenerationRepository.uploadFilesIntoCloud()` calls
+`KMPStorage.putFile { source { bytes(...) }; destination { … }; contentType = … }` → gets back a URL.
+
+The default provider is **tempfile.org** (`util/TempFileStorageProvider.kt` — standalone, destined to
+move into KMPStorage) —
+an anonymous host that needs **no API key**, so image hosting works with zero config on every
+platform. It's a thin `SimpleHttpStorageProvider` config (upload URL + multipart field + a response
+parser that returns the direct-download URL). To
+swap hosts, write another `SimpleHttpStorageProvider` (or a Firebase/Supabase KMPStorage provider)
+and register it in `initializeStorage()` — nothing else changes, since callers only see `putFile`.
 
 ### Repositories
 - **Prefer concrete classes** — no interface unless swapping implementations at runtime

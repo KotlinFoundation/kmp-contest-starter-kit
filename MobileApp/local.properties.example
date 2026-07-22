@@ -43,10 +43,6 @@ ADMOB_BANNER_AD_ID_IOS=
 ADMOB_INTERSTITIAL_AD_ID_IOS=
 ADMOB_REWARDED_AD_ID_IOS=
 
-# --- Optional / conditional --------------------------------------------------------------------
-# Image hosting token, only if you use image upload. Get it from https://api.imgbb.com/
-IMGBB_TOKEN=
-
 # --- [P1] Direct AI (no-Firebase prototyping) --------------------------------------------------
 # Only needed if your app uses AI. This is the phase-1 path: no Firebase, no backend.
 # By default the app calls OpenAI/Replicate through the Cloud Functions web-proxy, which reads these
