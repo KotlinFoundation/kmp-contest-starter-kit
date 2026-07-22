@@ -59,9 +59,6 @@ object Constants {
     // DataStore requires the file name to end with ".preferences_pb"
     const val PREFERENCES_STORAGE_NAME = "user_preferences.preferences_pb"
 
-    // OPFS subdirectory holding the web FileManager's persisted image bytes. App-agnostic like the DB /
-    // prefs names above — OPFS is origin-scoped so no cross-app collision, and the refactor script leaves
-    // it alone (no app id/name baked in).
     const val WEB_INTERNAL_FILES_DIR_NAME = "internal_files"
 
     val subscriptionUrl =
