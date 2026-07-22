@@ -99,8 +99,8 @@ package $SCREENS_PACKAGE
 
 class $UI_STATE_CLASS
 
-sealed class $UI_EVENT_CLASS {
-    data object OnClick : $UI_EVENT_CLASS()
+sealed interface $UI_EVENT_CLASS {
+    data object OnClick : $UI_EVENT_CLASS
 }
 EOF
   echo "Created: $UI_STATE_FILE"
