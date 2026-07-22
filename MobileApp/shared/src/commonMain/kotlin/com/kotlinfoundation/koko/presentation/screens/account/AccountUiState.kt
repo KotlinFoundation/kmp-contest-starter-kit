@@ -34,11 +34,11 @@ data class AccountUiState(
     val showUpgradePremiumBanner: Boolean = false,
 )
 
-sealed class AccountUiEvent {
-    data class OnSettingsItemClick(val item: SettingsItemUiState) : AccountUiEvent()
-    data object OnLogoutConfirmClick : AccountUiEvent()
-    data object OnLogoutDialogDismiss : AccountUiEvent()
-    data object OnClickUpgradePremium : AccountUiEvent()
-    data object OnClickSignIn : AccountUiEvent()
-    data object OnClickProfile : AccountUiEvent()
+sealed interface AccountUiEvent {
+    data class OnSettingsItemClick(val item: SettingsItemUiState) : AccountUiEvent
+    data object OnLogoutConfirmClick : AccountUiEvent
+    data object OnLogoutDialogDismiss : AccountUiEvent
+    data object OnClickUpgradePremium : AccountUiEvent
+    data object OnClickSignIn : AccountUiEvent
+    data object OnClickProfile : AccountUiEvent
 }

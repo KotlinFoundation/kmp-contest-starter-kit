@@ -9,10 +9,10 @@ data class GenerationResultUiState(
     val isReportDialogVisible: Boolean = false,
 )
 
-sealed class GenerationResultUiEvent {
-    data object OnClickShare : GenerationResultUiEvent()
-    data object OnClickDownload : GenerationResultUiEvent()
-    data object OnClickReport : GenerationResultUiEvent()
-    data class OnSubmitReport(val reason: String) : GenerationResultUiEvent()
-    data object OnDismissReportDialog : GenerationResultUiEvent()
+sealed interface GenerationResultUiEvent {
+    data object OnClickShare : GenerationResultUiEvent
+    data object OnClickDownload : GenerationResultUiEvent
+    data object OnClickReport : GenerationResultUiEvent
+    data class OnSubmitReport(val reason: String) : GenerationResultUiEvent
+    data object OnDismissReportDialog : GenerationResultUiEvent
 }

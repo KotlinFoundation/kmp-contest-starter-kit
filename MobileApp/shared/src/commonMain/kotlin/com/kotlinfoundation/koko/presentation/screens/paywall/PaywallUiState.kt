@@ -52,8 +52,8 @@ data class PaywallPackageUiState(
     val id: PurchasePackageId get() = purchasePackage.id
 }
 
-sealed class PaywallUiEvent {
-    data object OnClickBuy : PaywallUiEvent()
-    data object OnClickRestore : PaywallUiEvent()
-    data class OnSelectPackage(val packageId: PurchasePackageId) : PaywallUiEvent()
+sealed interface PaywallUiEvent {
+    data object OnClickBuy : PaywallUiEvent
+    data object OnClickRestore : PaywallUiEvent
+    data class OnSelectPackage(val packageId: PurchasePackageId) : PaywallUiEvent
 }

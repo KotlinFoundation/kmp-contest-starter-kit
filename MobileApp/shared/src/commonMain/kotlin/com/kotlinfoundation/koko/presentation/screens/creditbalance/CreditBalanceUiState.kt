@@ -12,7 +12,7 @@ data class CreditBalanceUiState(
     val recurringCredits: List<RecurringCredit> = emptyList(),
 )
 
-sealed class CreditBalanceUiEvent {
-    data object UpgradeToPremium : CreditBalanceUiEvent()
-    data object BuyCreditPack : CreditBalanceUiEvent()
+sealed interface CreditBalanceUiEvent {
+    data object UpgradeToPremium : CreditBalanceUiEvent
+    data object BuyCreditPack : CreditBalanceUiEvent
 }

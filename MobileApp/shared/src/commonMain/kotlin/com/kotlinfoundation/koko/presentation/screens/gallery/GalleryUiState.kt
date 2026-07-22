@@ -7,7 +7,7 @@ data class GalleryUiState(
     val isLoading: Boolean = false,
 )
 
-sealed class GalleryUiEvent {
-    data class OnClickItem(val item: GenerationOutput) : GalleryUiEvent()
-    data object OnClickGenerate : GalleryUiEvent()
+sealed interface GalleryUiEvent {
+    data class OnClickItem(val item: GenerationOutput) : GalleryUiEvent
+    data object OnClickGenerate : GalleryUiEvent
 }

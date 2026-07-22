@@ -9,6 +9,6 @@ data class SubscriptionsUiState(
     val isMock: Boolean = false,
 )
 
-sealed class SubscriptionsUiEvent {
-    data object OnCancelMockSubscription : SubscriptionsUiEvent()
+sealed interface SubscriptionsUiEvent {
+    data object OnCancelMockSubscription : SubscriptionsUiEvent
 }
