@@ -4,6 +4,7 @@ import com.kotlinfoundation.koko.data.BackgroundExecutor
 import com.kotlinfoundation.koko.data.source.local.dao.GenerationOutputDao
 import com.kotlinfoundation.koko.data.source.local.entity.toEntity
 import com.kotlinfoundation.koko.data.source.local.entity.toModel
+import com.kotlinfoundation.koko.data.source.remote.apiservices.TemporaryFileUploadApiService
 import com.kotlinfoundation.koko.domain.exceptions.CreditRequiredException
 import com.kotlinfoundation.koko.domain.exceptions.PurchaseRequiredException
 import com.kotlinfoundation.koko.domain.model.credit.CreditConstants
@@ -12,7 +13,6 @@ import com.kotlinfoundation.koko.domain.model.generation.GenerationInput
 import com.kotlinfoundation.koko.domain.model.generation.GenerationOutput
 import com.kotlinfoundation.koko.domain.usecase.AiGenerationProvider
 import com.kotlinfoundation.koko.root.AppConfiguration
-import com.kotlinfoundation.koko.util.TempFileUploader
 import com.kotlinfoundation.koko.util.analytics.Analytics
 import com.kotlinfoundation.koko.util.file.FileManager
 import com.kotlinfoundation.koko.util.file.mimeTypeForFileName
@@ -34,7 +34,7 @@ class GenerationRepository(
     private val fileManager: FileManager,
     private val analytics: Analytics,
     private val backgroundExecutor: BackgroundExecutor,
-    private val tempFileUploader: TempFileUploader,
+    private val temporaryFileUploadApiService: TemporaryFileUploadApiService,
 ) {
     private val cachedOutputMap = linkedMapOf<String, GenerationOutput>()
 
@@ -102,15 +102,15 @@ class GenerationRepository(
         params = params.mapValues { (_, param) ->
             param.mapFileUploadUrls { fileNameWithExtension ->
                 val fileBytes = fileManager.readInternalFileBytes(fileNameWithExtension)
-                runCatching {
-                    tempFileUploader.upload(
+                val uploadedUrl = runCatching {
+                    temporaryFileUploadApiService.upload(
                         bytes = fileBytes,
                         fileNameWithExtension = fileNameWithExtension,
                         contentType = mimeTypeForFileName(fileNameWithExtension),
-                    )
-                }.onSuccess { AppLogger.d("File uploaded. Url: $it") }
-                    .onFailure { AppLogger.e("File upload failed: $it") }
-                    .getOrDefault("")
+                    ).asDownloadUrl()
+                }.onFailure { AppLogger.e("File upload failed: $it") }.getOrNull()
+                AppLogger.d("File uploaded. Url: $uploadedUrl")
+                uploadedUrl ?: ""
             }
         },
     )

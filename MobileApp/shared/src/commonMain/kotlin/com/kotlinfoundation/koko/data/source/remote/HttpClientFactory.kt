@@ -3,6 +3,7 @@ package com.kotlinfoundation.koko.data.source.remote
 import com.kotlinfoundation.koko.auth.api.AuthServiceProvider
 import com.kotlinfoundation.koko.util.logging.AppLogger
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -19,7 +20,7 @@ import kotlinx.serialization.json.Json
 /** Builds the app's shared Ktor [HttpClient] — JSON, timeouts, logging, and a bearer-token interceptor. */
 object HttpClientFactory {
     /** The app/proxy client: attaches the Firebase ID token as a bearer to every request. */
-    fun default(authServiceProvider: AuthServiceProvider) = baseClient().also {
+    fun default(authServiceProvider: AuthServiceProvider) = jsonClient().also {
         it.plugin(HttpSend).intercept { request ->
             // For all requests you can send user token here, for example
             val userToken = authServiceProvider.getCurrentUserToken(forceRefresh = true)
@@ -29,17 +30,28 @@ object HttpClientFactory {
     }
 
     /**
-     * Client for DIRECT provider calls (OpenAI/Replicate) — deliberately WITHOUT the Firebase bearer
-     * interceptor. The provider `Authorization` header (the on-device API key) is set per request by
-     * [com.kotlinfoundation.koko.data.source.remote.apiservices.ai.AiTransport].
+     * Like [default] but WITHOUT the Firebase bearer interceptor — for DIRECT provider calls
+     * (OpenAI/Replicate), where the `Authorization` header (the on-device API key) is set per request
+     * by [com.kotlinfoundation.koko.data.source.remote.apiservices.ai.AiTransport].
      */
-    fun direct() = baseClient()
+    fun noAuth() = jsonClient()
 
-    private fun baseClient() = HttpClient {
+    /**
+     * Client for multipart file uploads (e.g. hosting the reference image). Same timeouts/logging/JSON
+     * as the others but WITHOUT the default `application/json` content type — a multipart request sets
+     * its own, and a stray default header corrupts the body.
+     */
+    fun fileUpload() = HttpClient { installCommonPlugins() }
+
+    private fun jsonClient() = HttpClient {
         defaultRequest {
             url("BASE_URL") // TODO replace with your API base URL (AI calls pass absolute URLs)
             header(HttpHeaders.ContentType, "application/json")
         }
+        installCommonPlugins()
+    }
+
+    private fun HttpClientConfig<*>.installCommonPlugins() {
         install(HttpTimeout) {
             requestTimeoutMillis = 60000 // Total request timeout: 60 seconds
             connectTimeoutMillis = 10000 // Connection establishment timeout: 10 seconds

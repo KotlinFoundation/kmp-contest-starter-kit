@@ -15,6 +15,7 @@ import com.kotlinfoundation.koko.data.source.preferences.UserPreferences
 import com.kotlinfoundation.koko.data.source.preferences.UserPreferencesImpl
 import com.kotlinfoundation.koko.data.source.remote.HttpClientFactory
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ApiService
+import com.kotlinfoundation.koko.data.source.remote.apiservices.TemporaryFileUploadApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.AiTransport
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.OpenAiApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.ReplicateApiService
@@ -36,7 +37,6 @@ import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderFactory
 import com.kotlinfoundation.koko.subscription.api.SubscriptionProviderUi
 import com.kotlinfoundation.koko.util.ApplicationScope
 import com.kotlinfoundation.koko.util.Constants
-import com.kotlinfoundation.koko.util.TempFileUploader
 import com.kotlinfoundation.koko.util.defaultAsyncDispatcher
 import com.kotlinfoundation.koko.util.extensions.nowEpochMillis
 import com.kotlinfoundation.koko.util.isAndroid
@@ -78,9 +78,9 @@ private val dataModule = module {
 
     // Remote source
     single { HttpClientFactory.default(get()) }
-    single(named("aiDirectClient")) { HttpClientFactory.direct() }
+    single(named("aiDirectClient")) { HttpClientFactory.noAuth() }
     single { AiTransport(proxyClient = get(), directClient = get(named("aiDirectClient"))) }
-    single { TempFileUploader() }
+    single { TemporaryFileUploadApiService(HttpClientFactory.fileUpload()) }
 
     factoryOf(::ApiService)
     factoryOf(::OpenAiApiService)

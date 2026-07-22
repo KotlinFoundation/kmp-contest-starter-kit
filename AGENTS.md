@@ -195,11 +195,14 @@ directly. It picks between two backends and adapts the response so the DTOs + `A
 ### File hosting
 
 When a flow needs a **public URL** for a local file (today: the reference image handed to an AI
-provider), `GenerationRepository.uploadFilesIntoCloud()` uploads the bytes and gets a URL back via
-**`util/TempFileUploader.kt`** — a plain Ktor multipart POST to **tempfile.org**, an anonymous host
-that needs **no API key**, so image hosting works with zero config on every platform. No storage
-library; the response's viewer URL + `download` is the direct link the provider fetches. To swap
-hosts, change `TempFileUploader` (URL + response parsing) — it's the only touch point.
+provider), `GenerationRepository.uploadFilesIntoCloud()` uploads the bytes via
+**`TemporaryFileUploadApiService`** (`data/source/remote/apiservices/`) — a plain Ktor multipart POST
+to **tempfile.org**, an anonymous host that needs **no API key**, so image hosting works with zero
+config on every platform. Following the API-service convention it returns the raw
+`TemporaryFileUploadResponse` (`response/file/`); the repo maps it with `asDownloadUrl()` (viewer URL
++ `download`) and handles failure. The client is `HttpClientFactory.fileUpload()` (multipart-safe —
+no default json content type). No storage library. To swap hosts, change the service URL + response
+DTO — the only touch point.
 
 ### Repositories
 - **Prefer concrete classes** — no interface unless swapping implementations at runtime
