@@ -102,7 +102,6 @@ class GenerationRepository(
     private suspend fun GenerationInput.uploadFilesIntoCloud(): GenerationInput = copy(
         params = params.mapValues { (_, param) ->
             param.mapFileUploadUrls { fileNameWithExtension ->
-                // Read bytes (not a PlatformFile) — web has no file handles, and KMPStorage takes bytes.
                 val fileBytes = fileManager.readInternalFileBytes(fileNameWithExtension)
 
                 val fileUploadProgress = KMPStorage.putFile {

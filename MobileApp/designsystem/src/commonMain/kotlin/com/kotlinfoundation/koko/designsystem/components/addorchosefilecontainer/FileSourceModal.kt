@@ -68,7 +68,6 @@ fun FileSourceModal(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.groupedVerticalElementSpacing),
         ) {
-            // Hidden on platforms without in-app capture (desktop/web) — the picker is the only path there.
             if (isCaptureSupported) {
                 AppButton(
                     size = ButtonSize.SMALL,

@@ -30,7 +30,6 @@ class FileManagerImpl(
     private val httpClient: HttpClient = HttpClient(),
 ) : FileManager {
 
-    // name -> raw bytes, for the current session only.
     private val store = mutableMapOf<String, ByteArray>()
 
     override fun getAbsoluteFilePathRelativeToInternal(relativePathToInternal: String): String {
@@ -90,13 +89,10 @@ class FileManagerImpl(
     ): Result<String> = downloadFileFromNetworkToInternalDirectory(url, fileExtension)
         .onSuccess { name -> saveImageToGallery(name) }
 
-    // Sharing on web is a download.
     override suspend fun shareFile(absoluteFilePath: String): Result<Unit> = saveImageToGallery(absoluteFilePath)
 
     override suspend fun readInternalFileBytes(fileNameWithExtension: String): ByteArray = resolveBytes(fileNameWithExtension) ?: error("No file bytes for: $fileNameWithExtension")
 
-    // Web has no file handles. The upload path reads bytes via readInternalFileBytes and sharing is a
-    // download, so nothing in the app calls this on web.
     override fun getPlatformFile(absoluteFilePath: String): PlatformFile = throw UnsupportedOperationException("getPlatformFile is not supported on web")
 
     private fun resolveBytes(pathOrDataUrl: String): ByteArray? = when {
@@ -111,8 +107,6 @@ class FileManagerImpl(
     private fun String.fileExtension(): String = substringAfterLast('.', "").substringBefore(';').lowercase()
 }
 
-// The picked PlatformFile's bytes become a self-contained data: URL — usable both as an immediate
-// Coil preview and as the input to copyFileToInternalDirectory (which decodes it back).
 @OptIn(ExperimentalEncodingApi::class)
 actual suspend fun PlatformFile.absolutePathCommon(): String {
     val bytes = readBytes()
