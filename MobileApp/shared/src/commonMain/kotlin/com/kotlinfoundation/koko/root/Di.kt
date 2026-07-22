@@ -15,6 +15,7 @@ import com.kotlinfoundation.koko.data.source.preferences.UserPreferences
 import com.kotlinfoundation.koko.data.source.preferences.UserPreferencesImpl
 import com.kotlinfoundation.koko.data.source.remote.HttpClientFactory
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ApiService
+import com.kotlinfoundation.koko.data.source.remote.apiservices.TemporaryFileUploadApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.AiTransport
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.OpenAiApiService
 import com.kotlinfoundation.koko.data.source.remote.apiservices.ai.ReplicateApiService
@@ -77,8 +78,9 @@ private val dataModule = module {
 
     // Remote source
     single { HttpClientFactory.default(get()) }
-    single(named("aiDirectClient")) { HttpClientFactory.direct() }
+    single(named("aiDirectClient")) { HttpClientFactory.noAuth() }
     single { AiTransport(proxyClient = get(), directClient = get(named("aiDirectClient"))) }
+    single { TemporaryFileUploadApiService(HttpClientFactory.fileUpload()) }
 
     factoryOf(::ApiService)
     factoryOf(::OpenAiApiService)
@@ -122,7 +124,7 @@ private val dataModule = module {
     // Repositories
     single { UserRepository(get(), get(), get(), get(), get()) }
     single { SubscriptionRepository(get(), get(), get(), get()) }
-    single { GenerationRepository(get(), get(), get(), get(), get(), get()) }
+    single { GenerationRepository(get(), get(), get(), get(), get(), get(), get()) }
 
     // Loggers
     factory { TelegramLogger(get(), get(), get()) } bind Logger::class

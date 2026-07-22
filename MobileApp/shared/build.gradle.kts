@@ -85,8 +85,6 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.ui.tooling.preview)
-            implementation(libs.kmpstorage.core)
-            implementation(libs.kmpstorage.http)
             implementation(libs.kmpauth.google)
             implementation(libs.napier)
             implementation(libs.room.runtime)
@@ -269,7 +267,6 @@ buildConfig {
         "GOOGLE_WEB_CLIENT_ID",
         getRequiredProperty(key = "GOOGLE_WEB_CLIENT_ID", defaultValue = "testValue"),
     )
-    buildConfigField("IMGBB_TOKEN", getRequiredProperty(key = "IMGBB_TOKEN", defaultValue = "testValue"))
 
     // Direct-AI (no-Firebase) provider keys. Empty by default → the app uses the Cloud Functions proxy.
     // Setting one (with a blank CLOUD_FUNCTIONS_URL) makes AiTransport call the provider directly.

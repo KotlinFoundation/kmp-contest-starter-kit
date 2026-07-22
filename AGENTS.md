@@ -183,13 +183,26 @@ directly. It picks between two backends and adapts the response so the DTOs + `A
   client with **no** Firebase interceptor, sending `Authorization: Bearer <OPENAI_API_KEY|REPLICATE_API_KEY>`
   (from `BuildConfig`/`local.properties`) + Replicate's `Prefer: wait`. The raw provider JSON is re-wrapped
   into a synthetic `AiApiBaseResponse`.
-- **Selection:** auto — direct when `AppConfiguration.CLOUD_FUNCTIONS_URL` is blank AND the provider key is set;
+- **Selection:** auto — proxy only when `AppConfiguration.CLOUD_FUNCTIONS_URL` is set, otherwise direct
+  (the proxy is useless without a URL, so a blank URL always falls back to a direct provider call).
   `AppConfiguration.USE_AI_PROXY_SERVER` (`Boolean?`; `true`=proxy, `false`=direct, `null`=auto) overrides.
   Prototyping only — direct-mode keys ship in the app
   binary; production keeps the proxy (keys in Secret Manager). `AiTransport` is **provider-agnostic**: each
   service supplies its own `directUrl` + headers + key-readiness, so a new provider needs no `AiTransport`
-  change. Text→image is fully Firebase-free; image-editing still hosts the input image via
-  `KMPStorage`/Firebase Storage (an ImgBB host swap is the follow-up).
+  change. Text→image is fully Firebase-free; image-editing hosts the input image via a direct upload
+  (see **File hosting** below) so the provider can fetch it by URL — no Firebase.
+
+### File hosting
+
+When a flow needs a **public URL** for a local file (today: the reference image handed to an AI
+provider), `GenerationRepository.uploadFilesIntoCloud()` uploads the bytes via
+**`TemporaryFileUploadApiService`** (`data/source/remote/apiservices/`) — a plain Ktor multipart POST
+to **tempfile.org**, an anonymous host that needs **no API key**, so image hosting works with zero
+config on every platform. Following the API-service convention it returns the raw
+`TemporaryFileUploadResponse` (`response/file/`); the repo maps it with `asDownloadUrl()` (viewer URL
++ `download`) and handles failure. The client is `HttpClientFactory.fileUpload()` (multipart-safe —
+no default json content type). No storage library. To swap hosts, change the service URL + response
+DTO — the only touch point.
 
 ### Repositories
 - **Prefer concrete classes** — no interface unless swapping implementations at runtime

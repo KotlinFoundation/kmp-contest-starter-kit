@@ -48,8 +48,8 @@ class AiDirectSpec(
  * is the raw provider object — which is exactly what `data` holds — so we parse the body as `T` and wrap
  * it in a synthetic [AiApiBaseResponse]. Same `T`, same downstream code.
  *
- * DIRECT is auto-selected when [AppConfiguration.CLOUD_FUNCTIONS_URL] is blank AND the provider key is set
- * ([AiDirectSpec.apiKey] set); [AppConfiguration.USE_AI_PROXY_SERVER] overrides. Prototyping only — the key ships in the binary.
+ * DIRECT is auto-selected whenever [AppConfiguration.CLOUD_FUNCTIONS_URL] is blank (the proxy is useless
+ * without a URL); [AppConfiguration.USE_AI_PROXY_SERVER] overrides. Prototyping only — the key ships in the binary.
  */
 class AiTransport(
     @PublishedApi internal val proxyClient: HttpClient, // carries the Firebase bearer-token interceptor
@@ -70,7 +70,10 @@ class AiTransport(
         proxyQueryParams: Map<String, String> = emptyMap(),
         body: Any? = null,
     ): AiApiBaseResponse<T> {
-        val mode = resolveMode(hasAiApiKey = direct.apiKey.isNotBlank())
+        val mode = resolveMode()
+        if (mode == AiMode.DIRECT && direct.apiKey.isBlank()) {
+            throw Exception("AI provider API key is missing. Set OPENAI_API_KEY / REPLICATE_API_KEY in local.properties, or configure the Cloud Functions proxy (CLOUD_FUNCTIONS_URL).")
+        }
         val response = rawExecute(mode, method, proxyUrl, direct, proxyQueryParams, body)
         return when (mode) {
             AiMode.PROXY -> response.body()
@@ -111,9 +114,10 @@ class AiTransport(
     }
 
     @PublishedApi
-    internal fun resolveMode(hasAiApiKey: Boolean): AiMode {
+    internal fun resolveMode(): AiMode {
         AppConfiguration.USE_AI_PROXY_SERVER?.let { return if (it) AiMode.PROXY else AiMode.DIRECT }
-        return if (AppConfiguration.CLOUD_FUNCTIONS_URL.isBlank() && hasAiApiKey) AiMode.DIRECT else AiMode.PROXY
+        // Auto: the proxy only works with a proxy URL, so use it only when one is set; otherwise direct.
+        return if (AppConfiguration.CLOUD_FUNCTIONS_URL.isBlank()) AiMode.DIRECT else AiMode.PROXY
     }
 
     /**

@@ -4,6 +4,7 @@ import com.kotlinfoundation.koko.data.BackgroundExecutor
 import com.kotlinfoundation.koko.data.source.local.dao.GenerationOutputDao
 import com.kotlinfoundation.koko.data.source.local.entity.toEntity
 import com.kotlinfoundation.koko.data.source.local.entity.toModel
+import com.kotlinfoundation.koko.data.source.remote.apiservices.TemporaryFileUploadApiService
 import com.kotlinfoundation.koko.domain.exceptions.CreditRequiredException
 import com.kotlinfoundation.koko.domain.exceptions.PurchaseRequiredException
 import com.kotlinfoundation.koko.domain.model.credit.CreditConstants
@@ -16,12 +17,10 @@ import com.kotlinfoundation.koko.util.analytics.Analytics
 import com.kotlinfoundation.koko.util.file.FileManager
 import com.kotlinfoundation.koko.util.file.mimeTypeForFileName
 import com.kotlinfoundation.koko.util.logging.AppLogger
-import com.mmk.kmpstorage.core.FileUploadProgress
-import com.mmk.kmpstorage.core.KMPStorage
-import com.mmk.kmpstorage.core.extensions.putFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Orchestrates one AI generation: spend a credit, upload input files to the cloud, call the
@@ -36,6 +35,7 @@ class GenerationRepository(
     private val fileManager: FileManager,
     private val analytics: Analytics,
     private val backgroundExecutor: BackgroundExecutor,
+    private val temporaryFileUploadApiService: TemporaryFileUploadApiService,
 ) {
     private val cachedOutputMap = linkedMapOf<String, GenerationOutput>()
 
@@ -103,18 +103,19 @@ class GenerationRepository(
         params = params.mapValues { (_, param) ->
             param.mapFileUploadUrls { fileNameWithExtension ->
                 val fileBytes = fileManager.readInternalFileBytes(fileNameWithExtension)
-
-                val fileUploadProgress = KMPStorage.putFile {
-                    source { bytes(fileBytes) }
-                    destination {
-                        folder = "temporary_files"
-                        fileName = fileNameWithExtension.substringBeforeLast('.')
-                    }
-                    contentType = mimeTypeForFileName(fileNameWithExtension)
+                val uploadedUrl = try {
+                    temporaryFileUploadApiService.upload(
+                        bytes = fileBytes,
+                        fileNameWithExtension = fileNameWithExtension,
+                        contentType = mimeTypeForFileName(fileNameWithExtension),
+                    ).asDownloadUrl()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    AppLogger.e("File upload failed: ${e.message}")
+                    null
                 }
-                val uploadedUrl =
-                    (fileUploadProgress as? FileUploadProgress.Completed)?.result?.url
-                AppLogger.d("File is uploaded in cloud. Url: $uploadedUrl")
+                AppLogger.d("File uploaded. Url: $uploadedUrl")
                 uploadedUrl ?: ""
             }
         },

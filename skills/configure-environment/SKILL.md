@@ -41,7 +41,6 @@ credentials, IDs, and toggles.
 | `ADMOB_BANNER_AD_ID_IOS` | Banner ad unit (iOS) | AdMob console | monetization |
 | `ADMOB_INTERSTITIAL_AD_ID_IOS` | Interstitial ad unit (iOS) | AdMob console | monetization |
 | `ADMOB_REWARDED_AD_ID_IOS` | Rewarded ad unit (iOS) | AdMob console | monetization |
-| `IMGBB_TOKEN` | Image hosting/upload token | https://api.imgbb.com/ account | when using image upload |
 | `OPENAI_API_KEY` | Direct OpenAI calls (no proxy, no Firebase) | https://platform.openai.com/ | **phase 1** if the app uses AI (direct) · proxied in integrations — see note |
 | `REPLICATE_API_KEY` | Direct Replicate calls (no proxy, no Firebase) | https://replicate.com/account/api-tokens | **phase 1** if the app uses AI (direct) · proxied in integrations — see note |
 
@@ -50,8 +49,8 @@ credentials, IDs, and toggles.
 > marks it). Setting a real key auto-switches to the real provider — see `setup-subscriptions`.
 
 > **Direct AI mode (prototyping):** `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `local.properties` are used
-> only for the **direct** (no-Firebase) AI path — the app calls the provider straight from the device when
-> `AppConfiguration.CLOUD_FUNCTIONS_URL` is blank and a key is set (`AppConfiguration.USE_AI_PROXY_SERVER` overrides). The key
+> only for the **direct** (no-Firebase) AI path — the app calls the provider straight from the device
+> whenever `AppConfiguration.CLOUD_FUNCTIONS_URL` is blank (`AppConfiguration.USE_AI_PROXY_SERVER` overrides). The key
 > ships in the app binary, so this is prototyping only. In **production** the app calls the web-proxy and
 > the keys live in **Google Cloud Secret Manager**, not on device — see `integrate-web-proxy`.
 

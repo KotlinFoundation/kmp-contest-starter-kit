@@ -11,7 +11,8 @@ class PreferencesDataStoreProviderImpl : PreferencesDataStoreProvider {
     override fun providePreferencesDataStore(): DataStore<Preferences> = PreferenceDataStoreFactory.createWithPath(
         produceFile = {
             // Not java.io.tmpdir — the OS may wipe it, silently resetting user preferences.
-            val appDataDir = File(System.getProperty("user.home"), ".kmpstarterkit")
+            // Named after the app id so it's unique per app and refactor_package.sh renames it too.
+            val appDataDir = File(System.getProperty("user.home"), ".com.kotlinfoundation.koko")
             appDataDir.mkdirs()
             File(appDataDir, Constants.PREFERENCES_STORAGE_NAME)
                 .absolutePath
