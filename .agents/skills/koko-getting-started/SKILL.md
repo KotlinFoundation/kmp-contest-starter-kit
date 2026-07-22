@@ -44,7 +44,9 @@ Once the KMP app is ready (the getting started skill mentioned above is complete
 ## 🚀 Available Skills Index
 
 ### Phase 1: First Run (Local-only)
+- [ ] **[new-app](../../../skills/new-app/SKILL.md)**: Turn a raw idea into a defined product (prd/user_flow/ui_ux + name/id) — the entry point when starting from just an idea.
 - [ ] **[run-the-app](../../../skills/run-the-app/SKILL.md)**: Build and run the app on Android, Desktop, Web, or iOS.
+- [ ] **[build-features](../../../skills/build-features/SKILL.md)**: Derive and implement the MVP screens + local models from the product docs (tracked in PROGRESS_FEATURES.md).
 - [ ] **[refactor-package](../../../skills/refactor-package/SKILL.md)**: Rebrand the app by renaming package/applicationId/bundle ID and display name.
 - [ ] **[new-screen](../../../skills/new-screen/SKILL.md)**: Scaffold a new screen (UI, State, ViewModel, and Navigation).
 - [ ] **[new-local-model](../../../skills/new-local-model/SKILL.md)**: Scaffold a new Room 3 entity, DAO, and DI registration.
@@ -82,3 +84,4 @@ Once the KMP app is ready (the getting started skill mentioned above is complete
 
 ### 🛠️ Quality & Maintenance
 - [ ] **[run-quality-gates](../../../skills/run-quality-gates/SKILL.md)**: Execute lint checks, unit tests, and build validation.
+- [ ] **[verify-ui](../../../skills/verify-ui/SKILL.md)**: Verify a screen's behaviour (headless Compose test) and appearance (render a `@Preview` to a PNG).
