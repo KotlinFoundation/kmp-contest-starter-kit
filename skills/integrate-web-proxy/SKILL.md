@@ -126,9 +126,9 @@ Point `CLOUD_FUNCTIONS_URL` at the emulator host while iterating, then switch ba
 
 The OpenAI/Replicate calls are **already wired** — `OpenAiApiService` / `ReplicateApiService` route
 through `AiTransport`, and the proxy `HttpClient` (`HttpClientFactory.default`) attaches the Firebase ID
-token to every request automatically. So once `CLOUD_FUNCTIONS_URL` is set (and no direct key is set /
-`USE_AI_PROXY_SERVER` isn't forcing direct), the existing generation flow uses the proxy with **no code
-change**.
+token to every request automatically. So once `CLOUD_FUNCTIONS_URL` is set (unless `USE_AI_PROXY_SERVER`
+forces direct), the existing generation flow uses the proxy with **no code change** — a set proxy URL
+takes precedence over any direct key.
 
 To add a **new** endpoint:
 - **AI provider call** — add a method to the AI service that calls

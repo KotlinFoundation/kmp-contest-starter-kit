@@ -183,7 +183,8 @@ directly. It picks between two backends and adapts the response so the DTOs + `A
   client with **no** Firebase interceptor, sending `Authorization: Bearer <OPENAI_API_KEY|REPLICATE_API_KEY>`
   (from `BuildConfig`/`local.properties`) + Replicate's `Prefer: wait`. The raw provider JSON is re-wrapped
   into a synthetic `AiApiBaseResponse`.
-- **Selection:** auto — direct when `AppConfiguration.CLOUD_FUNCTIONS_URL` is blank AND the provider key is set;
+- **Selection:** auto — proxy only when `AppConfiguration.CLOUD_FUNCTIONS_URL` is set, otherwise direct
+  (the proxy is useless without a URL, so a blank URL always falls back to a direct provider call).
   `AppConfiguration.USE_AI_PROXY_SERVER` (`Boolean?`; `true`=proxy, `false`=direct, `null`=auto) overrides.
   Prototyping only — direct-mode keys ship in the app
   binary; production keeps the proxy (keys in Secret Manager). `AiTransport` is **provider-agnostic**: each

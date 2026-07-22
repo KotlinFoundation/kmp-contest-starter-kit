@@ -70,7 +70,7 @@ class AiTransport(
         proxyQueryParams: Map<String, String> = emptyMap(),
         body: Any? = null,
     ): AiApiBaseResponse<T> {
-        val mode = resolveMode(hasAiApiKey = direct.apiKey.isNotBlank())
+        val mode = resolveMode()
         val response = rawExecute(mode, method, proxyUrl, direct, proxyQueryParams, body)
         return when (mode) {
             AiMode.PROXY -> response.body()
@@ -111,9 +111,11 @@ class AiTransport(
     }
 
     @PublishedApi
-    internal fun resolveMode(hasAiApiKey: Boolean): AiMode {
+    internal fun resolveMode(): AiMode {
         AppConfiguration.USE_AI_PROXY_SERVER?.let { return if (it) AiMode.PROXY else AiMode.DIRECT }
-        return if (AppConfiguration.CLOUD_FUNCTIONS_URL.isBlank() && hasAiApiKey) AiMode.DIRECT else AiMode.PROXY
+        // Auto: the proxy only works with a proxy URL, so use it only when one is set; otherwise call
+        // the provider directly (a blank direct key then surfaces a clear auth error, not a dead proxy).
+        return if (AppConfiguration.CLOUD_FUNCTIONS_URL.isBlank()) AiMode.DIRECT else AiMode.PROXY
     }
 
     /**

@@ -50,8 +50,8 @@ credentials, IDs, and toggles.
 > marks it). Setting a real key auto-switches to the real provider — see `setup-subscriptions`.
 
 > **Direct AI mode (prototyping):** `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `local.properties` are used
-> only for the **direct** (no-Firebase) AI path — the app calls the provider straight from the device when
-> `AppConfiguration.CLOUD_FUNCTIONS_URL` is blank and a key is set (`AppConfiguration.USE_AI_PROXY_SERVER` overrides). The key
+> only for the **direct** (no-Firebase) AI path — the app calls the provider straight from the device
+> whenever `AppConfiguration.CLOUD_FUNCTIONS_URL` is blank (`AppConfiguration.USE_AI_PROXY_SERVER` overrides). The key
 > ships in the app binary, so this is prototyping only. In **production** the app calls the web-proxy and
 > the keys live in **Google Cloud Secret Manager**, not on device — see `integrate-web-proxy`.
 
