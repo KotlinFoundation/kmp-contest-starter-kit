@@ -31,8 +31,8 @@ object AppConfiguration {
     /**
      * How AI (OpenAI/Replicate) calls are routed.
      *
-     * - `null` (AUTO, default): use the Cloud Functions proxy, unless [CLOUD_FUNCTIONS_URL] is blank AND a
-     *   provider key is set in `local.properties` — then call the provider directly from the device.
+     * - `null` (AUTO, default): use the Cloud Functions proxy only when [CLOUD_FUNCTIONS_URL] is set;
+     *   if it's blank, call the provider directly from the device (the proxy is useless without a URL).
      * - `true`: always use the proxy.
      * - `false`: always call the provider directly.
      *
