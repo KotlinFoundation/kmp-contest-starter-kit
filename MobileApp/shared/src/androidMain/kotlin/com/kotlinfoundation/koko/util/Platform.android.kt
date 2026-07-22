@@ -62,6 +62,8 @@ internal actual fun onApplicationStartPlatformSpecific() {
     )
 }
 
+actual fun getPlatform(): Platform = Platform.Android
+
 internal actual val isAndroid = true
 internal actual val isDebug = BuildConfig.DEBUG
 actual val defaultAsyncDispatcher: CoroutineDispatcher = Dispatchers.IO

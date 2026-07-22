@@ -41,6 +41,8 @@ internal actual fun onApplicationStartPlatformSpecific() {
     )
 }
 
+actual fun getPlatform(): Platform = Platform.Web
+
 internal actual val isAndroid: Boolean get() = false
 internal actual val isDebug: Boolean get() = false
 
