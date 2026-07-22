@@ -45,7 +45,9 @@ These sequential guides walk you from first-run setup to monetization and growth
 
 | Skill Name | Location | Description |
 | :--- | :--- | :--- |
+| **`new-app`** | [SKILL.md](../../../../skills/new-app/SKILL.md) | Turn a raw idea into a defined product (prd/user_flow/ui_ux + name/id) before building. Entry point when the developer arrives with just an idea. |
 | **`run-the-app`** | [SKILL.md](../../../../skills/run-the-app/SKILL.md) | Instructions to run/build the app on Android, Desktop, Web, or iOS from source. |
+| **`build-features`** | [SKILL.md](../../../../skills/build-features/SKILL.md) | Derive the MVP screens + local models from prd.md / user_flow.md and implement the UI per ui_ux.md (records progress in PROGRESS_FEATURES.md). |
 | **`refactor-package`** | [SKILL.md](../../../../skills/refactor-package/SKILL.md) | Shell-script command to safely rename Android package namespaces, app IDs, and iOS bundles. |
 | **`new-screen`** | [SKILL.md](../../../../skills/new-screen/SKILL.md) | Scaffold a new Screen, UiState, and ViewModel, and register them with Jetpack Navigation 3 & Koin. |
 | **`new-local-model`** | [SKILL.md](../../../../skills/new-local-model/SKILL.md) | Scaffold a new Room 3 Entity, Dao, Database registration, and dependency injection binding. |
@@ -108,6 +110,7 @@ These sequential guides walk you from first-run setup to monetization and growth
 | Skill Name | Location | Description |
 | :--- | :--- | :--- |
 | **`run-quality-gates`** | [SKILL.md](../../../../skills/run-quality-gates/SKILL.md) | Execute codebase standard checks (Spotless code formatting check, unit tests, debug build validations). |
+| **`verify-ui`** | [SKILL.md](../../../../skills/verify-ui/SKILL.md) | Verify a screen's behaviour with a headless Compose test and its appearance by rendering a `@Preview` to a PNG. |
 
 > [!NOTE]
 > When executing a skill, make sure you perform any associated bash/gradle commands from the `MobileApp/` directory. Every path inside the parent skills expects execution inside the mobile subproject.
