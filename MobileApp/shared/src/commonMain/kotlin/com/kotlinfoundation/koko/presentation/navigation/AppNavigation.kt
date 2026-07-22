@@ -53,6 +53,7 @@ import com.kotlinfoundation.koko.presentation.screens.profile.ProfileViewModel
 import com.kotlinfoundation.koko.presentation.screens.signin.SignInScreen
 import com.kotlinfoundation.koko.presentation.screens.subscriptions.SubscriptionsScreen
 import com.kotlinfoundation.koko.presentation.screens.subscriptions.SubscriptionsViewModel
+import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.util.Constants
 import com.kotlinfoundation.koko.util.extensions.isKeyboardOpen
 import org.koin.compose.koinInject
@@ -176,11 +177,13 @@ private fun EntryProviderScope<ScreenRoute>.screens(navigator: Navigator) {
         OnBoardingScreen(
             style = OnBoardingScreenStyle.STYLE1,
             viewModel = viewModel,
-            onNavigateMain = { navigator.goBack() },
-            onNavigatePaywall = {
-                navigator.navigate(
-                    PaywallScreenRoute(placementId = Constants.PAYWALL_PLACEMENT_ONBOARDING),
-                )
+            onOnBoardingFinished = { isNewUser ->
+                navigator.set(HomeScreenRoute)
+                if (isNewUser && AppConfiguration.PREMIUM_FEATURES_ENABLED) {
+                    navigator.navigate(
+                        PaywallScreenRoute(placementId = Constants.PAYWALL_PLACEMENT_ONBOARDING),
+                    )
+                }
             },
         )
     }

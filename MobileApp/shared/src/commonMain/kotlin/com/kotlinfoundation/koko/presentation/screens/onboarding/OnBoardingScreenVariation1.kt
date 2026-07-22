@@ -36,18 +36,11 @@ import com.kotlinfoundation.koko.designsystem.components.AppButton
 import com.kotlinfoundation.koko.designsystem.components.HorizontalPagerIndicator
 import com.kotlinfoundation.koko.designsystem.components.HorizontalPagerIndicatorStyle
 import com.kotlinfoundation.koko.designsystem.components.ScreenTitle
-import com.kotlinfoundation.koko.designsystem.components.premium.PremiumFeaturesList
-import com.kotlinfoundation.koko.designsystem.generated.resources.UiRes
-import com.kotlinfoundation.koko.designsystem.generated.resources.benefits
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
 import com.kotlinfoundation.koko.generated.resources.Res
-import com.kotlinfoundation.koko.generated.resources.btn_get_premium
 import com.kotlinfoundation.koko.generated.resources.btn_get_started
-import com.kotlinfoundation.koko.generated.resources.btn_maybe_later
 import com.kotlinfoundation.koko.generated.resources.btn_next
 import com.kotlinfoundation.koko.generated.resources.btn_skip
-import com.kotlinfoundation.koko.presentation.components.premium.PremiumFeatureFactory
-import com.kotlinfoundation.koko.root.AppConfiguration
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -77,9 +70,6 @@ fun OnBoardingScreenVariation1(
             pageCount = { uiState.pages.size },
         )
         val isLastPage = pagerState.currentPage == (pagerState.pageCount - 1)
-        val isGetPremiumButtonVisible =
-            AppConfiguration.PREMIUM_FEATURES_ENABLED &&
-                (uiState.pages.getOrNull(pagerState.currentPage)?.isGetPremiumButtonVisible ?: false)
 
         Row(
             modifier = Modifier.fillMaxWidth()
@@ -87,19 +77,16 @@ fun OnBoardingScreenVariation1(
                 .padding(horizontal = AppTheme.spacing.outerSpacing),
         ) {
             Spacer(modifier = Modifier.weight(1f))
-            androidx.compose.animation.AnimatedVisibility(
-                visible = isGetPremiumButtonVisible || isLastPage.not(),
+            // Skip straight to the last page; hidden once you're already there.
+            AnimatedVisibility(
+                visible = isLastPage.not(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
                 SkipButton(
-                    text = stringResource(if (isGetPremiumButtonVisible) Res.string.btn_maybe_later else Res.string.btn_skip),
+                    text = stringResource(Res.string.btn_skip),
                     onClick = {
-                        if (isGetPremiumButtonVisible) {
-                            onUiEvent(OnBoardingUiEvent.OnClickStart)
-                        } else {
-                            coroutineScope.launch { pagerState.animateScrollToPage(uiState.pages.lastIndex) }
-                        }
+                        coroutineScope.launch { pagerState.animateScrollToPage(uiState.pages.lastIndex) }
                     },
                 )
             }
@@ -151,41 +138,30 @@ fun OnBoardingScreenVariation1(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(modifier = Modifier, contentAlignment = Alignment.Center) {
-                when {
-                    isGetPremiumButtonVisible -> {
-                        AppButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(Res.string.btn_get_premium),
-                            onClick = { onUiEvent(OnBoardingUiEvent.OnClickGetPremiumAccess) },
-                        )
-                    }
-
-                    isLastPage -> {
-                        AppButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(Res.string.btn_get_started),
-                            onClick = { onUiEvent(OnBoardingUiEvent.OnClickStart) },
-                        )
-                    }
-
-                    else -> {
-                        AppButton(
-                            text = stringResource(Res.string.btn_next),
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                coroutineScope.launch {
-                                    val nextPage = min(
-                                        pagerState.currentPage + 1,
-                                        uiState.pages.lastIndex,
-                                    )
-                                    pagerState.animateScrollToPage(
-                                        page = nextPage,
-                                        animationSpec = tween(),
-                                    )
-                                }
-                            },
-                        )
-                    }
+                // Last page finishes onboarding; earlier pages advance the pager.
+                if (isLastPage) {
+                    AppButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(Res.string.btn_get_started),
+                        onClick = { onUiEvent(OnBoardingUiEvent.OnClickStart) },
+                    )
+                } else {
+                    AppButton(
+                        text = stringResource(Res.string.btn_next),
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            coroutineScope.launch {
+                                val nextPage = min(
+                                    pagerState.currentPage + 1,
+                                    uiState.pages.lastIndex,
+                                )
+                                pagerState.animateScrollToPage(
+                                    page = nextPage,
+                                    animationSpec = tween(),
+                                )
+                            }
+                        },
+                    )
                 }
             }
         }
@@ -227,20 +203,6 @@ private fun OnBoardingPager(
                 color = AppTheme.colors.text.primary,
                 textAlign = TextAlign.Center,
             )
-
-            Spacer(modifier = Modifier.height(AppTheme.spacing.defaultSpacing))
-
-            AnimatedVisibility(item.isGetPremiumButtonVisible) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = stringResource(UiRes.string.benefits),
-                        style = AppTheme.typography.h6,
-                        color = AppTheme.colors.text.primary,
-                    )
-                    Spacer(modifier = Modifier.height(AppTheme.spacing.verticalListItemSpacingSmall))
-                    PremiumFeaturesList(features = PremiumFeatureFactory.defaultPremiumFeatures)
-                }
-            }
         }
     }
 }

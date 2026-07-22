@@ -19,35 +19,23 @@ class OnBoardingViewModel(
         checkIfOnBoardIsShown()
     }
 
-    private fun checkIfOnBoardIsShown() = viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
-        if (userPreferences.getBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN)) {
-            _uiState.update { it.copy(onBoardIsShown = true) }
-        } else {
-            _uiState.update { it.copy(onBoardIsShown = false, isLoading = false) }
-        }
-    }
-
     fun onUiEvent(event: OnBoardingUiEvent) = viewModelScope.launch {
         when (event) {
             OnBoardingUiEvent.OnClickStart -> {
-                onBoardShown()
-            }
-
-            OnBoardingUiEvent.OnClickGetPremiumAccess -> {
-                _uiState.update { it.copy(isPremiumRequired = true) }
+                userPreferences.putBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN, true)
+                _uiState.update { it.copy(isOnBoardingFinished = true, isNewUser = true) }
             }
         }
     }
 
-    fun onPaywallEventHandled() = viewModelScope.launch {
-        _uiState.update { it.copy(isPremiumRequired = false) }
-        onBoardShown()
-    }
+    fun onFinishHandled() = _uiState.update { it.copy(isOnBoardingFinished = false) }
 
-    private suspend fun onBoardShown() {
+    private fun checkIfOnBoardIsShown() = viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }
-        userPreferences.putBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN, true)
-        _uiState.update { it.copy(onBoardIsShown = true, isLoading = false) }
+        if (userPreferences.getBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN)) {
+            _uiState.update { it.copy(isOnBoardingFinished = true, isNewUser = false) }
+        } else {
+            _uiState.update { it.copy(isLoading = false) }
+        }
     }
 }

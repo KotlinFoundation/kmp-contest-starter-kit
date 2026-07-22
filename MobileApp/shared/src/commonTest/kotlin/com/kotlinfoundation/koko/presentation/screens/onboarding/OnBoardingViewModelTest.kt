@@ -13,7 +13,6 @@ import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -38,47 +37,48 @@ class OnBoardingViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertFalse(state.onBoardIsShown)
+        assertFalse(state.isOnBoardingFinished)
         assertFalse(state.isLoading)
     }
 
     @Test
-    fun `returning user skips onboarding`() = runTest(mainDispatcher) {
+    fun `returning user finishes as an existing user`() = runTest(mainDispatcher) {
         userPreferences.putBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN, true)
 
         val viewModel = OnBoardingViewModel(userPreferences)
         advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value.onBoardIsShown)
+        val state = viewModel.uiState.value
+        assertTrue(state.isOnBoardingFinished)
+        // Not a new user, so navigation skips the paywall and goes straight to main.
+        assertFalse(state.isNewUser)
     }
 
     @Test
-    fun `clicking start persists the flag and completes onboarding`() = runTest(mainDispatcher) {
+    fun `clicking start finishes onboarding as a new user and persists it`() = runTest(mainDispatcher) {
         val viewModel = OnBoardingViewModel(userPreferences)
         advanceUntilIdle()
 
         viewModel.onUiEvent(OnBoardingUiEvent.OnClickStart)
         advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value.onBoardIsShown)
+        val state = viewModel.uiState.value
+        assertTrue(state.isOnBoardingFinished)
+        // isNewUser lets navigation decide paywall vs. main; onboarding stays paywall-unaware.
+        assertTrue(state.isNewUser)
         assertTrue(userPreferences.getBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN))
     }
 
     @Test
-    fun `premium CTA raises the paywall flag and paywall handling completes onboarding`() = runTest(mainDispatcher) {
+    fun `onFinishHandled resets the finished flag`() = runTest(mainDispatcher) {
         val viewModel = OnBoardingViewModel(userPreferences)
         advanceUntilIdle()
 
-        viewModel.onUiEvent(OnBoardingUiEvent.OnClickGetPremiumAccess)
+        viewModel.onUiEvent(OnBoardingUiEvent.OnClickStart)
         advanceUntilIdle()
-        assertTrue(viewModel.uiState.value.isPremiumRequired)
+        assertTrue(viewModel.uiState.value.isOnBoardingFinished)
 
-        viewModel.onPaywallEventHandled()
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertFalse(state.isPremiumRequired)
-        assertTrue(state.onBoardIsShown)
-        assertEquals(true, userPreferences.getBoolean(UserPreferences.KEY_IS_ONBOARD_SHOWN))
+        viewModel.onFinishHandled()
+        assertFalse(viewModel.uiState.value.isOnBoardingFinished)
     }
 }

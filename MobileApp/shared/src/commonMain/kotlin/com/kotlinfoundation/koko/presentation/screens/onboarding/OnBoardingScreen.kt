@@ -31,21 +31,14 @@ fun OnBoardingScreen(
     modifier: Modifier = Modifier,
     style: OnBoardingScreenStyle,
     viewModel: OnBoardingViewModel,
-    onNavigateMain: () -> Unit,
-    onNavigatePaywall: () -> Unit,
+    onOnBoardingFinished: (isNewUser: Boolean) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    if (uiState.onBoardIsShown) {
-        LaunchedEffect(uiState.onBoardIsShown) {
-            onNavigateMain()
-        }
-    }
-
-    if (uiState.isPremiumRequired) {
-        LaunchedEffect(uiState.isPremiumRequired) {
-            onNavigatePaywall()
-            viewModel.onPaywallEventHandled()
+    LaunchedEffect(uiState.isOnBoardingFinished) {
+        if (uiState.isOnBoardingFinished) {
+            onOnBoardingFinished(uiState.isNewUser)
+            viewModel.onFinishHandled()
         }
     }
 

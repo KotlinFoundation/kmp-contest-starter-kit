@@ -12,7 +12,6 @@ data class OnBoardingScreenData(
     val title: StringResource,
     val description: StringResource,
     val imageRes: DrawableResource,
-    val isGetPremiumButtonVisible: Boolean = false,
 )
 
 data class OnBoardingUiState(
@@ -32,15 +31,14 @@ data class OnBoardingUiState(
             Res.string.title_onboarding_page_1,
             Res.string.desc_onboarding_page_1,
             UiRes.drawable.ic_logo,
-            isGetPremiumButtonVisible = true,
         ),
     ),
-    val onBoardIsShown: Boolean = false,
-    val isPremiumRequired: Boolean = false,
+    val isOnBoardingFinished: Boolean = false,
+    // isNewUser distinguishes a fresh completion from an already-onboarded user
+    val isNewUser: Boolean = false,
     val isLoading: Boolean = true,
 )
 
-sealed class OnBoardingUiEvent {
-    data object OnClickStart : OnBoardingUiEvent()
-    data object OnClickGetPremiumAccess : OnBoardingUiEvent()
+sealed interface OnBoardingUiEvent {
+    data object OnClickStart : OnBoardingUiEvent
 }
