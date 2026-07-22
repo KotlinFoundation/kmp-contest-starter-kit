@@ -51,6 +51,23 @@ open iosApp/iosApp.xcodeproj
 ```
 Do NOT run iOS builds for routine validation — they are slow. Only when the change is iOS-specific.
 
+## Run vs. verify — don't loop
+
+`run-the-app` is for a **human** to see the app. When you (the agent) just need to confirm a change is
+sound, do **not** launch it:
+
+- **Compiling is the check.** `:androidApp:assembleDebug` (or `:desktopApp:run` for a one-off visual) is
+  enough. Do **not** auto-install and launch via `adb` and poll for the process to "confirm it works" —
+  the launcher Activity is `.AppActivity` (Application class `.AndroidApp`), but detecting it via adb is
+  fragile and is a classic retry-loop trap. For behaviour/appearance use the **`verify-ui`** skill.
+- **`run` tasks never exit** (`:desktopApp:run`, `:webApp:wasmJsBrowserDevelopmentRun`, `installDebug`+launch).
+  A task that hasn't returned is **running, not hung** — start it once (background if you need the shell)
+  and stop; do not kill and re-run.
+- **Never run `check` / `build` / `clean build`** to validate — they aggregate every target (incl. iOS) and
+  a single iOS cache failure fails the whole thing, which loops. See `run-quality-gates` for the scoped gates.
+- A failed/slow command is **not** a retry signal: read the error, fix or STOP. First build is slow
+  (JBR + Compose download) — expected.
+
 ## First-run failures
 
 - `SDK location not found` → `sdk.dir` missing/wrong in `MobileApp/local.properties`.

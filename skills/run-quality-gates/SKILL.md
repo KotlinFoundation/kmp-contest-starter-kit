@@ -40,6 +40,15 @@ Rules:
 - Web check when web code changed: `./gradlew :shared:compileKotlinWasmJs :shared:compileKotlinJs`.
 - Quick iOS-code compile check without a full build: `./gradlew :shared:compileAppleMainKotlinMetadata`.
 
+## Do NOT (this is what causes a build loop)
+
+The three scoped tasks above ARE the whole validation. Improvising around them is what spirals.
+
+- **Never run `check`, `build`, or `clean build`.** They aggregate **every** target — including iOS — so an unrelated iOS cache/link failure fails the whole run and reads as "broken", tempting a retry. They're also far slower. Use the scoped gates, nothing wider.
+- **Don't launch the app to "verify" a code change.** `:androidApp:assembleDebug` compiling green IS the Android gate. Do **not** auto-install + launch via `adb` and poll for the process — the launcher Activity is `.AppActivity` (Application class `.AndroidApp`), but detecting it via adb is fragile and is exactly what loops. To watch it render, use **`verify-ui`** (headless PNG) or ask the developer to hit Run in the IDE.
+- **Run tasks never return** (`:desktopApp:run`, `:webApp:wasmJsBrowserDevelopmentRun`, `installDebug`+launch). A command that hasn't exited is **running, not hung** — start it once (in the background if you need the shell) and move on; do not kill and re-run.
+- **A failed or slow command is not a retry signal.** Read the error → fix it, or STOP and report. Never re-run the same command hoping for a different result. The **first** build is slow (downloads JBR + Compose) — expected, not a hang.
+
 ---
 
 *Cross-phase — every guide's validation steps call this skill.*
