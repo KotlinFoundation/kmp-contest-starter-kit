@@ -99,9 +99,15 @@ Use `TODO(integrations)` / `TODO(publish)` / `TODO(monetization)` to name the ph
 
 ### 5. Hand off — **Agent Action**
 
-Product is defined. **Continue straight into the [`getting-started`](../getting-started/SKILL.md)
-guide** (don't make the developer ask) — it installs prereqs, runs the app, rebrands it with the name
-and id decided in step 2, and builds the MVP features via **`build-features`**.
+Product is defined. **Continue into the [`getting-started`](../getting-started/SKILL.md) guide** (don't
+make the developer ask) — it installs prereqs, runs the app, rebrands it with the name and id decided in
+step 2, and builds the MVP features via **`build-features`**.
+
+**If `getting-started` invoked you** (it found the product docs / name+id missing and called `new-app`
+to fill them): once the docs are written and the name/id chosen, just **hand back** — `getting-started`
+resumes at its next unchecked item. It will **not** call `new-app` again, because the values it checks
+for now exist. This is the only link between the two skills, and it is one-way + state-guarded, so it
+cannot loop.
 
 ---
 

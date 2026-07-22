@@ -74,8 +74,9 @@ Verify: `./scripts/check_env.sh --phase getting-started`.
 
 ### C. Define the product (grounds everything downstream)
 
-7. **Agent Action** — The product should already be defined by the **`new-app`** skill: `AiGuidelines/project/prd.md`, `user_flow.md`, and `ui_ux.md` filled, name/id decided, deferred decisions marked `TODO(<phase>)` in `root/AppConfiguration.kt`.
-   - If those files are still blank (just a heading), **stop and run `new-app` first** — it interviews the developer and writes them. Never invent the product yourself.
+7. **Agent Action** — The product must be defined before building: `AiGuidelines/project/prd.md`, `user_flow.md`, and `ui_ux.md` filled, **app name + id decided**, deferred decisions marked `TODO(<phase>)` in `root/AppConfiguration.kt`. This is normally produced by the **`new-app`** skill.
+   - **If any of that is missing** — the docs are still just a heading, or no name/id has been chosen (common when the developer jumped straight into `getting-started`) — invoke **`new-app`** to produce it. It interviews the developer and writes the docs + picks the name/id; never invent the product yourself. When it finishes, **resume this guide at the next unchecked item** (don't restart from step A).
+   - **This cannot loop.** `new-app` fills exactly the files/values checked here, so on return the precondition is satisfied and `new-app` is never re-invoked. The trigger is state-based (docs present + name/id set), not a blind re-run — if the state is already good, skip straight past this step.
 
 ### D. Build your features
 
