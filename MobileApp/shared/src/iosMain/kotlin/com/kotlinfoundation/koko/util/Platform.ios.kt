@@ -52,9 +52,11 @@ object IosPushNotificationHandler {
     }
 }
 
+actual fun getPlatform(): Platform = Platform.Ios
+
 internal actual val isAndroid = false
 
 @OptIn(ExperimentalNativeApi::class)
-internal actual val isDebug = Platform.isDebugBinary
+internal actual val isDebug = kotlin.native.Platform.isDebugBinary
 
 actual val defaultAsyncDispatcher: CoroutineDispatcher = Dispatchers.IO

@@ -41,6 +41,8 @@ internal actual fun onApplicationStartPlatformSpecific() {
     FileKit.init("com.kotlinfoundation.koko")
 }
 
+actual fun getPlatform(): Platform = Platform.Desktop
+
 internal actual val isAndroid: Boolean
     get() = false
 internal actual val isDebug: Boolean

@@ -77,7 +77,7 @@ class FileManagerImpl(
         val extension = fileExtension
             ?: url.fileExtension().ifEmpty { null }
             ?: return@execute Result.failure(Exception("Failed to download. Please specify file extension"))
-        val bytes = httpClient.get(url).readRawBytes()
+        val bytes = httpClient.get(url.throughDevProxy()).readRawBytes()
         val name = createNewUniqueFileNameWithExtension(fileExtension = extension)
         store[name] = bytes
         Result.success(name)
@@ -105,6 +105,23 @@ class FileManagerImpl(
     private fun String.decodeBase64OrNull(): ByteArray? = runCatching { Base64.decode(this) }.getOrNull()
 
     private fun String.fileExtension(): String = substringAfterLast('.', "").substringBefore(';').lowercase()
+
+    /**
+     * Rewrite a provider CDN URL to the same-origin dev-server proxy so the browser can fetch the
+     * generated image (the CDNs, e.g. `replicate.delivery`, send no `Access-Control-Allow-Origin`, so a
+     * direct cross-origin fetch is CORS-blocked). Matches the `devServer.proxy` block in
+     * `webApp/build.gradle.kts`. Local-dev only; a deployed web build fetches via the Cloud Functions proxy.
+     */
+    private fun String.throughDevProxy(): String = CDN_PROXY_REWRITES.entries
+        .firstOrNull { (origin, _) -> startsWith(origin) }
+        ?.let { (origin, proxyPath) -> proxyPath + removePrefix(origin) }
+        ?: this
+
+    private companion object {
+        val CDN_PROXY_REWRITES = mapOf(
+            "https://replicate.delivery" to "http://localhost:8080/rdelivery",
+        )
+    }
 }
 
 @OptIn(ExperimentalEncodingApi::class)

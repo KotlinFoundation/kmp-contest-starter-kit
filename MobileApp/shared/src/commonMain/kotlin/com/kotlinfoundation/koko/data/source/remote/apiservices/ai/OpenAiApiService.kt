@@ -8,9 +8,16 @@ import com.kotlinfoundation.koko.data.source.remote.response.ai.AiApiBaseRespons
 import com.kotlinfoundation.koko.data.source.remote.response.ai.openai.OpenAiCreateChatResponse
 import com.kotlinfoundation.koko.data.source.remote.response.ai.openai.OpenAiCreateImageResponse
 import com.kotlinfoundation.koko.root.AppConfiguration
+import com.kotlinfoundation.koko.util.Platform
+import com.kotlinfoundation.koko.util.getPlatform
 import io.ktor.http.HttpMethod
 
 class OpenAiApiService(private val aiTransport: AiTransport) {
+
+    // Web can't call api.openai.com directly (no CORS); it goes through the same-origin dev-server proxy
+    // (see webApp/build.gradle.kts). Everyone else hits the provider directly.
+    private val baseUrl: String
+        get() = if (getPlatform() == Platform.Web) "http://localhost:8080/openai" else "https://api.openai.com"
 
     private fun directSpec(url: String) = AiDirectSpec(url = url, apiKey = BuildConfig.OPENAI_API_KEY)
 
@@ -46,7 +53,7 @@ class OpenAiApiService(private val aiTransport: AiTransport) {
     suspend fun createChat(requestBody: OpenAiCreateChatRequest): AiApiBaseResponse<OpenAiCreateChatResponse> = aiTransport.execute(
         method = HttpMethod.Post,
         proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/openAiCreateTextCompletion",
-        direct = directSpec("https://api.openai.com/v1/chat/completions"),
+        direct = directSpec("$baseUrl/v1/chat/completions"),
         body = requestBody,
     )
 
@@ -59,7 +66,7 @@ class OpenAiApiService(private val aiTransport: AiTransport) {
     suspend fun createImage(requestBody: OpenAiCreateImageRequest): AiApiBaseResponse<OpenAiCreateImageResponse> = aiTransport.execute(
         method = HttpMethod.Post,
         proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/openAiCreateImage",
-        direct = directSpec("https://api.openai.com/v1/images/generations"),
+        direct = directSpec("$baseUrl/v1/images/generations"),
         body = requestBody,
     )
 }

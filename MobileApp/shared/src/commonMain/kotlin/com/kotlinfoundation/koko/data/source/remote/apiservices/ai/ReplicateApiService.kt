@@ -5,6 +5,8 @@ import com.kotlinfoundation.koko.data.source.remote.request.ai.replicate.Replica
 import com.kotlinfoundation.koko.data.source.remote.response.ai.AiApiBaseResponse
 import com.kotlinfoundation.koko.data.source.remote.response.ai.replicate.ReplicatePredictionResponse
 import com.kotlinfoundation.koko.root.AppConfiguration
+import com.kotlinfoundation.koko.util.Platform
+import com.kotlinfoundation.koko.util.getPlatform
 import io.ktor.http.HttpMethod
 
 /**
@@ -13,6 +15,12 @@ import io.ktor.http.HttpMethod
  *
  */
 class ReplicateApiService(val aiTransport: AiTransport) {
+
+    // Web can't call api.replicate.com directly (no CORS); it goes through the same-origin dev-server
+    // proxy (see webApp/build.gradle.kts). Everyone else hits the provider directly.
+    @PublishedApi
+    internal val baseUrl: String
+        get() = if (getPlatform() == Platform.Web) "http://localhost:8080/replicate" else "https://api.replicate.com"
 
     @PublishedApi
     internal fun directSpec(url: String) = AiDirectSpec(
@@ -59,7 +67,7 @@ class ReplicateApiService(val aiTransport: AiTransport) {
     ): AiApiBaseResponse<ReplicatePredictionResponse> = aiTransport.execute(
         method = HttpMethod.Post,
         proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/replicateCreateModelPrediction",
-        direct = directSpec("https://api.replicate.com/v1/models/$modelOwner/$modelName/predictions"),
+        direct = directSpec("$baseUrl/v1/models/$modelOwner/$modelName/predictions"),
         proxyQueryParams = mapOf("model_owner" to modelOwner, "model_name" to modelName),
         body = requestBody,
     )
@@ -86,7 +94,7 @@ class ReplicateApiService(val aiTransport: AiTransport) {
     suspend fun createPrediction(requestBody: ReplicatePredictionRequest): AiApiBaseResponse<ReplicatePredictionResponse> = aiTransport.execute(
         method = HttpMethod.Post,
         proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/replicateCreatePrediction",
-        direct = directSpec("https://api.replicate.com/v1/predictions"),
+        direct = directSpec("$baseUrl/v1/predictions"),
         body = requestBody,
     )
 
@@ -107,7 +115,7 @@ class ReplicateApiService(val aiTransport: AiTransport) {
     suspend fun getPredictionStatus(id: String): AiApiBaseResponse<ReplicatePredictionResponse> = aiTransport.execute(
         method = HttpMethod.Get,
         proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/replicateGetPredictionStatus",
-        direct = directSpec("https://api.replicate.com/v1/predictions/$id"),
+        direct = directSpec("$baseUrl/v1/predictions/$id"),
         proxyQueryParams = mapOf("id" to id),
     )
 
@@ -128,7 +136,7 @@ class ReplicateApiService(val aiTransport: AiTransport) {
     suspend fun cancelPrediction(id: String): AiApiBaseResponse<ReplicatePredictionResponse> = aiTransport.execute(
         method = HttpMethod.Post,
         proxyUrl = "${AppConfiguration.CLOUD_FUNCTIONS_URL}/replicateCancelPrediction",
-        direct = directSpec("https://api.replicate.com/v1/predictions/$id/cancel"),
+        direct = directSpec("$baseUrl/v1/predictions/$id/cancel"),
         proxyQueryParams = mapOf("id" to id),
     )
 }
