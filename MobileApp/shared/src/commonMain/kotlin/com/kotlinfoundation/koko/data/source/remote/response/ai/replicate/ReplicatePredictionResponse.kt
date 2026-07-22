@@ -2,13 +2,16 @@ package com.kotlinfoundation.koko.data.source.remote.response.ai.replicate
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
+// [input] is a concrete JsonObject rather than a type parameter — a generic @Serializable class
+// crashes kotlinx.serialization's reflective serializer lookup on Kotlin/Wasm.
 @Serializable
-data class ReplicatePredictionResponse<Input>(
+data class ReplicatePredictionResponse(
     @SerialName("id") val id: String? = null,
     @SerialName("model") val model: String? = null,
     @SerialName("version") val version: String? = null,
-    @SerialName("input") val input: Input? = null,
+    @SerialName("input") val input: JsonObject? = null,
     @SerialName("logs") val logs: String? = null,
     @SerialName("status") val status: String? = null,
     @SerialName("output") val output: String? = null,

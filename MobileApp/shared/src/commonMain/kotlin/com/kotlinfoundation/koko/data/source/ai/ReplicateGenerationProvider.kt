@@ -11,6 +11,7 @@ import com.kotlinfoundation.koko.domain.usecase.AiGenerationProvider
 import com.kotlinfoundation.koko.util.file.FileManager
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
@@ -87,7 +88,7 @@ class ReplicateGenerationProvider(
         }
     }
 
-    fun GenerationInput.toReplicateRequestBody(): Map<String, JsonElement> {
+    fun GenerationInput.toReplicateRequestBody(): JsonObject {
         val requestBody = mutableMapOf<String, JsonElement>()
 
         requestBody[PROMPT_KEY_PARAM] = JsonPrimitive(fullPrompt())
@@ -121,7 +122,7 @@ class ReplicateGenerationProvider(
             }
         }
 
-        return requestBody
+        return JsonObject(requestBody)
     }
 
     /**
@@ -130,10 +131,10 @@ class ReplicateGenerationProvider(
      * @param modelName The name of the model (e.g., `"nano-banana""`).
      *
      */
-    private suspend inline fun <reified Input> createOfficialModelsPrediction(
+    private suspend fun createOfficialModelsPrediction(
         modelOwner: String,
         modelName: String,
-        input: Input,
+        input: JsonObject,
     ) = replicateApiService.createModelPrediction(
         modelOwner = modelOwner,
         modelName = modelName,
@@ -147,9 +148,9 @@ class ReplicateGenerationProvider(
      * Creates a prediction request for a specific community models using the Replicate API.
      * @param version The version of the model to use.
      */
-    private suspend inline fun <reified Input> createCommunityModelsPrediction(
+    private suspend fun createCommunityModelsPrediction(
         version: String?,
-        input: Input,
+        input: JsonObject,
     ) = replicateApiService.createPrediction(
         requestBody = ReplicatePredictionRequest(
             version = version,
