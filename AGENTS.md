@@ -119,6 +119,13 @@ All Gradle commands run from `MobileApp/`.
 2. **Unit + UI tests**: `./gradlew :shared:jvmTest :shared:testAndroidHostTest` — both source sets pull from `commonTest`. `jvmTest` also includes `jvmTest/`-only tests (e.g. headless `runComposeUiTest`).
 3. **Android debug build**: `./gradlew :androidApp:assembleDebug` — also builds `:shared` transitively.
 
+### Validation guardrails (avoid the build loop)
+These three scoped tasks ARE the whole validation. Do not improvise around them:
+- **Never run the aggregate tasks `check`, `build`, or `clean build`.** They pull in **every** target — including iOS — so an unrelated iOS cache/link failure fails the whole run, which reads as "broken" and tempts a retry loop. They are also far slower. Run only the three scoped gates above (plus the web/iOS compile checks below when relevant).
+- **`assembleDebug` succeeding IS the Android validation.** Do **not** then auto-install + launch via `adb` and poll to "confirm it works" — the launcher Activity is `.AppActivity` (Application class `.AndroidApp`), but guessing/parsing it via adb is fragile and is what spirals into a loop. To see the app actually render, use the `verify-ui` skill (headless PNG) or hand off to the developer to hit Run in the IDE.
+- **Run tasks are long-running and never exit**: `:desktopApp:run`, `:webApp:wasmJsBrowserDevelopmentRun`, `:androidApp:installDebug`+launch. Start once (background if you need the shell back); a task that hasn't returned is **running, not hung** — do not kill and re-run.
+- **A failed or slow gate is not a retry signal.** Read the error and fix it, or STOP and report to the developer. Never re-run the same command hoping it passes. First build is slow (downloads JBR + Compose) — expected, not a hang.
+
 ### Other test paths
 - **Android UI/logic** (instrumented): `./gradlew :androidApp:connectedDebugAndroidTest` (device required).
 - **Design system only**: just compile with build tasks; no tests yet.
