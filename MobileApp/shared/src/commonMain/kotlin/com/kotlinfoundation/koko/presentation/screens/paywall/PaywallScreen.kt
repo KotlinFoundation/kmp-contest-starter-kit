@@ -35,8 +35,8 @@ fun PaywallScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    if (uiState.signInActionRequired) {
-        LaunchedEffect(uiState.signInActionRequired) {
+    LaunchedEffect(uiState.signInActionRequired) {
+        if (uiState.signInActionRequired) {
             onSignInRequired()
             viewModel.onSignInActionHandled()
         }

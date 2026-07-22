@@ -56,8 +56,8 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    if (uiState.signInActionRequired) {
-        LaunchedEffect(uiState) {
+    LaunchedEffect(uiState.signInActionRequired) {
+        if (uiState.signInActionRequired) {
             onSignInRequired()
         }
     }
