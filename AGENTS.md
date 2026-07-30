@@ -52,9 +52,6 @@ MobileApp/
 ├── designsystem/            # Reusable UI components library (KMP)
 │   └── src/jvmMain/         # Desktop entry for component preview (Main.kt)
 ├── libs/
-│   ├── auth/                # Authentication module
-│   │   ├── auth-api/        # Auth interface contracts
-│   │   └── auth-firebase/   # Firebase implementation
 │   └── subscription/        # Subscription module
 │       ├── subscription-api/        # Subscription interface contracts
 │       ├── subscription-revenuecat/ # RevenueCat implementation
@@ -453,6 +450,32 @@ private fun HomeStoreScreenshot_iPhone_en() {
 `@StoreScreenshot`-tagged previews are excluded from the regression screenshot test (they're storefront assets, rendered at huge pixel sizes — different concerns) and only run when the `-PgenerateStoreScreenshots=true` Gradle property is set, which the script handles for you.
 
 **Default device.** Unless the user explicitly requests a different device, leave the annotation with the enum default (`StoreDevice.IPHONE_6_5`). It's already the default value on the `@StoreScreenshot` annotation, so the cleanest form is to omit the `device =` argument entirely.
+
+### Authentication
+
+Auth is handled **directly by the [KMPAuth](https://github.com/mirzemehdi/KMPAuth) library** (3.0.1) via
+the `KMPAuth` facade — there is **no in-repo auth module**. Everything is common and **cross-platform,
+including desktop and web** (Firebase backend; the REST engine covers targets without a native Firebase
+SDK), so there is no more desktop/web no-op mock.
+
+- **Facade** (`com.mmk.kmpauth.core.KMPAuth`): `currentUser()`, `currentUserFlow`, `currentUserIdToken(forceRefresh)`
+  (the web-proxy Bearer token — see `HttpClientFactory.default()`), `signInAnonymously()`, `signOut()`,
+  `deleteAccount()`, `reauthenticate()`. Initialized once in `AppInitializer` via
+  `KMPAuth.initialize { google(GoogleAuthCredentials(serverId = BuildConfig.GOOGLE_WEB_CLIENT_ID)) }`
+  (the Firebase backend self-registers from the `kmpauth-firebase` classpath).
+- **`UserRepository`** wraps the facade (maps `KMPAuthUser` → domain `User`, merges premium status,
+  guest sign-in on first launch). ViewModels never call KMPAuth directly.
+- **Social sign-in UI** (`presentation/components/AuthUIHelperButtons.kt`, common): `rememberGoogleAuthState`
+  (`kmpauth-google`) and `rememberAppleAuthState` (`kmpauth-apple`) — the modern state API returning
+  `Result<KMPAuthUser>`. No deprecated `*UiContainer`.
+- **Typed exceptions** (from KMPAuth, not domain): `KMPAuthUserCollisionException` (guest-upgrade collision →
+  `SignInScreen` switches to sign-in mode) and `KMPAuthRecentLoginRequiredException` (stale session on delete →
+  `ProfileViewModel` prompts reauth).
+- Modules: `kmpauth-firebase` (backend), `kmpauth-google`, `kmpauth-apple`. iOS needs the GoogleSignIn-iOS +
+  firebase-ios-sdk Swift packages (already in `iosApp.xcodeproj`) and deployment target ≥ 16.
+
+> **mavenLocal (temporary):** `settings.gradle.kts` includes `mavenLocal()` to resolve kmpauth `3.0.1`
+> until it's published to Maven Central. Remove that repo line once it's on Central.
 
 ### Subscription Provider
 

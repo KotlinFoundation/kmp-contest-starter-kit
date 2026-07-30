@@ -15,8 +15,9 @@ import com.kotlinfoundation.koko.util.isAndroid
 import com.kotlinfoundation.koko.util.isDebug
 import com.kotlinfoundation.koko.util.logging.AppLogger
 import com.kotlinfoundation.koko.util.onApplicationStartPlatformSpecific
+import com.mmk.kmpauth.core.KMPAuth
 import com.mmk.kmpauth.google.GoogleAuthCredentials
-import com.mmk.kmpauth.google.GoogleAuthProvider
+import com.mmk.kmpauth.google.google
 import com.mmk.kmpnotifier.KMPNotifier
 import com.mmk.kmpnotifier.notification.PayloadData
 import com.mmk.kmpnotifier.push.PushListener
@@ -130,7 +131,9 @@ private fun initializeNotification() {
 }
 
 private fun initializeAuthentication() {
-    GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = BuildConfig.GOOGLE_WEB_CLIENT_ID))
+    KMPAuth.initialize {
+        google(GoogleAuthCredentials(serverId = BuildConfig.GOOGLE_WEB_CLIENT_ID))
+    }
 }
 
 private fun KoinApplication.initializeInAppPurchase() {

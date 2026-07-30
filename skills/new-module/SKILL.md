@@ -19,7 +19,7 @@ The script creates the module directories, a `build.gradle.kts` using the conven
 
 ## After running
 
-1. Follow the existing module layout for API/impl splits — see `libs/auth/` (`auth-api` + `auth-firebase`) and `libs/subscription/` (`subscription-api` + provider implementations) for the pattern.
+1. Follow the existing module layout for API/impl splits — see `libs/subscription/` (`subscription-api` + provider implementations) for the pattern.
 2. Add the module to consumers' dependencies (`implementation(projects.libs....)`).
 3. Validate with the `run-quality-gates` skill.
 

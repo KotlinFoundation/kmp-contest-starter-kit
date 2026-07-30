@@ -2,10 +2,10 @@ package com.kotlinfoundation.koko.presentation.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kotlinfoundation.koko.auth.api.AuthRecentLoginRequiredException
 import com.kotlinfoundation.koko.data.repository.UserRepository
 import com.kotlinfoundation.koko.domain.exceptions.UnAuthorizedException
 import com.kotlinfoundation.koko.util.logging.AppLogger
+import com.mmk.kmpauth.core.auth.KMPAuthRecentLoginRequiredException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -56,7 +56,7 @@ class ProfileViewModel(private val userRepository: UserRepository) : ViewModel()
             }
             .onFailure { error ->
                 AppLogger.d("Account deletion failed ${error.message}")
-                if (error is AuthRecentLoginRequiredException) {
+                if (error is KMPAuthRecentLoginRequiredException) {
                     _uiState.update { it.copy(isLoading = false, user = null) }
                 } else {
                     _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }

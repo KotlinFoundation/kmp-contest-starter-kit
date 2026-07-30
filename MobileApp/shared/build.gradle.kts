@@ -86,6 +86,8 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.kmpauth.google)
+            implementation(libs.kmpauth.apple)
+            implementation(libs.kmpauth.firebase)
             implementation(libs.napier)
             implementation(libs.room.runtime)
             implementation(libs.kotlinx.coroutines.core)
@@ -107,7 +109,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.nav3.ui)
             implementation(libs.lifecycle.viewmodel.navigation3)
-            implementation(projects.libs.auth.authFirebase)
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)
 

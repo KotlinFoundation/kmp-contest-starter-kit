@@ -1,7 +1,5 @@
 package com.kotlinfoundation.koko.root
 
-import com.kotlinfoundation.koko.auth.api.AuthServiceProvider
-import com.kotlinfoundation.koko.auth.api.AuthServiceProviderFactory
 import com.kotlinfoundation.koko.common.BuildConfig
 import com.kotlinfoundation.koko.data.BackgroundExecutor
 import com.kotlinfoundation.koko.data.repository.CreditRepository
@@ -77,7 +75,7 @@ private val dataModule = module {
     single { UserPreferencesImpl(get<PreferencesDataStoreProvider>().providePreferencesDataStore()) } bind UserPreferences::class
 
     // Remote source
-    single { HttpClientFactory.default(get()) }
+    single { HttpClientFactory.default() }
     single(named("aiDirectClient")) { HttpClientFactory.noAuth() }
     single { AiTransport(proxyClient = get(), directClient = get(named("aiDirectClient"))) }
     single { TemporaryFileUploadApiService(HttpClientFactory.fileUpload()) }
@@ -85,10 +83,6 @@ private val dataModule = module {
     factoryOf(::ApiService)
     factoryOf(::OpenAiApiService)
     factoryOf(::ReplicateApiService)
-
-    // Auth provider
-    factory { AppConfiguration.authServiceProviderFactory } bind AuthServiceProviderFactory::class
-    single { get<AuthServiceProviderFactory>().create() } bind AuthServiceProvider::class
 
     // Subscription Provider. When no real SDK key is set (isSubscriptionMockActive), swap in the
     // MockSubscriptionProvider so the paywall/purchase/unlock flow is explorable with zero keys.
@@ -122,7 +116,7 @@ private val dataModule = module {
     } bind SubscriptionProviderUi::class
 
     // Repositories
-    single { UserRepository(get(), get(), get(), get(), get()) }
+    single { UserRepository(get(), get(), get(), get()) }
     single { SubscriptionRepository(get(), get(), get(), get()) }
     single { GenerationRepository(get(), get(), get(), get(), get(), get(), get()) }
 

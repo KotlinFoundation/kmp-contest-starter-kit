@@ -24,7 +24,7 @@ firebase = "34.14.1"
 firebaseCrashlytics = "3.0.7"
 googleServices = "4.4.4"
 junit = "4.13.2"
-kmpauth = "2.5.0-alpha01"
+kmpauth = "3.0.1"
 kmpnotifier = "2.0.0"
 koin = "4.2.1"
 kotlin = "2.4.0"
@@ -82,6 +82,7 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 google-admob = { module = "com.google.android.gms:play-services-ads", version.ref = "admob" }
 junit = { module = "junit:junit", version.ref = "junit" }
+kmpauth-apple = { module = "io.github.mirzemehdi:kmpauth-apple", version.ref = "kmpauth" }
 kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
 kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
 kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }

@@ -10,10 +10,12 @@ Firebase + Anonymous sign-in (done in `setup-firebase`), which needs none of the
 this skill if the developer explicitly wants Google/Apple sign-in.
 
 Adds Google and Apple sign-in on top of the base Firebase project. Requires `setup-firebase` done
-first (project + registered apps + anonymous auth). Auth is implemented via the `libs/auth/` module
-(`auth-api` contracts + `auth-firebase` implementation, using KMPAuth); `UserRepository` exposes
-`continueAsGuest()`, `logOut()`, `deleteAccount()`, and `currentUser`. `SignInScreen` already wires
-the UI — you're supplying credentials, not writing auth code.
+first (project + registered apps + anonymous auth). Auth is implemented directly with the **KMPAuth**
+library (the `KMPAuth` facade — `currentUser()`, `currentUserFlow`, `currentUserIdToken()`,
+`signInAnonymously()`, `signOut()`, `deleteAccount()`, `reauthenticate()`) — cross-platform, including
+desktop and web; there is no in-repo auth module. `UserRepository` wraps it (`continueAsGuest()`,
+`logOut()`, `deleteAccount()`, `currentUser`), and `SignInScreen` renders the social buttons via
+`rememberGoogleAuthState` / `rememberAppleAuthState`. You're supplying credentials, not writing auth code.
 
 ## 1. Turn on the feature flag — Agent Action
 

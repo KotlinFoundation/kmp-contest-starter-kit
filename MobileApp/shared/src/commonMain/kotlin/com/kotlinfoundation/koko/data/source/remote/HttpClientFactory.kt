@@ -1,7 +1,7 @@
 package com.kotlinfoundation.koko.data.source.remote
 
-import com.kotlinfoundation.koko.auth.api.AuthServiceProvider
 import com.kotlinfoundation.koko.util.logging.AppLogger
+import com.mmk.kmpauth.core.KMPAuth
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpSend
@@ -20,10 +20,9 @@ import kotlinx.serialization.json.Json
 /** Builds the app's shared Ktor [HttpClient] — JSON, timeouts, logging, and a bearer-token interceptor. */
 object HttpClientFactory {
     /** The app/proxy client: attaches the Firebase ID token as a bearer to every request. */
-    fun default(authServiceProvider: AuthServiceProvider) = jsonClient().also {
+    fun default() = jsonClient().also {
         it.plugin(HttpSend).intercept { request ->
-            // For all requests you can send user token here, for example
-            val userToken = authServiceProvider.getCurrentUserToken(forceRefresh = true)
+            val userToken = KMPAuth.currentUserIdToken(forceRefresh = true).getOrNull()
             request.header("Authorization", "Bearer $userToken")
             execute(request)
         }

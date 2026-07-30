@@ -1,7 +1,5 @@
 package com.kotlinfoundation.koko.root
 
-import com.kotlinfoundation.koko.auth.api.AuthServiceProviderFactory
-import com.kotlinfoundation.koko.auth.firebase.Firebase
 import com.kotlinfoundation.koko.subscription.config.activeSubscriptionProviderFactory
 
 /**
@@ -89,6 +87,4 @@ object AppConfiguration {
      * resolves to whichever one is linked. Do NOT name a concrete provider here.
      */
     val subscriptionProviderFactory get() = activeSubscriptionProviderFactory
-
-    val authServiceProviderFactory get() = AuthServiceProviderFactory.Firebase
 }

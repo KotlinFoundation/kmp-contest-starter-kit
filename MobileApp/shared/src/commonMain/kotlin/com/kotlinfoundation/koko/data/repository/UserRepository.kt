@@ -2,8 +2,6 @@
 
 package com.kotlinfoundation.koko.data.repository
 
-import com.kotlinfoundation.koko.auth.api.AuthProviderUser
-import com.kotlinfoundation.koko.auth.api.AuthServiceProvider
 import com.kotlinfoundation.koko.data.BackgroundExecutor
 import com.kotlinfoundation.koko.data.source.preferences.UserPreferences
 import com.kotlinfoundation.koko.data.source.preferences.UserPreferences.Keys.KEY_FIRST_TIME_USER
@@ -11,6 +9,8 @@ import com.kotlinfoundation.koko.domain.exceptions.UnAuthorizedException
 import com.kotlinfoundation.koko.domain.model.User
 import com.kotlinfoundation.koko.util.ApplicationScope
 import com.kotlinfoundation.koko.util.logging.AppLogger
+import com.mmk.kmpauth.core.KMPAuth
+import com.mmk.kmpauth.core.auth.KMPAuthUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,12 +22,13 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 /**
- * Owns the authenticated user. Exposes [currentUser] as a hot flow that merges the auth
- * provider's user with premium status from [SubscriptionRepository], and signs guests in
- * anonymously on first launch. Emits `Result.failure(UnAuthorizedException)` when signed out.
+ * Owns the authenticated user. Exposes [currentUser] as a hot flow that merges the auth state from
+ * [KMPAuth] with premium status from [SubscriptionRepository], and signs guests in anonymously on
+ * first launch. Emits `Result.failure(UnAuthorizedException)` when signed out.
+ *
+ * Auth is handled entirely by [KMPAuth] (Firebase backend) — cross-platform, including desktop and web.
  */
 class UserRepository(
-    private val authServiceProvider: AuthServiceProvider,
     private val subscriptionRepository: SubscriptionRepository,
     private val userPreferences: UserPreferences,
     private val backgroundExecutor: BackgroundExecutor = BackgroundExecutor.IO,
@@ -41,13 +42,13 @@ class UserRepository(
     private val authTrigger = MutableStateFlow(Clock.System.now().toEpochMilliseconds())
 
     val currentUser: SharedFlow<Result<User>> =
-        combine(authTrigger, authServiceProvider.currentUserFlow) { _, currentUser -> currentUser }
+        combine(authTrigger, KMPAuth.currentUserFlow) { _, currentUser -> currentUser }
             .map { currentUser ->
-                AppLogger.d("CUrrent user is updated")
+                AppLogger.d("Current user is updated")
                 if (currentUser == null) {
                     Result.failure(UnAuthorizedException())
                 } else {
-                    subscriptionRepository.login(userId = currentUser.id)
+                    subscriptionRepository.login(userId = currentUser.uid)
                     val user = currentUser.asUser()
                         .copy(hasPremiumAccess = subscriptionRepository.hasPremiumAccess())
                     Result.success(user)
@@ -57,8 +58,8 @@ class UserRepository(
     fun signInAnonymouslyIfNecessary() = applicationScope.launch {
         backgroundExecutor.execute {
             val isFirstTimeUser = userPreferences.getBoolean(KEY_FIRST_TIME_USER, true)
-            if (authServiceProvider.currentUser == null && isFirstTimeUser) {
-                authServiceProvider.signInAnonymously()
+            if (KMPAuth.currentUser() == null && isFirstTimeUser) {
+                KMPAuth.signInAnonymously()
                 userPreferences.putBoolean(KEY_FIRST_TIME_USER, false)
                 AppLogger.d("Signed in anonymously")
             }
@@ -74,27 +75,27 @@ class UserRepository(
     }
 
     suspend fun continueAsGuest(): Result<Unit> = backgroundExecutor.execute {
-        if (authServiceProvider.currentUser == null) {
-            authServiceProvider.signInAnonymously()
+        if (KMPAuth.currentUser() == null) {
+            KMPAuth.signInAnonymously()
         }
         Result.success(Unit)
     }
 
     suspend fun logOut() = backgroundExecutor.execute {
         subscriptionRepository.logOut()
-        authServiceProvider.logOut()
+        KMPAuth.signOut()
         Result.success(Unit)
     }
 
     suspend fun deleteAccount() = backgroundExecutor.execute {
-        // Here you can send delete request to the server if needed
-        authServiceProvider.deleteAccount()
+        // getOrThrow() surfaces KMPAuthRecentLoginRequiredException so ProfileViewModel can prompt a reauth.
+        KMPAuth.deleteAccount().getOrThrow()
         logOut()
         Result.success(Unit)
     }
 
-    private fun AuthProviderUser.asUser(): User = User(
-        id = id,
+    private fun KMPAuthUser.asUser(): User = User(
+        id = uid,
         isAnonymous = isAnonymous,
         email = email,
         displayName = displayName,
