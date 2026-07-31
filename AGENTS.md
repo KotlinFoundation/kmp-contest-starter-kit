@@ -453,26 +453,12 @@ private fun HomeStoreScreenshot_iPhone_en() {
 
 ### Authentication
 
-Auth is handled **directly by the [KMPAuth](https://github.com/mirzemehdi/KMPAuth) library** (3.0.1) via
-the `KMPAuth` facade — there is **no in-repo auth module**. Everything is common and **cross-platform,
-including desktop and web** (Firebase backend; the REST engine covers targets without a native Firebase
-SDK), so there is no more desktop/web no-op mock.
-
-- **Facade** (`com.mmk.kmpauth.core.KMPAuth`): `currentUser()`, `currentUserFlow`, `currentUserIdToken(forceRefresh)`
-  (the web-proxy Bearer token — see `HttpClientFactory.default()`), `signInAnonymously()`, `signOut()`,
-  `deleteAccount()`, `reauthenticate()`. Initialized once in `AppInitializer` via
-  `KMPAuth.initialize { google(GoogleAuthCredentials(serverId = BuildConfig.GOOGLE_WEB_CLIENT_ID)) }`
-  (the Firebase backend self-registers from the `kmpauth-firebase` classpath).
-- **`UserRepository`** wraps the facade (maps `KMPAuthUser` → domain `User`, merges premium status,
-  guest sign-in on first launch). ViewModels never call KMPAuth directly.
-- **Social sign-in UI** (`presentation/components/AuthUIHelperButtons.kt`, common): `rememberGoogleAuthState`
-  (`kmpauth-google`) and `rememberAppleAuthState` (`kmpauth-apple`) — the modern state API returning
-  `Result<KMPAuthUser>`. No deprecated `*UiContainer`.
-- **Typed exceptions** (from KMPAuth, not domain): `KMPAuthUserCollisionException` (guest-upgrade collision →
-  `SignInScreen` switches to sign-in mode) and `KMPAuthRecentLoginRequiredException` (stale session on delete →
-  `ProfileViewModel` prompts reauth).
-- Modules: `kmpauth-firebase` (backend), `kmpauth-google`, `kmpauth-apple`. iOS needs the GoogleSignIn-iOS +
-  firebase-ios-sdk Swift packages (already in `iosApp.xcodeproj`) and deployment target ≥ 16.
+Auth is the **[KMPAuth](https://github.com/mirzemehdi/KMPAuth) `KMPAuth` facade** used directly — **no
+in-repo auth module**, cross-platform including desktop/web (Firebase backend). `AppInitializer` calls
+`KMPAuth.initialize { google(...) }`; `UserRepository` wraps the facade (maps `KMPAuthUser` → `User`);
+`AuthUIHelperButtons` renders social sign-in via `rememberGoogleAuthState` / `rememberAppleAuthState`.
+Auth conditions surface as KMPAuth's typed `KMPAuthUserCollisionException` /
+`KMPAuthRecentLoginRequiredException`, not domain exceptions.
 
 ### Subscription Provider
 
