@@ -44,6 +44,3 @@ include(":designsystem")
 include(":libs:subscription:subscription-api")
 include(":libs:subscription:subscription-revenuecat")
 include(":libs:subscription:subscription-adapty")
-
-include(":libs:auth:auth-api")
-include(":libs:auth:auth-firebase")

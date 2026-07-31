@@ -1,12 +1,5 @@
 package com.kotlinfoundation.koko.presentation.screens.onboarding
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kotlinfoundation.koko.designsystem.components.LogoImage
@@ -62,13 +54,8 @@ fun OnBoardingScreen(
     uiState: OnBoardingUiState,
     onUiEvent: (OnBoardingUiEvent) -> Unit,
 ) {
-    Crossfade(
-        targetState = uiState.isLoading,
-        animationSpec = tween(durationMillis = 500),
-        modifier = modifier.fillMaxSize(),
-        label = "onboardingSplash",
-    ) { isLoading ->
-        if (isLoading) {
+    Box(modifier = modifier.fillMaxSize().background(AppTheme.colors.background)) {
+        if (uiState.isLoading) {
             SplashLogo(modifier = Modifier.fillMaxSize())
         } else {
             when (style) {
@@ -94,21 +81,11 @@ fun OnBoardingScreen(
 
 @Composable
 private fun SplashLogo(modifier: Modifier = Modifier) {
-    val transition = rememberInfiniteTransition(label = "splashLogoPulse")
-    val scale by transition.animateFloat(
-        initialValue = 0.96f,
-        targetValue = 1.04f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1100, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "splashLogoScale",
-    )
     Box(
         modifier = modifier.background(AppTheme.colors.background),
         contentAlignment = Alignment.Center,
     ) {
-        LogoImage(modifier = Modifier.scale(scale))
+        LogoImage()
     }
 }
 

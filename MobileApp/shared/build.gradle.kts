@@ -86,6 +86,8 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.kmpauth.google)
+            implementation(libs.kmpauth.apple)
+            implementation(libs.kmpauth.firebase)
             implementation(libs.napier)
             implementation(libs.room.runtime)
             implementation(libs.kotlinx.coroutines.core)
@@ -107,7 +109,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.nav3.ui)
             implementation(libs.lifecycle.viewmodel.navigation3)
-            implementation(projects.libs.auth.authFirebase)
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)
 
@@ -163,6 +164,7 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.ktor.client.okhttp)
         }
 
         val nonWebMain by getting {
@@ -173,6 +175,7 @@ kotlin {
 
         val webMain by getting {
             dependencies {
+                implementation(libs.ktor.client.js)
                 implementation(libs.sqlite.web)
                 implementation(npm("@sqlite.org/sqlite-wasm", "3.50.1-build1"))
                 implementation(npm("sqlite-wasm-worker", project.file("sqlite-wasm-worker")))
@@ -267,6 +270,13 @@ buildConfig {
         "GOOGLE_WEB_CLIENT_ID",
         getRequiredProperty(key = "GOOGLE_WEB_CLIENT_ID", defaultValue = "testValue"),
     )
+
+    // Firebase web config for KMPAuth on Desktop/Web only — those targets have no native Firebase SDK,
+    // so the auth backend runs on a REST engine that needs this config. Leave EMPTY for mobile (Android/iOS
+    // read google-services.json / GoogleService-Info.plist). From the Firebase console → a Web app.
+    buildConfigField("FIREBASE_API_KEY", getRequiredProperty(key = "FIREBASE_API_KEY", defaultValue = ""))
+    buildConfigField("FIREBASE_PROJECT_ID", getRequiredProperty(key = "FIREBASE_PROJECT_ID", defaultValue = ""))
+    buildConfigField("FIREBASE_APPLICATION_ID", getRequiredProperty(key = "FIREBASE_APPLICATION_ID", defaultValue = ""))
 
     // Direct-AI (no-Firebase) provider keys. Empty by default → the app uses the Cloud Functions proxy.
     // Setting one (with a blank CLOUD_FUNCTIONS_URL) makes AiTransport call the provider directly.

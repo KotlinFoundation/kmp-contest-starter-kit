@@ -5,12 +5,16 @@ import androidx.compose.ui.window.application
 import com.kotlinfoundation.koko.root.App
 import com.kotlinfoundation.koko.root.AppInitializer
 
-fun main() = application {
-    AppInitializer.initialize {}
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "Koko",
-    ) {
-        App()
+fun main() {
+    System.setProperty("java.util.logging.SimpleFormatter.format", "%5\$s%6\$s%n")
+
+    application {
+        AppInitializer.initialize {}
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "Koko",
+        ) {
+            App()
+        }
     }
 }

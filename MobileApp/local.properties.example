@@ -22,6 +22,14 @@ sdk.dir=/Users/you/Library/Android/sdk
 # Get it from: Firebase Console -> Authentication -> Google provider -> Web client ID.
 GOOGLE_WEB_CLIENT_ID=
 
+# --- [P2] Firebase config for auth on DESKTOP / WEB only ---------------------------------------
+# Only Desktop and Web need these (no native Firebase SDK there, so auth runs on a REST engine).
+# Leave EMPTY for mobile — Android/iOS read google-services.json / GoogleService-Info.plist.
+# Get them from: Firebase Console -> Project settings -> your Web app -> SDK config.
+FIREBASE_API_KEY=
+FIREBASE_PROJECT_ID=
+FIREBASE_APPLICATION_ID=
+
 # --- [P4] Subscriptions (Adapty default, or RevenueCat) ----------------------------------------
 # Public SDK keys for the billing provider selected by SUBSCRIPTION_PROVIDER in gradle.properties.
 # Adapty:     https://app.adapty.io/      -> App settings -> API keys (public SDK keys)

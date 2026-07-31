@@ -41,7 +41,6 @@ import com.kotlinfoundation.koko.designsystem.components.ScreenWithToolbar
 import com.kotlinfoundation.koko.designsystem.generated.resources.UiRes
 import com.kotlinfoundation.koko.designsystem.generated.resources.ic_back
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
-import com.kotlinfoundation.koko.domain.exceptions.UserAlreadyExistsException
 import com.kotlinfoundation.koko.generated.resources.Res
 import com.kotlinfoundation.koko.generated.resources.auth_continue_as_guest_failed
 import com.kotlinfoundation.koko.generated.resources.auth_switch_to_sign_in
@@ -60,6 +59,7 @@ import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.root.AppGlobalUiState
 import com.kotlinfoundation.koko.util.UiMessage
 import com.kotlinfoundation.koko.util.logging.AppLogger
+import com.mmk.kmpauth.core.auth.KMPAuthUserCollisionException
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -147,7 +147,7 @@ fun SignInScreen(
                                 onSuccessfulSignIn()
                             }.onFailure { error ->
                                 AppLogger.e("Error occurred while signing in, $error")
-                                if (error is UserAlreadyExistsException) {
+                                if (error is KMPAuthUserCollisionException) {
                                     signInMode = true
                                     coroutineScope.launch {
                                         AppGlobalUiState.showUiMessage(

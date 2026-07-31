@@ -32,6 +32,7 @@ credentials, IDs, and toggles.
 |-----|-----|-----------------|-----------------|
 | `sdk.dir` | Android SDK location | Your machine's SDK path (`/Users/<you>/Library/Android/sdk`) | getting-started |
 | `GOOGLE_WEB_CLIENT_ID` | Google sign-in (Android + iOS) | Firebase → Auth → Google provider → **Web client ID** | integrations (`enable-auth`) |
+| `FIREBASE_API_KEY` / `FIREBASE_PROJECT_ID` / `FIREBASE_APPLICATION_ID` | Firebase auth on **Desktop/Web only** (no native SDK there → KMPAuth runs on a REST engine that needs this config). **Leave empty for mobile.** | Firebase → Project settings → your **Web app** → SDK config | integrations (`setup-firebase`) |
 | `SUBSCRIPTION_PROVIDER_ANDROID_API_KEY` | Billing SDK public key (Android) | Adapty or RevenueCat dashboard | integrations (opt-in) / monetization |
 | `SUBSCRIPTION_PROVIDER_IOS_API_KEY` | Billing SDK public key (iOS) | Adapty or RevenueCat dashboard | integrations (opt-in) / monetization |
 | `ADMOB_APP_ID_ANDROID` | AdMob app id (Android) | Google AdMob console | monetization (ads) |

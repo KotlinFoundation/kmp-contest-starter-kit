@@ -52,9 +52,6 @@ MobileApp/
 ├── designsystem/            # Reusable UI components library (KMP)
 │   └── src/jvmMain/         # Desktop entry for component preview (Main.kt)
 ├── libs/
-│   ├── auth/                # Authentication module
-│   │   ├── auth-api/        # Auth interface contracts
-│   │   └── auth-firebase/   # Firebase implementation
 │   └── subscription/        # Subscription module
 │       ├── subscription-api/        # Subscription interface contracts
 │       ├── subscription-revenuecat/ # RevenueCat implementation
@@ -453,6 +450,15 @@ private fun HomeStoreScreenshot_iPhone_en() {
 `@StoreScreenshot`-tagged previews are excluded from the regression screenshot test (they're storefront assets, rendered at huge pixel sizes — different concerns) and only run when the `-PgenerateStoreScreenshots=true` Gradle property is set, which the script handles for you.
 
 **Default device.** Unless the user explicitly requests a different device, leave the annotation with the enum default (`StoreDevice.IPHONE_6_5`). It's already the default value on the `@StoreScreenshot` annotation, so the cleanest form is to omit the `device =` argument entirely.
+
+### Authentication
+
+Auth is the **[KMPAuth](https://github.com/mirzemehdi/KMPAuth) `KMPAuth` facade** used directly — **no
+in-repo auth module**, cross-platform including desktop/web (Firebase backend). `AppInitializer` calls
+`KMPAuth.initialize { google(...) }`; `UserRepository` wraps the facade (maps `KMPAuthUser` → `User`);
+`AuthUIHelperButtons` renders social sign-in via `rememberGoogleAuthState` / `rememberAppleAuthState`.
+Auth conditions surface as KMPAuth's typed `KMPAuthUserCollisionException` /
+`KMPAuthRecentLoginRequiredException`, not domain exceptions.
 
 ### Subscription Provider
 

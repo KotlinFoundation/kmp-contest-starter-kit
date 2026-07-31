@@ -560,7 +560,7 @@
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
+				minimumVersion = 9.1.0;
 			};
 		};
 		A631C8AC2C8DE94A0075EE70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
