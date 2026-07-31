@@ -88,7 +88,6 @@ class UserRepository(
     }
 
     suspend fun deleteAccount() = backgroundExecutor.execute {
-        // getOrThrow() surfaces KMPAuthRecentLoginRequiredException so ProfileViewModel can prompt a reauth.
         KMPAuth.deleteAccount().getOrThrow()
         logOut()
         Result.success(Unit)
