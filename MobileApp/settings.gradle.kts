@@ -19,9 +19,6 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-        // TODO(kmpauth): remove mavenLocal once kmpauth 3.0.1 is published to Maven Central —
-        // it currently resolves the locally-published 3.0.1 build.
-        mavenLocal()
         google {
             content {
                 includeGroupByRegex("com\\.android.*")

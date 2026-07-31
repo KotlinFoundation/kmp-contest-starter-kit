@@ -474,9 +474,6 @@ SDK), so there is no more desktop/web no-op mock.
 - Modules: `kmpauth-firebase` (backend), `kmpauth-google`, `kmpauth-apple`. iOS needs the GoogleSignIn-iOS +
   firebase-ios-sdk Swift packages (already in `iosApp.xcodeproj`) and deployment target ≥ 16.
 
-> **mavenLocal (temporary):** `settings.gradle.kts` includes `mavenLocal()` to resolve kmpauth `3.0.1`
-> until it's published to Maven Central. Remove that repo line once it's on Central.
-
 ### Subscription Provider
 
 Two interchangeable billing backends live under `libs/subscription/` behind the
