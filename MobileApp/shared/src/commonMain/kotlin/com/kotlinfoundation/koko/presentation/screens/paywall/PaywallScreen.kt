@@ -57,10 +57,7 @@ fun PaywallScreen(
             isRecurring = subscription.willRenew,
             isLifetime = subscription.isLifetime,
             expirationDate = subscription.expirationDateInMillis?.asFormattedDate(),
-            onContinue = {
-                onDismiss()
-                viewModel.onSuccessfulPurchaseHandled()
-            },
+            onContinue = { onDismiss() },
         )
         return
     }

@@ -109,10 +109,6 @@ class PaywallViewModel(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun onSuccessfulPurchaseHandled() = viewModelScope.launch {
-        _uiState.update { it.copy(successfulSubscription = null) }
-    }
-
     fun onSignInActionHandled() = viewModelScope.launch {
         _uiState.update { it.copy(signInActionRequired = false) }
     }
