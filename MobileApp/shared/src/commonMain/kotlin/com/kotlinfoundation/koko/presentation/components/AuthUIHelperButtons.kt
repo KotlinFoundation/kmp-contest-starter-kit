@@ -22,6 +22,8 @@ import com.kotlinfoundation.koko.designsystem.generated.resources.btn_sign_in_wi
 import com.kotlinfoundation.koko.designsystem.generated.resources.btn_sign_in_with_google
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
 import com.kotlinfoundation.koko.domain.model.AuthProvider
+import com.kotlinfoundation.koko.util.Platform
+import com.kotlinfoundation.koko.util.getPlatform
 import com.kotlinfoundation.koko.util.logging.AppLogger
 import com.mmk.kmpauth.apple.rememberAppleAuthState
 import com.mmk.kmpauth.core.auth.KMPAuthUser
@@ -80,7 +82,8 @@ fun AuthUiButton(
             ) { googleAuthState.launch() }
         }
 
-        AuthProvider.APPLE -> {
+        // Apple sign-in only on mobile — desktop/web aren't wired for it yet.
+        AuthProvider.APPLE -> if (getPlatform() == Platform.Android || getPlatform() == Platform.Ios) {
             val appleAuthState = rememberAppleAuthState(linkAccount = linkAccount) { it.handle(onResult) }
             LaunchedEffect(Unit) { if (autoClickEnabled) appleAuthState.launch() }
             AppleSignInButton(
