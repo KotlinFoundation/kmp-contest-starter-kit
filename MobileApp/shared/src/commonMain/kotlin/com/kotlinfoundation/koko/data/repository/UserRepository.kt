@@ -44,7 +44,7 @@ class UserRepository(
     val currentUser: SharedFlow<Result<User>> =
         combine(authTrigger, KMPAuth.currentUserFlow) { _, currentUser -> currentUser }
             .map { currentUser ->
-                AppLogger.d("Current user is updated")
+                AppLogger.d("Current user is updated: $currentUser")
                 if (currentUser == null) {
                     Result.failure(UnAuthorizedException())
                 } else {
