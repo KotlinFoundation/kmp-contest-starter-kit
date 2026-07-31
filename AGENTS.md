@@ -326,7 +326,7 @@ Each platform uses its **native** launch screen — no library.
 - **Android** (`androidx.core:core-splashscreen`): theme `Theme.App.Starting` in `androidApp/src/main/res/values/styles.xml`. Background is `@color/windowBackgroundColor` — **the same as the app window**, so the hand-off to `AppTheme` has no color flash. The icon is the **adaptive launcher icon** `@mipmap/ic_launcher`. (The system masks the splash icon to a circle; adaptive icons are built for that, so it stays crisp and uncropped — a full-bleed brand logo would get its corners cut. The native theme also can't reference Compose/`designsystem` resources like `ic_logo`, only `res/` ones.) The brand logo (`ic_logo`) is shown **uncut** by the Compose splash (the onboarding `LogoImage`). Wired via `android:theme="@style/Theme.App.Starting"` on `AppActivity` + `installSplashScreen()` (before `super.onCreate()`) in `App.android.kt`. To hold the splash while the app loads: `installSplashScreen().setKeepOnScreenCondition { !ready }`.
 - **iOS** (declarative `UILaunchScreen` in `iosApp/iosApp/Info.plist`, iOS 14+ — no storyboard, no `.xcodeproj` edit). iOS can't reference the designsystem/Compose resources, so the splash logo is **one** file you replace:
   - Logo → `iosApp/iosApp/Assets.xcassets/ic_logo.imageset/ic_logo.png` (single universal image; the brand logo, asset name `ic_logo`).
-  - Background → `SplashBackground.colorset` — keep it equal to the app window background (`windowBackgroundColor`, currently `#F0EDE5`) so the transition is seamless.
+  - Background → `SplashBackground.colorset` — keep it equal to the app window background (`AppTheme.colors.background` / Android `windowBackgroundColor`, currently `#F9F7FF` light and `#12101A` dark) so the transition is seamless. Give the colorset both a light (universal) and a dark (`luminosity` = `dark`) appearance so neither mode flashes.
   - The plist keys `UIColorName` / `UIImageName` reference those two asset names.
 
 ### Local Preferences (DataStore)
@@ -480,8 +480,8 @@ Two interchangeable billing backends live under `libs/subscription/` behind the
   == "testValue"`), DI swaps in `MockSubscriptionProvider` (in `subscription-api`, next to
   `NoOpSubscriptionProvider`) instead of the linked real provider. It returns demo packages and a
   "purchase" simulates success (persisted via `UserPreferences`), so the whole paywall → purchase →
-  unlock → cancel flow works on every platform with **no keys**. The paywall shows a red `DemoBanner`
-  (`SubscriptionProvider.isMockProvider` → `PaywallUiState.isMock`), buys skip the sign-in gate, and the
+  unlock → cancel flow works on every platform with **no keys**. The paywall shows a red demo warning
+  `AppDialog` on each open (`SubscriptionProvider.isMockProvider` → `PaywallUiState.isMock`), buys skip the sign-in gate, and the
   Subscriptions screen's "manage here" link cancels in-app via `cancelMockSubscription()` (an interface
   method — default no-op, only the mock implements it). Client-only fake (no receipt); auto-reverts to
   the real provider the moment a key is set. The mock stays dependency-free — its ids/persistence/clock
