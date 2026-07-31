@@ -1,0 +1,64 @@
+# local.properties.example — template for MobileApp/local.properties
+#
+# local.properties is gitignored (it holds machine paths + secret API keys) and never ships in the
+# repo. Copy this file to `local.properties` and fill the values you need for your current phase:
+#
+#     cp local.properties.example local.properties
+#
+# Keys are read at build time by shared/build.gradle.kts via getRequiredProperty(...). Most keys have
+# a placeholder default ("testValue" or empty), so the app still BUILDS without them — but the
+# matching feature will not work. Run `./scripts/check_env.sh --phase <phase>` to see which keys are
+# still placeholders for the phase you are in.
+#
+# Legend:  [P1] getting-started  [P2] integrations  [P3] publishing  [P4] monetization  [P5] growth
+
+# --- [P1] Required to build & run locally ------------------------------------------------------
+# Android SDK location on your machine (the one value everyone must set).
+sdk.dir=/Users/you/Library/Android/sdk
+
+# --- [P2] Social sign-in (OPTIONAL) ------------------------------------------------------------
+# Only needed if you turn on Google/Apple sign-in (AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED = true).
+# The recommended easy path is Firebase + Anonymous auth, which needs NONE of these.
+# Get it from: Firebase Console -> Authentication -> Google provider -> Web client ID.
+GOOGLE_WEB_CLIENT_ID=
+
+# --- [P2] Firebase config for auth on DESKTOP / WEB only ---------------------------------------
+# Only Desktop and Web need these (no native Firebase SDK there, so auth runs on a REST engine).
+# Leave EMPTY for mobile — Android/iOS read google-services.json / GoogleService-Info.plist.
+# Get them from: Firebase Console -> Project settings -> your Web app -> SDK config.
+FIREBASE_API_KEY=
+FIREBASE_PROJECT_ID=
+FIREBASE_APPLICATION_ID=
+
+# --- [P4] Subscriptions (Adapty default, or RevenueCat) ----------------------------------------
+# Public SDK keys for the billing provider selected by SUBSCRIPTION_PROVIDER in gradle.properties.
+# Adapty:     https://app.adapty.io/      -> App settings -> API keys (public SDK keys)
+# RevenueCat: https://app.revenuecat.com/ -> Project -> API keys (public app-specific keys)
+# Until these are set, the app runs a built-in MOCK provider: the paywall shows demo packages and a
+# "purchase" simulates unlocking Premium / adding credits (with a "Demo paywall" banner). Setting a
+# real key here automatically switches to the real provider.
+SUBSCRIPTION_PROVIDER_ANDROID_API_KEY=
+SUBSCRIPTION_PROVIDER_IOS_API_KEY=
+
+# --- [P4] AdMob (OPTIONAL — only if you enable ads) --------------------------------------------
+# Needed only when ads are on (FeatureFlagManager IS_ADS_ENABLED = true). Get them from the
+# Google AdMob console: https://apps.admob.com/
+ADMOB_APP_ID_ANDROID=
+ADMOB_BANNER_AD_ID_ANDROID=
+ADMOB_INTERSTITIAL_AD_ID_ANDROID=
+ADMOB_REWARDED_AD_ID_ANDROID=
+ADMOB_BANNER_AD_ID_IOS=
+ADMOB_INTERSTITIAL_AD_ID_IOS=
+ADMOB_REWARDED_AD_ID_IOS=
+
+# --- [P1] Direct AI (no-Firebase prototyping) --------------------------------------------------
+# Only needed if your app uses AI. This is the phase-1 path: no Firebase, no backend.
+# By default the app calls OpenAI/Replicate through the Cloud Functions web-proxy, which reads these
+# keys from Google Cloud Secret Manager (production-safe — keys never on device).
+# For a QUICK no-Firebase prototype, set a key here AND leave AppConfiguration.CLOUD_FUNCTIONS_URL
+# blank: the app then calls the provider directly from the device.
+# WARNING: the key is compiled into the app binary — prototyping only. For production, deploy the
+# web-proxy and clear these (see the integrate-web-proxy skill).
+# OpenAI:    https://platform.openai.com/   Replicate: https://replicate.com/account/api-tokens
+OPENAI_API_KEY=
+REPLICATE_API_KEY=

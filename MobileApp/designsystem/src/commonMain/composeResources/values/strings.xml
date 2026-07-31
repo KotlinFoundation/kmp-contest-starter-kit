@@ -1,0 +1,69 @@
+<resources>
+    <string name="bottom_nav_label_home">Home</string>
+    <string name="bottom_nav_label_profile">Profile</string>
+    <string name="bottom_nav_label_favorites">Favorites</string>
+    <string name="title_error_dialog">Error</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_logout">Log Out</string>
+    <string name="btn_delete_account">Delete Account</string>
+    <string name="title_delete_user_dialog">Delete Account?</string>
+    <string name="subtitle_delete_user_dialog">Are you sure you want to delete your account?</string>
+    <string name="description_delete_user_dialog">This irreversible action will permanently delete the user and associated data. For security, you will need to log in or reauthenticate to proceed. Are you sure?</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="and">and</string>
+    <string name="txt_agree_privacy_policy_and_terms">By continuing, I agree to the </string>
+    <string name="title_info">Info</string>
+    <string name="logout">Logout</string>
+    <string name="help_and_support">Help &amp; Support</string>
+    <string name="btn_logout_confirm">Yes, Logout</string>
+    <string name="text_logout_confirmation">Are you sure you want to logout?</string>
+    <string name="current_plan">Your current plan</string>
+    <string name="free">Free</string>
+    <string name="lifetime_premium_subscription_renewal_text">Thank you for your one-time purchase. You have access to all premium features with a lifetime license—no renewal required!</string>
+    <string name="premium_subscription_renewal_text">Your subscription is recurring and your next billing date is on %1$s. You can cancel or renew your subscription at any time here.</string>
+    <string name="premium_subscription_non_recurring_text">Your subscription is non-recurring and will expire on %1$s. You can renew your subscription at any time here.</string>
+    <string name="text_here">here</string>
+    <string name="title_successful_purchase">Congratulations!</string>
+    <string name="subtitle_successful_purchase">You now have premium access. Enjoy all the exclusive features!</string>
+    <string name="btn_action_successful_purchase">Explore Premium Benefits</string>
+    <string name="benefits">Benefits</string>
+    <string name="banner_title_upgrade_premium">Upgrade Premium</string>
+    <string name="banner_subtitle_upgrade_premium">Enjoy all premium benefits.</string>
+    <string name="btn_action_upgrade_premium">Upgrade</string>
+    <string name="btn_sign_in_with_google">Sign in with Google</string>
+    <string name="btn_sign_in_with_apple">Sign in with Apple</string>
+    <string name="btn_continue_with_google">Continue with Google</string>
+    <string name="btn_continue_with_apple">Continue with Apple</string>
+
+    <!--    AddOrChooseFileContainer Strings -->
+    <string name="btn_choose_from_gallery">Choose from gallery</string>
+
+    <!--    AddOrChooseFileContainer Photo Source Modal Strings -->
+    <string name="select_photo_source_modal_title">Select photo source</string>
+    <string name="btn_take_photo">Take photo</string>
+    <string name="btn_add_image">Add photo</string>
+    <string name="btn_change_image">Change photo</string>
+    <string name="btn_add_more_images">Add More Photos (%1$d/%2$d)</string>
+    <string name="add_image_title">Add photo</string>
+    <string name="add_image_description">Tap to add a photo</string>
+    <string name="image_selected_title">Photo selected</string>
+    <string name="image_selected_description">You have selected your photo</string>
+
+    <!--    AddOrChooseFileContainer Video Source Modal Strings -->
+    <string name="select_video_source_modal_title">Select video source</string>
+    <string name="btn_record_video">Record video</string>
+    <string name="btn_add_video">Add video</string>
+    <string name="btn_change_video">Change video</string>
+    <string name="btn_add_more_videos">Add More Videos (%1$d/%2$d)</string>
+    <string name="add_video_title">Add video</string>
+    <string name="add_video_description">Tap to add a video</string>
+    <string name="video_selected_title">Video selected</string>
+    <string name="video_selected_description">You have selected your video</string>
+
+    <string name="tip_text_for_better_result">Tip: Center your subject, use good light, and keep the background simple for the best result!</string>
+
+
+</resources>

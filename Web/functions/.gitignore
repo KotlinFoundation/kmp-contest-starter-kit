@@ -1,0 +1,7 @@
+node_modules/
+*.local
+
+# Local functions config — never commit real values. .env.example is the tracked template.
+.env
+.env.*
+!.env.example

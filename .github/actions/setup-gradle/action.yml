@@ -1,0 +1,45 @@
+name: Setup Environment
+description: Setup the environment (Java and Gradle)
+
+inputs:
+  gradle-cache-encryption-key:
+    description: 'The encryption key to use for the Gradle cache'
+    required: true
+  build-root:
+    description: 'Path to the Gradle build root, relative to the repo root.'
+    required: false
+    default: 'MobileApp'
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: 17
+
+    - uses: gradle/actions/setup-gradle@v4
+      with:
+        cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
+        build-root-directory: ${{ inputs.build-root }}
+
+    - name: Cache KMP tooling
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.konan
+        key: ${{ runner.os }}-v1-${{ hashFiles('**/libs.versions.toml') }}
+
+    - name: Cache Swift Package Manager downloads
+      if: runner.os == 'macOS'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+

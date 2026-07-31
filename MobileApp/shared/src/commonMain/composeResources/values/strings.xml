@@ -1,0 +1,203 @@
+<resources>
+    <string name="bottom_nav_label_home">Home</string>
+    <string name="bottom_nav_label_profile">Profile</string>
+    <string name="bottom_nav_label_gallery">Gallery</string>
+
+    <string name="title_onboarding_page_1">Amazing Title</string>
+    <string name="desc_onboarding_page_1">Amazing Description Text will be here</string>
+
+    <string name="btn_get_started">Get Started</string>
+    <string name="btn_restore_purchase">Restore Purchase</string>
+    <string name="btn_skip">Skip</string>
+    <string name="btn_next">Next</string>
+    <string name="btn_delete_account">Delete Account</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_get_premium">Yes, I want Premium</string>
+    <string name="btn_maybe_later">Maybe Later</string>
+
+    <string name="title_sign_in">Sign in</string>
+    <string name="title_sign_up">Sign up</string>
+    <string name="title_screen_home">Home</string>
+    <string name="title_screen_gallery">Gallery</string>
+    <string name="title_screen_account">Account</string>
+    <string name="title_screen_profile">Profile</string>
+    <string name="title_screen_generation_result">Result</string>
+    <string name="title_screen_credits">Credits</string>
+
+    <string name="and">and</string>
+    <string name="sign_in_to">Sign in to </string>
+    <string name="sign_up_to">Sign up for </string>
+    <string name="txt_main_action_to_sign_in">Your account</string>
+
+    <string name="auth_switch_to_sign_in">Already have an account?</string>
+    <string name="auth_switch_to_sign_in_action">Sign in</string>
+    <string name="auth_switch_to_sign_up">New here?</string>
+    <string name="auth_switch_to_sign_up_action">Create account</string>
+    <string name="btn_continue_as_guest">Continue as guest</string>
+    <string name="auth_user_already_exists_message">Account already exists. Please sign in.</string>
+    <string name="auth_continue_as_guest_failed">Failed to continue as guest</string>
+
+    <string name="subscriptions">Subscriptions</string>
+    <string name="logout">Logout</string>
+    <string name="help_and_support">Help &amp; Support</string>
+    <string name="item_contact_support">Contact Support</string>
+
+
+    <!-- Home Screen Strings -->
+    <string name="home_loading_title">Creating your generation...</string>
+    <string name="home_loading_text">This may take up to 2 minutes</string>
+    <string name="btn_generate">Create</string>
+    <string name="home_prompt_label">Describe what you want to create</string>
+    <string name="home_prompt_placeholder">Type your idea here…</string>
+    <string name="home_reference_image_label">Add an optional reference image to guide the result</string>
+
+    <string name="home_error_file_size">File size must be less than 10MB</string>
+    <string name="home_error_choosing_file">Failed to choose file, please try again</string>
+
+    <!--    Gallery Screen strings-->
+    <string name="empty_generations_state_title">Let’s create something amazing</string>
+    <string name="empty_generations_state_description">Your creations will appear here once you start generating.</string>
+
+    <string name="ai_content_report_dialog_title">Report Content</string>
+    <string name="ai_content_report_dialog_message">Why are you reporting this content?</string>
+    <string name="ai_content_report_dialog_input_label">Offensive, inaccurate, etc.</string>
+    <string name="ai_content_report_btn_dialog_confirm">Submit</string>
+    <string name="ai_content_report_btn_dialog_dismiss">Cancel</string>
+    <string name="ai_content_report_submitted_msg">Thanks! Your report has been submitted.</string>
+
+    <string name="btn_action_share">Share</string>
+    <string name="btn_action_save">Save</string>
+    <string name="btn_action_report">Report</string>
+
+    <string name="msg_save_success">Your file has been saved</string>
+    <string name="msg_save_failure">Couldn’t save your file</string>
+
+    <string name="paywall_btn_restore">Restore</string>
+    <string name="paywall_footer_privacy">Privacy Policy</string>
+    <string name="paywall_footer_terms">Terms</string>
+    <string name="paywall_badge_best_value">BEST VALUE</string>
+    <string name="paywall_badge_save_percent">SAVE %1$d%%</string>
+    <string name="paywall_demo_title">Demo paywall</string>
+    <string name="paywall_demo_banner">Demo paywall — no subscription key set. Purchases are simulated. Add your Adapty or RevenueCat key to go live.</string>
+
+    <string name="paywall_msg_sign_in_required">You need to sign in first</string>
+    <string name="paywall_msg_credits_added">%1$d credits added to your account.</string>
+    <string name="paywall_msg_credits_not_added">Your purchase went through, but we couldn’t add credits. Please contact support.</string>
+
+    <!-- Paywall: period units. Bare form (no count) is used as a noun suffix
+         ("/week", "your first month"). Count form embeds the count
+         ("3 months", "7 days"). -->
+    <plurals name="paywall_unit_day">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <plurals name="paywall_unit_week">
+        <item quantity="one">week</item>
+        <item quantity="other">weeks</item>
+    </plurals>
+    <plurals name="paywall_unit_month">
+        <item quantity="one">month</item>
+        <item quantity="other">months</item>
+    </plurals>
+    <plurals name="paywall_unit_year">
+        <item quantity="one">year</item>
+        <item quantity="other">years</item>
+    </plurals>
+    <plurals name="paywall_unit_day_count">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="paywall_unit_week_count">
+        <item quantity="one">%1$d week</item>
+        <item quantity="other">%1$d weeks</item>
+    </plurals>
+    <plurals name="paywall_unit_month_count">
+        <item quantity="one">%1$d month</item>
+        <item quantity="other">%1$d months</item>
+    </plurals>
+    <plurals name="paywall_unit_year_count">
+        <item quantity="one">%1$d year</item>
+        <item quantity="other">%1$d years</item>
+    </plurals>
+    <string name="paywall_unit_period">period</string>
+    <string name="paywall_unit_lifetime">lifetime</string>
+
+    <!-- Subscriptions screen — fallback when the user has no active plan. -->
+    <string name="subscriptions_plan_free">Free</string>
+
+    <!-- Paywall: subscription header copy -->
+    <string name="paywall_sub_title">Get the full app</string>
+    <string name="paywall_sub_subtitle">Every feature unlocked. No ads. No limits.</string>
+
+    <!-- Paywall: subscription feature rows -->
+    <string name="paywall_sub_feature_1">Unlimited access to all features</string>
+    <string name="paywall_sub_feature_2">Priority support</string>
+    <string name="paywall_sub_feature_3">Ad-free experience</string>
+    <string name="paywall_sub_feature_4">New features first</string>
+
+    <!-- Paywall: subscription plan card titles (uppercase headline form) -->
+    <string name="paywall_sub_plan_daily">1 Day</string>
+    <string name="paywall_sub_plan_weekly">1 Week</string>
+    <string name="paywall_sub_plan_monthly">1 Month</string>
+    <string name="paywall_sub_plan_two_months">2 Months</string>
+    <string name="paywall_sub_plan_three_months">3 Months</string>
+    <string name="paywall_sub_plan_six_months">6 Months</string>
+    <string name="paywall_sub_plan_yearly">1 Year</string>
+    <string name="paywall_sub_plan_lifetime">Lifetime</string>
+    <string name="paywall_sub_plan_unknown">Unknown</string>
+
+    <!-- Paywall: subscription plan card subtitles -->
+    <string name="paywall_sub_subtitle_per_week">%1$s per week</string>
+    <string name="paywall_sub_subtitle_one_time">One-time payment</string>
+    <string name="paywall_sub_subtitle_premium_access">Premium access</string>
+    <string name="paywall_sub_subtitle_auto_renews">Auto-renews</string>
+
+    <!-- Paywall: reassurance line shown above the CTA. The intro reassurance
+         template receives the discount percent and a duration (e.g. "month",
+         "3 months") that already includes the count when greater than one. -->
+    <string name="paywall_sub_reassurance_trial">No payment required now</string>
+    <string name="paywall_sub_reassurance_cancel">Cancel anytime</string>
+    <string name="paywall_sub_reassurance_intro">Save %1$s%% on your first %2$s</string>
+    <string name="paywall_sub_reassurance_intro_generic">Special intro offer</string>
+
+    <!-- Paywall: subscription CTA -->
+    <string name="paywall_sub_cta_continue">Continue</string>
+    <string name="paywall_sub_cta_try_for">Try for %1$s</string>
+
+    <!-- Paywall: subscription disclosure -->
+    <string name="paywall_sub_disclosure_template">%1$s, %2$s. %3$s.</string>
+    <string name="paywall_sub_disclosure_trial">%1$s free</string>
+    <string name="paywall_sub_disclosure_trial_generic">Free trial</string>
+    <string name="paywall_sub_disclosure_intro_upfront">%1$s for first %2$s</string>
+    <string name="paywall_sub_disclosure_intro_pay_as_you_go">%1$s/%2$s for first %3$s</string>
+    <string name="paywall_sub_disclosure_then">then %1$s</string>
+    <string name="paywall_sub_disclosure_then_standard">then standard rate</string>
+
+    <!-- Paywall: credit pack -->
+    <string name="paywall_cp_title">Buy credits</string>
+    <string name="paywall_cp_subtitle">One-time purchase. Credits never expire.</string>
+    <string name="paywall_cp_section_title">Pick your pack</string>
+    <string name="paywall_cp_credits_count">%1$d credits</string>
+    <string name="paywall_cp_unit_price">%1$s per credit</string>
+    <string name="paywall_cp_reassurance">No subscription · One-time purchase</string>
+    <string name="paywall_cp_cta_buy">Buy credits</string>
+
+    <!-- Credit Balance screen -->
+    <string name="credit_available">Available Credits</string>
+    <string name="credit_status_premium">Premium</string>
+    <string name="credit_status_free">Free Plan</string>
+    <string name="credit_upgrade_title">Upgrade to Premium</string>
+    <string name="credit_upgrade_subtitle">More credits and premium features</string>
+    <string name="credit_top_up_title">Top Up</string>
+    <string name="credit_top_up_subtitle">One-time credit pack</string>
+    <string name="credit_cost_title">1 credit per generation</string>
+    <string name="credit_cost_subtitle">Each AI generation uses one credit.</string>
+    <string name="credit_transaction_history">Transaction History</string>
+    <string name="btn_show">Show</string>
+    <string name="btn_hide">Hide</string>
+    <string name="credit_motivational_zero">You’re out of credits, but not out of ideas. Top up and keep creating.</string>
+    <string name="credit_motivational_one">One last credit left — make it count!</string>
+    <string name="credit_motivational_low">Running low on credits. Top up to keep the ideas flowing.</string>
+    <string name="credit_motivational_plenty">You’ve got plenty of credits. Let’s make something amazing!</string>
+
+</resources>

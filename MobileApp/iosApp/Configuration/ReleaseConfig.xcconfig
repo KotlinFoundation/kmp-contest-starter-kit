@@ -1,0 +1,3 @@
+//Override any field values from BaseConfig that should be overriden in release build
+
+#include "BaseConfig.xcconfig"  // Include base config

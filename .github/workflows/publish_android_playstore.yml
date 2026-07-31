@@ -1,0 +1,82 @@
+name: Publish Android App
+
+on:
+  push:
+    tags:
+      - '*-android'
+
+defaults:
+  run:
+    working-directory: MobileApp
+
+jobs:
+  publish_app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    name: Publishing Android App
+    permissions:
+      contents: write
+    env:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-gradle
+        with:
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
+      - name: Write secrets to local.properties
+        run: |
+          echo "GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}" >> "local.properties"
+          echo "REVENUECAT_ANDROID_API_KEY=${{ secrets.REVENUECAT_ANDROID_API_KEY }}" >> "local.properties"
+          echo "REVENUECAT_IOS_API_KEY=${{ secrets.REVENUECAT_IOS_API_KEY }}" >> "local.properties"
+
+      - name: Decode Android Keystore
+        env:
+          ENCODED_KEYSTORE_FILE_STRING: ${{ secrets.SIGNING_KEY_STORE_FILE_BASE64 }}
+          ENCODED_KEYSTORE_PROPERTIES_STRING: ${{ secrets.SIGNING_KEY_STORE_PROPERTIES_BASE64 }}
+        run: |
+          mkdir -p distribution/android/keystore
+          echo $ENCODED_KEYSTORE_FILE_STRING > keystore-b64.txt
+          base64 -d -i keystore-b64.txt > distribution/android/keystore/keystore.jks
+          echo $ENCODED_KEYSTORE_PROPERTIES_STRING > keystore-props-b64.txt
+          base64 -d -i keystore-props-b64.txt > distribution/android/keystore/keystore.properties
+
+      - name: Build Release Apk and Bundle
+        run: |
+          ./gradlew :androidApp:assembleRelease
+          ./gradlew :androidApp:bundleRelease
+
+      - name: Upload APK and AAB artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          retention-days: 7
+          path: |
+            MobileApp/androidApp/build/outputs/apk/release/*.apk
+            MobileApp/androidApp/build/outputs/bundle/release/*.aab
+
+      - name: Publish android app to Play Store (Internal track)
+        id: deploy
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.kotlinfoundation.koko
+          releaseFiles: MobileApp/androidApp/build/outputs/bundle/release/*.aab
+          track: internal #internal, alpha, beta or production
+          whatsNewDirectory: MobileApp/distribution/whatsnew
+
+
+      - name: Create new release from tag
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          files: |
+            MobileApp/androidApp/build/outputs/apk/release/*.apk
+            MobileApp/androidApp/build/outputs/bundle/release/*.aab
+          body_path: MobileApp/distribution/whatsnew/whatsnew-en-US
+          token: ${{ env.github_token }}

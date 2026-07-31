@@ -1,0 +1,18 @@
+
+*.iml
+.gradle
+.idea
+.kotlin
+.DS_Store
+build
+*/build
+captures
+.externalNativeBuild
+.cxx
+
+
+# Claude Code local settings (machine-specific)
+.claude/settings.local.json
+
+# Roborazzi goldens are local-only (screenshot verification is not a PR gate)
+MobileApp/shared/src/androidHostTest/snapshots/

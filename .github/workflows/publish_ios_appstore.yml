@@ -1,0 +1,128 @@
+name: Publish iOS App
+
+on:
+  push:
+    tags:
+      - '*-ios'
+
+defaults:
+  run:
+    working-directory: MobileApp
+
+jobs:
+  publish_app:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    name: Publishing iOS App
+    permissions:
+      contents: write
+    env:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+      bundle_id: com.kotlinfoundation.koko
+      app_name: Koko
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-gradle
+        with:
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
+      - name: Write secrets to local.properties
+        run: |
+          echo "GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}" >> "local.properties"
+          echo "REVENUECAT_ANDROID_API_KEY=${{ secrets.REVENUECAT_ANDROID_API_KEY }}" >> "local.properties"
+          echo "REVENUECAT_IOS_API_KEY=${{ secrets.REVENUECAT_IOS_API_KEY }}" >> "local.properties"
+
+
+      - name: Import Apple Certificates
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_APP_CERTIFICATE_P12_BASE64 }}
+          p12-password: ${{ secrets.IOS_APP_CERTIFICATE_P12_PASSWORD }}
+
+      - name: Download Provisioning Profiles
+        uses: apple-actions/download-provisioning-profiles@v3
+        with:
+          bundle-id: ${{ env.bundle_id }}
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
+      - name: Build iOSApp archive
+        run: |
+          cd iosApp
+
+          xcrun xcodebuild \
+            -project iosApp.xcodeproj \
+            -scheme "iosApp" \
+            -sdk "iphoneos" \
+            -configuration "Release" \
+            -destination "generic/platform=iOS" \
+            -parallelizeTargets \
+            -showBuildTimingSummary \
+            -derivedDataPath "${RUNNER_TEMP}/Build/DerivedData" \
+            -archivePath "${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive" \
+            -resultBundlePath "${RUNNER_TEMP}/Build/Artifacts/iosApp.xcresult" \
+            -destination "generic/platform=iOS" \
+            DEVELOPMENT_TEAM="${{ secrets.APPSTORE_TEAM_ID }}" \
+            CODE_SIGN_STYLE="Manual" \
+            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_APP_DEVELOPMENT_PROVISION_UUID }}" \
+            clean archive
+
+
+      - name: Generate ExportOptions.plist
+        run: |
+          cat <<EOF > ${RUNNER_TEMP}/Build/ExportOptions.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+            <dict>
+              <key>destination</key>
+              <string>export</string>
+              <key>manageAppVersionAndBuildNumber</key>
+              <true/>
+              <key>method</key>
+              <string>app-store-connect</string>
+              <key>signingStyle</key>
+              <string>automatic</string>
+              <key>stripSwiftSymbols</key>
+              <true/>
+              <key>teamID</key>
+              <string>${{ secrets.APPSTORE_TEAM_ID }}</string>
+              <key>uploadSymbols</key>
+              <true/>
+            </dict>
+          </plist>
+          EOF
+
+      - id: export_archive
+        name: Export Archive
+        run: |
+          xcrun xcodebuild \
+            -exportArchive \
+            -exportOptionsPlist "${RUNNER_TEMP}/Build/ExportOptions.plist" \
+            -archivePath "${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive" \
+            -exportPath "${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive"
+
+          echo "ipa_path=${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive/${{ env.app_name }}.ipa" >> $GITHUB_ENV
+
+      - name: Upload to TestFlight
+        uses: Apple-Actions/upload-testflight-build@v1
+        with:
+          app-path: ${{ env.ipa_path }}
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
+      - name: Create new release from tag
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          files: |
+            ${{ env.ipa_path }}
+          body_path: MobileApp/distribution/whatsnew/whatsnew-en-US
+          token: ${{ env.github_token }}
