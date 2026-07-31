@@ -271,6 +271,13 @@ buildConfig {
         getRequiredProperty(key = "GOOGLE_WEB_CLIENT_ID", defaultValue = "testValue"),
     )
 
+    // Firebase web config for KMPAuth on Desktop/Web only — those targets have no native Firebase SDK,
+    // so the auth backend runs on a REST engine that needs this config. Leave EMPTY for mobile (Android/iOS
+    // read google-services.json / GoogleService-Info.plist). From the Firebase console → a Web app.
+    buildConfigField("FIREBASE_API_KEY", getRequiredProperty(key = "FIREBASE_API_KEY", defaultValue = ""))
+    buildConfigField("FIREBASE_PROJECT_ID", getRequiredProperty(key = "FIREBASE_PROJECT_ID", defaultValue = ""))
+    buildConfigField("FIREBASE_APPLICATION_ID", getRequiredProperty(key = "FIREBASE_APPLICATION_ID", defaultValue = ""))
+
     // Direct-AI (no-Firebase) provider keys. Empty by default → the app uses the Cloud Functions proxy.
     // Setting one (with a blank CLOUD_FUNCTIONS_URL) makes AiTransport call the provider directly.
     // Prototyping only — the key ships in the app binary; production should keep the proxy.

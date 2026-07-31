@@ -16,6 +16,7 @@ import com.kotlinfoundation.koko.util.isDebug
 import com.kotlinfoundation.koko.util.logging.AppLogger
 import com.kotlinfoundation.koko.util.onApplicationStartPlatformSpecific
 import com.mmk.kmpauth.core.KMPAuth
+import com.mmk.kmpauth.firebase.firebase
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.google
 import com.mmk.kmpnotifier.KMPNotifier
@@ -133,6 +134,15 @@ private fun initializeNotification() {
 private fun initializeAuthentication() {
     KMPAuth.initialize {
         google(GoogleAuthCredentials(serverId = BuildConfig.GOOGLE_WEB_CLIENT_ID))
+        // Desktop/Web only: the Firebase backend has no native SDK there, so it needs explicit config.
+        // No-op on Android/iOS. Blank until the developer sets the FIREBASE_* keys (Firebase console → Web app).
+        if (BuildConfig.FIREBASE_API_KEY.isNotBlank()) {
+            firebase(
+                apiKey = BuildConfig.FIREBASE_API_KEY,
+                projectId = BuildConfig.FIREBASE_PROJECT_ID,
+                applicationId = BuildConfig.FIREBASE_APPLICATION_ID,
+            )
+        }
     }
 }
 

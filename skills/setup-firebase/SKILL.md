@@ -81,6 +81,13 @@ With the real `google-services.json` in place, from `MobileApp/`:
 
 Run the app; the first launch should silently obtain an anonymous session.
 
+> **Desktop / Web auth.** Android and iOS auth works from the config files above. Desktop and Web have no
+> native Firebase SDK, so KMPAuth runs on a REST engine that needs explicit config: register a **Web app**
+> in Firebase (Project settings → Add app → Web) and put its `apiKey` / `projectId` / `appId` into
+> `MobileApp/local.properties` as `FIREBASE_API_KEY` / `FIREBASE_PROJECT_ID` / `FIREBASE_APPLICATION_ID`.
+> `AppInitializer` wires them automatically when set; blank = no desktop/web auth (fine until you need it).
+> Leave them empty on mobile-only projects.
+
 ## Next
 
 - Enable Google/Apple sign-in → `enable-auth`.
