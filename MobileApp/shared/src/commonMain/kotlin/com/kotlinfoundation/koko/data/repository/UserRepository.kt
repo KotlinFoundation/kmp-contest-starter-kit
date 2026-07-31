@@ -59,7 +59,7 @@ class UserRepository(
         backgroundExecutor.execute {
             val isFirstTimeUser = userPreferences.getBoolean(KEY_FIRST_TIME_USER, true)
             if (KMPAuth.currentUser() == null && isFirstTimeUser) {
-                KMPAuth.signInAnonymously()
+                KMPAuth.signInAnonymously().getOrThrow()
                 userPreferences.putBoolean(KEY_FIRST_TIME_USER, false)
                 AppLogger.d("Signed in anonymously")
             }
@@ -76,7 +76,7 @@ class UserRepository(
 
     suspend fun continueAsGuest(): Result<Unit> = backgroundExecutor.execute {
         if (KMPAuth.currentUser() == null) {
-            KMPAuth.signInAnonymously()
+            KMPAuth.signInAnonymously().getOrThrow()
         }
         Result.success(Unit)
     }
