@@ -5,6 +5,11 @@ description: Create a Firebase project, register the Android + iOS apps, place g
 
 # Set up Firebase
 
+> [!IMPORTANT]
+> **⚠️ Critical SDK Version & KMP WASM Limitation**
+> - **Gitlive Version**: Always use **at least version `2.5.0`** of the Gitlive Firebase Kotlin SDK. The latest stable version can be found at [GitLiveApp/firebase-kotlin-sdk](https://github.com/GitLiveApp/firebase-kotlin-sdk).
+> - **WASM Technical Limitation**: Gitlive Firebase does **not** support Kotlin/WASM (`wasmJs` target). If your project contains a WASM target, the WASM target **must** be dropped once Firestore/Firebase is added, as the Gitlive libraries will cause compilation failures on WASM.
+
 Firebase is the backend for auth, push notifications, and the AI Cloud Functions proxy. This skill
 covers the base project + app registration + anonymous auth. Social sign-in is a separate step —
 see `enable-auth`. The Cloud Functions deploy is `integrate-web-proxy`.
