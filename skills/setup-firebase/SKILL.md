@@ -5,17 +5,33 @@ description: Create a Firebase project, register the Android + iOS apps, place g
 
 # Set up Firebase
 
-> [!IMPORTANT]
-> **⚠️ Critical SDK Version & KMP WASM Limitation**
-> - **Gitlive Version**: Always use **at least version `2.5.0`** of the Gitlive Firebase Kotlin SDK. The latest stable version can be found at [GitLiveApp/firebase-kotlin-sdk](https://github.com/GitLiveApp/firebase-kotlin-sdk).
-> - **WASM Technical Limitation**: Gitlive Firebase does **not** support Kotlin/WASM (`wasmJs` target). If your project contains a WASM target, the WASM target **must** be dropped once Firestore/Firebase is added, as the Gitlive libraries will cause compilation failures on WASM.
-
 Firebase is the backend for auth, push notifications, and the AI Cloud Functions proxy. This skill
 covers the base project + app registration + anonymous auth. Social sign-in is a separate step —
 see `enable-auth`. The Cloud Functions deploy is `integrate-web-proxy`.
 
 Most of this happens in the browser at https://console.firebase.google.com/ — you (the agent) can
 prep identifiers and the SHA-1, but the developer performs the console clicks and file downloads.
+
+> [!IMPORTANT]
+> **Firestore + Kotlin/Wasm — ask before you pick an approach.**
+>
+> There is no Firebase client SDK for the `wasmJs` target. The GitLive
+> [firebase-kotlin-sdk](https://github.com/GitLiveApp/firebase-kotlin-sdk) covers Android, iOS, JVM
+> and JS, but **not** Kotlin/Wasm, so putting it in `commonMain` breaks the web build. Nothing about
+> the base setup below is affected — this only matters once the developer wants **Firestore** (or
+> another Firebase *client* SDK) in shared code.
+>
+> When that comes up, **stop and ask the developer which they want** — do not silently drop a target:
+>
+> - **Keep Wasm (recommended, default).** Don't use a Firebase client SDK in shared code at all.
+>   Put Firestore behind the Cloud Functions backend this kit already ships — see
+>   *Firestore via Cloud Functions* below. Every platform, Wasm included, keeps working.
+> - **Drop Wasm.** If the app doesn't need the web target, remove it and use the GitLive SDK
+>   directly for a shorter path to Firestore. This is a real trade-off (no browser build), so it
+>   must be the developer's explicit decision, not an assumption.
+>
+> If GitLive is used, take the **latest stable version** from its
+> [releases](https://github.com/GitLiveApp/firebase-kotlin-sdk/releases) — don't pin an old one.
 
 ## 1. Prep the identifiers — Agent Action
 
@@ -92,6 +108,33 @@ Run the app; the first launch should silently obtain an anonymous session.
 > `MobileApp/local.properties` as `FIREBASE_API_KEY` / `FIREBASE_PROJECT_ID` / `FIREBASE_APPLICATION_ID`.
 > `AppInitializer` wires them automatically when set; blank = no desktop/web auth (fine until you need it).
 > Leave them empty on mobile-only projects.
+
+## Firestore via Cloud Functions — the Wasm-safe architecture
+
+Reach for this when the app needs Firestore and you're keeping the web target (the default answer to
+the callout above). It's the same shape as the AI proxy already in `Web/functions`, so the pieces
+exist: HTTPS Cloud Functions authenticate the caller with a Firebase ID token
+(`Web/functions/utils/validation.js` → `admin.auth().verifyIdToken(...)`) and reach Firestore through
+the **Firebase Admin SDK**.
+
+```
+KMP app (Android, iOS, Desktop, Wasm)
+   │  HTTPS + Firebase ID token
+   ▼
+HTTPS Cloud Functions  ──►  Firebase Admin SDK  ──►  Cloud Firestore
+```
+
+Rules to follow when building it:
+
+- Every Firestore read/write goes through a Cloud Function; the client never touches Firestore.
+- Cloud Functions use the Firebase Admin SDK — not the Firestore REST API from the client.
+- Functions verify the caller's Firebase Auth ID token before any database operation.
+- Keep the endpoints plain REST so one client implementation serves every platform.
+- On the client, add them like any other backend API — DTOs + an `*ApiService` + a repository, per
+  the `add-api-service` skill. The app stays free of Firebase implementation details.
+
+Add new endpoints next to the existing ones in `Web/functions/api/`, export them from
+`Web/functions/index.js`, and deploy with `integrate-web-proxy`.
 
 ## Next
 
