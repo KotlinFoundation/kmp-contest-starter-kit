@@ -1,6 +1,6 @@
 ---
 name: store-screenshots
-description: Generate App Store / Play Store screenshots at storefront pixel sizes from @StoreScreenshot previews. Use when the user asks for store screenshots, marketing screenshots, or screenshots for app submission.
+description: Generate App Store / Play Store marketing screenshots at storefront pixel sizes from @StoreScreenshot previews. Use when the user asks for store screenshots, marketing screenshots, or screenshots for app submission — NOT for a quick visual check of a screen during development (use verify-ui for that).
 ---
 
 # Generate store screenshots

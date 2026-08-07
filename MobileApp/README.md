@@ -11,7 +11,6 @@ Compose Multiplatform mobile application targeting Android, iOS, Web (WASM), and
 ├── webApp/            # Wasm/JS browser entry point
 ├── designsystem/      # Reusable UI components library
 ├── libs/
-│   ├── auth/          # Authentication (API + Firebase implementation)
 │   └── subscription/  # Subscriptions (API + RevenueCat/Adapty implementations)
 ├── build-logic/       # Convention plugins for KMP library modules
 ├── iosApp/            # Xcode project wrapper

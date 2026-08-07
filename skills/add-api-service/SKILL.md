@@ -1,6 +1,6 @@
 ---
 name: add-api-service
-description: Add a Ktor-backed network request end-to-end — request/response DTOs, an API service, a repository, and a ViewModel call. Use when the user wants to fetch or post data over HTTP / call any REST endpoint from the app.
+description: Add a Ktor-backed network request end-to-end — request/response DTOs, an API service, a repository, and a ViewModel call. Use when the user wants to fetch or post data over HTTP, call any REST/third-party API, or extend an AI provider call (OpenAI/Replicate route through AiTransport — this skill explains how). To deploy the Cloud Functions AI proxy itself, use integrate-web-proxy instead.
 ---
 
 # Add an API service (network request)

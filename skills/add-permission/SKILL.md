@@ -1,6 +1,6 @@
 ---
 name: add-permission
-description: Request a runtime permission (camera, gallery, location, microphone, notifications, or any other) via the app-level AppPermissionState API. Use when a screen needs to ask the user for a device permission.
+description: Request a runtime permission (camera, gallery, location, microphone, notifications, or any other) via the app-level AppPermissionState API. Use when a screen needs to ask the user for a device permission. For full push/FCM setup (not just the notification permission prompt), use enable-notifications instead.
 ---
 
 # Add a runtime permission

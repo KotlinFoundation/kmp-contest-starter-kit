@@ -87,7 +87,7 @@ no-Firebase AI path, so Firebase / Adapty / store accounts wait until the phase 
 | Skill | Use when |
 |---|---|
 | [configure-environment](configure-environment/SKILL.md) | Figuring out where a config value / API key lives (local.properties, gradle.properties, AppConfiguration.kt, Constants.kt) |
-| [setup-firebase](setup-firebase/SKILL.md) | Connecting the app to Firebase (project, apps, anonymous auth) |
+| [setup-firebase](setup-firebase/SKILL.md) | Connecting the app to Firebase (project, apps, anonymous auth) — includes the Firestore decision (Wasm-safe Cloud Functions architecture vs GitLive SDK) |
 | [enable-auth](enable-auth/SKILL.md) | Adding Google / Apple social sign-in |
 | [integrate-web-proxy](integrate-web-proxy/SKILL.md) | Deploying the Cloud Functions AI proxy and calling it securely |
 

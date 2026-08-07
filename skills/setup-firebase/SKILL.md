@@ -1,6 +1,6 @@
 ---
 name: setup-firebase
-description: Create a Firebase project, register the Android + iOS apps, place google-services.json / GoogleService-Info.plist, and enable anonymous auth. Use when connecting the app to Firebase for the first time, or when the developer asks to set up Firebase / add the config files.
+description: Create a Firebase project, register the Android + iOS apps, place google-services.json / GoogleService-Info.plist, and enable anonymous auth. Also the home of the Firestore decision — this kit has NO Firebase client SDK in shared code (no wasmJs support), so Firestore goes through Cloud Functions; the architecture is documented here. Use when connecting the app to Firebase for the first time, adding the config files, or whenever the developer asks for Firestore / Cloud Firestore / a Firebase database.
 ---
 
 # Set up Firebase

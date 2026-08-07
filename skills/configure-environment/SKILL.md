@@ -1,6 +1,6 @@
 ---
 name: configure-environment
-description: Lay out the full catalog of environment configuration — local.properties API keys, the gradle.properties subscription toggle, and Constants.kt fields — with what each is for, where to get it, and which phase needs it. Use when setting up a new app's keys, wiring a service, or figuring out where a config value lives.
+description: Reference catalog (a lookup, not a setup action) of every environment configuration value — local.properties API keys, the gradle.properties subscription toggle, and AppConfiguration.kt / Constants.kt fields — with what each is for, where to get it, and which phase needs it. Use when you don't know where a config value or API key lives; then run the matching setup skill (setup-firebase, enable-auth, setup-subscriptions, enable-ads, setup-analytics, integrate-web-proxy) to actually wire it.
 ---
 
 # Configure environment

@@ -28,6 +28,14 @@ class ReplicateGenerationProvider(
         const val IS_OFFICIAL_MODEL = true
         const val PROMPT_KEY_PARAM = "prompt"
 
+        // Swapping the model? Changing the constants below is NOT enough — first read
+        // "Swapping the Replicate model" in skills/integrate-web-proxy/SKILL.md and check the new
+        // model's schema at https://replicate.com/<owner>/<name>/api. In particular: (1) input field
+        // keys must match the model's schema exactly, (2) `ReplicatePredictionResponse.output` is
+        // typed String? for this default model — many models return an ARRAY of URIs instead, and
+        // (3) `Prefer: wait` caps at ~60s, after which `output` is null with status
+        // "starting"/"processing" — that means poll `getPredictionStatus`, not "failed".
+
         // TODO needs to be changed if needed
         const val MODEL_OWNER = "google"
 

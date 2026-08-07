@@ -10,6 +10,12 @@ To get started, open this project in Android Studio and type `Proceed with @koko
 
 Documentation: [docs.kappmaker.com](https://docs.kappmaker.com)
 
+> **Cloning on Windows?** This repo uses git symlinks (`CLAUDE.md`/`GEMINI.md` → `AGENTS.md`,
+> `.claude/skills` → `skills/`). On Windows, clone with symlinks enabled or they become plain text
+> files and AI-agent skill discovery silently breaks: enable **Developer Mode** (Settings → For
+> developers), then `git clone -c core.symlinks=true <repo-url>`. Also note `Documentation/` is a
+> submodule — use `git clone --recurse-submodules` if you want the docs site locally (optional).
+
 ## Project Structure
 
 ```
