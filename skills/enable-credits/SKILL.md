@@ -99,6 +99,10 @@ Credits are **local-only** by default (on-device). That's fine for most early-st
 backend/server-verified credit sync (e.g. Firestore) if you see abuse, need cross-device sync, or need
 server-verified purchases — it adds real cost and complexity.
 
+When that time comes, use the **`sync-data-firebase`** skill; it has a worked credit-balance example.
+Don't design the sync ad hoc: no Firebase client SDK supports the `wasmJs` target, so the approach is a
+trade-off against the web build that the developer has to decide first.
+
 ## Validation
 
 - App builds (`./gradlew :androidApp:assembleDebug`) and the `CreditBalanceScreen` / toolbar badge

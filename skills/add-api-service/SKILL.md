@@ -86,3 +86,10 @@ Use Ktor `MockEngine` to stub responses/errors — never hit the real network in
 (`shared/src/commonTest/`). See `AiGuidelines/tech/api_services.md`.
 
 Validate with the `run-quality-gates` skill.
+
+## Talking to Firebase?
+
+If the endpoint is backed by Firestore — cloud sync, cross-device state, a server-authoritative balance
+— start from `sync-data-firebase`, not here. No Firebase client SDK supports the `wasmJs` target, so the
+approach has to be decided with the developer before any code is written. This skill still describes the
+client layering once that decision is made.

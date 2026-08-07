@@ -90,6 +90,7 @@ no-Firebase AI path, so Firebase / Adapty / store accounts wait until the phase 
 | [setup-firebase](setup-firebase/SKILL.md) | Connecting the app to Firebase (project, apps, anonymous auth) |
 | [enable-auth](enable-auth/SKILL.md) | Adding Google / Apple social sign-in |
 | [integrate-web-proxy](integrate-web-proxy/SKILL.md) | Deploying the Cloud Functions AI proxy and calling it securely |
+| [sync-data-firebase](sync-data-firebase/SKILL.md) | Putting data in Firestore / syncing across devices / making state server-authoritative (asks the wasmJs question first) |
 
 **Phase 3 — Publication**
 

@@ -10,3 +10,9 @@ check whether a skill already covers it.
   manually or by an agent.
 - Broader project conventions and the same skills index live in
   [`AGENTS.md`](../AGENTS.md).
+
+**Firebase data in shared code** (Firestore, sync, cloud storage, server-side
+balances): there is no Firebase client SDK for the `wasmJs` target, so this
+decision trades away the web build. **Stop and ask the developer which they
+want** before writing code or recommending an approach — see
+[`skills/setup-firebase/SKILL.md`](../skills/setup-firebase/SKILL.md).
