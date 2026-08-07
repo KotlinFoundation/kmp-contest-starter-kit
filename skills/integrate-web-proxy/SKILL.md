@@ -153,3 +153,6 @@ confirm the function returns `data`. This is the phase's validation gate.
 ## Next
 
 Live remote calls + auth working completes the `integrations` phase → move to `publishing`.
+
+Adding Firestore-backed endpoints on top of this backend → `sync-data-firebase`. It reuses the same
+functions + ID-token shape, and starts with the `wasmJs` trade-off question the developer must answer.

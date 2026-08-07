@@ -6,3 +6,8 @@ Read the matching skills/<name>/SKILL.md and follow it; the steps are exact
 (commands, file paths, console URLs) and work manually or agent-driven.
 
 Project conventions and the same skills index also live in AGENTS.md.
+
+Firebase data in shared code (Firestore, sync, storage, server-side balances):
+there is no Firebase client SDK for the wasmJs target, so this decision trades
+away the web build. Stop and ask the developer which they want before writing
+code or recommending an approach. See skills/setup-firebase/SKILL.md.
