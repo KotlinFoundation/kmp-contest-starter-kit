@@ -9,7 +9,7 @@ Entry format — one bullet per merged PR, tagged by scope:
 - `[skills]` / `[docs]` agent skills, AGENTS.md, guides — merges cleanly unless you edited them.
 - **Manual:** anything a derived app must do by hand after the merge.
 
-## Unreleased
+## 2026-08
 
 - `[skills]` **Template sync tooling** (#41): `MobileApp/scripts/sync_template.sh` (vendor-branch
   sync that renames the incoming template tree), the `sync-template` skill, and this changelog.
