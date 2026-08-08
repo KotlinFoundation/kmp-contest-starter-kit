@@ -177,9 +177,12 @@ is invited by the TODOs there, but **three things silently break if you only cha
    (string → itself, array → first element, object → the documented field).
 3. **`Prefer: wait` blocks at most ~60 seconds.** If the prediction isn't finished (cold start, heavy
    image-to-image, video models), Replicate returns HTTP 200 with `status: "starting"/"processing"`
-   and `output: null` — that is **"poll me", not an error**. The polling primitives exist
-   (`ReplicateApiService.getPredictionStatus`, `ReplicatePredictionResponse.isInProgress`) — if your
-   model can run long, poll until `isCompleted` instead of treating a null `output` as failure.
+   and `output: null` — that is **"poll me", not an error**. `ReplicateGenerationProvider` handles
+   this: `awaitOutput()` polls `getPredictionStatus` with exponential backoff until the prediction
+   leaves the in-progress state. The budget is ~4.3 minutes (`POLL_INITIAL_DELAY`,
+   `POLL_MAX_INTERVAL`, `POLL_MAX_ATTEMPTS` in the provider's companion object) — raise it if your
+   model routinely runs longer, and note that the Cloud Function's own timeout still caps the
+   initial `Prefer: wait` call.
 
 ## Next
 
