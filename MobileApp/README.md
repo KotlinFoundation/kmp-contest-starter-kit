@@ -136,7 +136,7 @@ Optional (local only, not part of PR checks): Roborazzi screenshot comparison. R
 
 ## Store Screenshot Generation
 
-Render every `@Preview @StoreScreenshot` composable at App Store / Play Store pixel sizes, framed in pure Compose (no Fastlane / ImageMagick):
+Render every `@Preview @StoreScreenshot` composable at App Store / Play Store pixel sizes — the screen as it renders, no marketing chrome added (no Fastlane / ImageMagick):
 
 ```bash
 ./scripts/generate_store_screenshots.sh
