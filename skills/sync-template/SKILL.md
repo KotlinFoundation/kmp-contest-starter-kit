@@ -107,3 +107,23 @@ That entry is what makes step 3 nearly automatic for the agents syncing the ~N a
   it manually (agent-cherry-pick); the next full sync will then merge cleanly over it.
 - The bootstrap commit must already contain `scripts/refactor_package.sh` (any 2025+ template
   version does).
+
+## Heavily diverged apps (rewrote navigation / DI / storage / structure)
+
+Merging degrades with architectural divergence — it stays *safe* (work branch; abort with
+`git branch -D template-sync/<sha>` and nothing happened), but the output shifts from auto-merge
+to porting work: wholesale-rewritten files conflict end-to-end, deleted subsystems come back as
+modify/delete conflicts (keep the deletion), and template features wired to the old architecture
+can merge cleanly yet fail to compile — which is exactly what the mandatory quality-gates step
+catches before anything reaches the app's branch.
+
+Past that point, stop merging and **port instead**: the render diff
+
+```bash
+git diff template-base~1 template-base
+```
+
+is precisely what the template changed, already expressed in the app's package names — apply it
+(with the CHANGELOG entry as intent) to the app's architecture by hand, then delete the work
+branch. Judge per sync: lightly diverged → merge and resolve; heavily diverged → rendered diff +
+CHANGELOG as a port source.
