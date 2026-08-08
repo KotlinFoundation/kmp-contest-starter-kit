@@ -29,9 +29,10 @@ sure the app id is final (use the `refactor-package` skill first if not).
 - **App name** (30 chars), **Short description** (80 chars), **Full description** (4000)
 - **App icon** — 512×512 PNG (32-bit, from the `generate-app-icons` source)
 - **Feature graphic** — **1024×500** PNG/JPG (required)
-- **Phone screenshots** — 2–8, from the `store-screenshots` skill
-  (`distribution/store_screenshots/<locale>/<device>/`); add tablet screenshots if you ship
-  tablet support.
+- **Phone screenshots** — 2–8. Plain captures of your screens come from the `capture-app-screens`
+  skill (`distribution/store_screenshots/<locale>/<device>/`). Play accepts those as-is; if you want
+  designed images with headlines and device frames, compose them in your own design tool using these
+  PNGs. Add tablet screenshots if you ship tablet support.
 
 Category, contact email (use `AppConfiguration.CONTACT_EMAIL`), and **Privacy Policy URL** (must
 match `AppConfiguration.URL_PRIVACY_POLICY` and be reachable) are set under **Store settings** /

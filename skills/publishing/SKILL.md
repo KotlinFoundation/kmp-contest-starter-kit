@@ -44,7 +44,7 @@ Every `⚠️` must be resolved before release. It covers:
 - **Version** bumped for both platforms (`bump-version`, step 3).
 - **Store listings** created + metadata/graphics/data-safety/content-rating filled: App Store Connect
   (`setup-appstore-connect`) and Google Play Console (`setup-google-play`), steps 7–8.
-- **Store screenshots** generated (`store-screenshots`, step 5).
+- **Store screenshots** generated (`capture-app-screens`, step 5).
 - `run-quality-gates` passes.
 
 The published docs mirror this: **`Documentation/docs/production/pre-publishing-checklist.md`**. If any item
@@ -121,10 +121,14 @@ Verify AppConfiguration config: `./scripts/check_env.sh --phase publishing`.
 - **Validation** — `./gradlew :androidApp:bundleRelease` produces a **signed** AAB
   (`keytool -printcert -jarfile <aab>` shows your cert, not the debug cert).
 
-### 5. Generate store screenshots — `store-screenshots`
-- **Agent Action** — Read the `store-screenshots` skill. Ensure `@StoreScreenshot` previews
+### 5. Capture the app's screens — `capture-app-screens`
+- **Agent Action** — Read the `capture-app-screens` skill. Ensure `@StoreScreenshot` previews
   exist for the key screens, then run `./scripts/generate_store_screenshots.sh`. Output lands
   at `distribution/store_screenshots/<locale>/<device>/`.
+- **User Action** — Decide whether these plain captures are the store listing, or the base artwork
+  for designed ones. Bare screen captures are valid store assets and plenty of apps ship them. If
+  the developer wants a headline, brand panel, and device frame, that is a design job outside this
+  kit — these PNGs are its input. **Ask — don't assume either way.**
 
 ### 6. Set store URLs + contact in `AppConfiguration.kt`
 - **Agent Action** — In `shared/src/commonMain/.../root/AppConfiguration.kt` set

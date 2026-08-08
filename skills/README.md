@@ -99,7 +99,7 @@ no-Firebase AI path, so Firebase / Adapty / store accounts wait until the phase 
 | [generate-app-icons](generate-app-icons/SKILL.md) | Setting/replacing the app + launcher icons |
 | [bump-version](bump-version/SKILL.md) | Bumping versionCode / versionName for a release |
 | [setup-signing](setup-signing/SKILL.md) | Release signing + moving keys out of the app into CI secrets |
-| [store-screenshots](store-screenshots/SKILL.md) | Generating App Store / Play Store screenshots |
+| [capture-app-screens](capture-app-screens/SKILL.md) | Capturing your real screens as plain PNGs at store pixel sizes (no headlines / device frames — this kit has no design step) |
 | [setup-appstore-connect](setup-appstore-connect/SKILL.md) | Creating + configuring the App Store Connect listing |
 | [setup-google-play](setup-google-play/SKILL.md) | Creating + configuring the Google Play Console listing |
 | [publish-release](publish-release/SKILL.md) | Building signed artifacts and submitting for review |

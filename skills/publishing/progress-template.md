@@ -37,9 +37,10 @@
 - [ ] **[User]** *(optional — only if publishing via CI)* Add signing secrets to GitHub Actions: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`, `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, `IOS_APP_CERTIFICATE_P12_BASE64` (+ password), `APPSTORE_KEY_ID`/`ISSUER_ID`/`PRIVATE_KEY`/`TEAM_ID`, both provision UUIDs, `GRADLE_CACHE_ENCRYPTION_KEY`
 - [ ] **[Validate]** `:androidApp:bundleRelease` produces a signed AAB (`keytool -printcert -jarfile` = your cert)
 
-## 5. Store screenshots — `store-screenshots`
+## 5. Store screenshots — `capture-app-screens`
 - [ ] **[Agent]** `@StoreScreenshot` previews exist for key screens
 - [ ] **[Agent]** `./scripts/generate_store_screenshots.sh` → `distribution/store_screenshots/<locale>/<device>/`
+- [ ] **[User]** Decided: ship these plain captures as-is, or use them as the base artwork for designed marketing images made outside this kit
 
 ## 6. Store URLs + contact in `AppConfiguration.kt`
 - [ ] **[Agent]** Set `URL_PRIVACY_POLICY`, `URL_TERMS_CONDITIONS`, `CONTACT_EMAIL`

@@ -77,7 +77,7 @@ These sequential guides walk you from first-run setup to monetization and growth
 | **`generate-app-icons`** | [SKILL.md](../../../../skills/generate-app-icons/SKILL.md) | Automatically generate and export app launcher icons. |
 | **`bump-version`** | [SKILL.md](../../../../skills/bump-version/SKILL.md) | Increment build and marketing version descriptors in parallel for Android and iOS. |
 | **`setup-signing`** | [SKILL.md](../../../../skills/setup-signing/SKILL.md) | Setup secure build-signing keystores and push keys to CI environments. |
-| **`store-screenshots`** | [SKILL.md](../../../../skills/store-screenshots/SKILL.md) | Generate store preview assets from `@StoreScreenshot` annotated Compose previews. |
+| **`capture-app-screens`** | [SKILL.md](../../../../skills/capture-app-screens/SKILL.md) | Render your real screens to plain PNGs at store pixel sizes. Not designed marketing images — no design step exists here. |
 | **`setup-appstore-connect`** | [SKILL.md](../../../../skills/setup-appstore-connect/SKILL.md) | Step-by-step Apple developer console setup. |
 | **`setup-google-play`** | [SKILL.md](../../../../skills/setup-google-play/SKILL.md) | Step-by-step Google Play developer console setup. |
 | **`publish-release`** | [SKILL.md](../../../../skills/publish-release/SKILL.md) | Submit finalized builds to their respective App Stores for review. |

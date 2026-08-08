@@ -63,7 +63,7 @@ The offer flows into the existing paywall layer at
 
 Fixtures in `PaywallPreviewData` (`subscriptionState(...)`, `paidIntroSubscriptionState()`,
 `creditPackState()`) drive the `@Preview` composables so you can eyeball copy without billing wired up.
-Run the design-system desktop preview or use the `store-screenshots` skill for pixel captures.
+Run the design-system desktop preview or use the `capture-app-screens` skill for pixel captures.
 
 ## Hand-off
 
@@ -84,5 +84,5 @@ The kit ships a working paywall, so it shows boilerplate until you brand it:
 ## Related skills
 
 `verify-ui` (render the paywall to a PNG and look at it — also how to answer "show me the paywall") ·
-`setup-subscriptions` · `enable-credits` · `store-screenshots` (paywall PNGs for the storefront) ·
+`setup-subscriptions` · `enable-credits` · `capture-app-screens` (paywall PNGs for the storefront) ·
 `monetization` (phase guide).

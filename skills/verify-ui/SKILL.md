@@ -101,7 +101,7 @@ To catch regressions against previously recorded goldens:
 Rules:
 - Import **`androidx.compose.ui.tooling.preview.Preview`**. The JetBrains one is not discovered.
 - `@StoreScreenshot`-tagged previews are storefront assets and are excluded here — see
-  `store-screenshots`.
+  `capture-app-screens`.
 - Previews are scanned under package `com.kotlinfoundation.koko`.
 
 ## 3. Finish
