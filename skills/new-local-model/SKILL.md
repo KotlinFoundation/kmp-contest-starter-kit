@@ -29,6 +29,10 @@ Insertion points are marked `// Add new ... — make_local.sh inserts here.` —
 4. DAO tests go in `shared/src/jvmTest/` using `Room.inMemoryDatabaseBuilder<AppDatabase>().setDriver(BundledSQLiteDriver())` — see `ExampleDaoTest.kt` for the pattern.
 5. Validate with the `run-quality-gates` skill.
 
+**Want this model in the cloud too?** Use the `sync-data-firebase` skill rather than reaching for a
+Firestore SDK — no Firebase client SDK supports the `wasmJs` target, so that choice trades away the web
+build and the developer has to make it.
+
 ---
 
 *Phase 1 · First Run building block — part of the [getting-started](../getting-started/SKILL.md) guide.*

@@ -85,6 +85,22 @@ common  (Room 3 @Database + DAOs live here — runs on all platforms)
 └── web (js + wasmJs — sqlite-web only on wasmJs)
 ```
 
+### Firebase client SDKs in shared code — ask first, always
+
+There is **no Firebase client SDK for the `wasmJs` target**. The GitLive
+[firebase-kotlin-sdk](https://github.com/GitLiveApp/firebase-kotlin-sdk) covers Android, iOS, JVM and JS
+but **not** Kotlin/Wasm, so putting Firestore (or any Firebase client SDK) in `commonMain` breaks the web
+build. Desktop is never the blocker — the browser target is.
+
+This applies to **any** task that puts Firebase data into shared code: Firestore, realtime database, cloud
+storage, cross-device sync, syncing credits/settings/user data, server-authoritative balances.
+
+**Stop and ask the developer which they want. Do not choose for them, do not answer with a
+recommendation as if the question were settled, and never drop the web target silently.** Two options:
+keep Wasm and put Firestore behind the Cloud Functions backend this kit already ships, or drop the
+`wasmJs` target and use GitLive directly. Full guidance + the Wasm-safe architecture:
+[`skills/setup-firebase/SKILL.md`](skills/setup-firebase/SKILL.md).
+
 ## Build & Run
 
 ### Android
@@ -384,7 +400,7 @@ Two layers:
 
 **Task skills** (grouped by phase):
 - **P1** `new-app`, `build-features`, `run-the-app`, `refactor-package`, `new-screen`, `new-local-model`, `add-api-service`, `save-preferences`, `add-permission`, `new-module`
-- **P2** `configure-environment`, `setup-firebase`, `enable-auth`, `integrate-web-proxy`
+- **P2** `configure-environment`, `setup-firebase`, `enable-auth`, `integrate-web-proxy`, `sync-data-firebase`
 - **P3** `generate-app-icons`, `bump-version`, `setup-signing`, `store-screenshots`, `setup-appstore-connect`, `setup-google-play`, `publish-release`
 - **P4** `design-paywall`, `setup-subscriptions`, `enable-credits`, `enable-ads`
 - **P5** `setup-analytics`, `enable-notifications`, `design-onboarding`, `add-virality-loop`

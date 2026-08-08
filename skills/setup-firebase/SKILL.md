@@ -1,6 +1,6 @@
 ---
 name: setup-firebase
-description: Create a Firebase project, register the Android + iOS apps, place google-services.json / GoogleService-Info.plist, and enable anonymous auth. Also the home of the Firestore decision — this kit has NO Firebase client SDK in shared code (no wasmJs support), so Firestore goes through Cloud Functions; the architecture is documented here. Use when connecting the app to Firebase for the first time, adding the config files, or whenever the developer asks for Firestore / Cloud Firestore / a Firebase database.
+description: Create a Firebase project, register the Android + iOS apps, place google-services.json / GoogleService-Info.plist, and enable anonymous auth. Use when connecting the app to Firebase for the first time, or when the developer asks to set up Firebase / add the config files. ALSO use before any work that puts Firebase data or a Firebase client SDK into shared code — Firestore / Cloud Firestore, a Firebase database, realtime database, cloud storage, cross-device sync, syncing credits/settings/user data to Firebase, server-side balances — because there is no Firebase client SDK for the wasmJs target and the developer must be asked which trade-off they want before an approach is chosen.
 ---
 
 # Set up Firebase
@@ -21,14 +21,21 @@ prep identifiers and the SHA-1, but the developer performs the console clicks an
 > the base setup below is affected — this only matters once the developer wants **Firestore** (or
 > another Firebase *client* SDK) in shared code.
 >
-> When that comes up, **stop and ask the developer which they want** — do not silently drop a target:
+> When that comes up, **put the question to the developer and wait for their answer** before writing
+> any code or naming a recommendation. Present both options below verbatim, then stop. Do not pick
+> one and proceed, do not answer with a recommendation as if it were settled, and do not silently
+> drop a target:
 >
 > - **Keep Wasm (recommended, default).** Don't use a Firebase client SDK in shared code at all.
 >   Put Firestore behind the Cloud Functions backend this kit already ships — see
 >   *Firestore via Cloud Functions* below. Every platform, Wasm included, keeps working.
 > - **Drop Wasm.** If the app doesn't need the web target, remove it and use the GitLive SDK
->   directly for a shorter path to Firestore. This is a real trade-off (no browser build), so it
->   must be the developer's explicit decision, not an assumption.
+>   directly for a shorter path to Firestore. GitLive covers Android, iOS, JVM **and** JS — only
+>   `wasmJs` is missing, so desktop is never the blocker; the browser build is. This is a real
+>   trade-off, so it must be the developer's explicit decision, not an assumption.
+>
+> "Recommended, default" describes which option to *present first*, not permission to skip the ask.
+> The web target is a deliverable the developer chose; trading it away is theirs to decide.
 >
 > If GitLive is used, take the **latest stable version** from its
 > [releases](https://github.com/GitLiveApp/firebase-kotlin-sdk/releases) — don't pin an old one.
@@ -112,7 +119,9 @@ Run the app; the first launch should silently obtain an anonymous session.
 ## Firestore via Cloud Functions — the Wasm-safe architecture
 
 Reach for this when the app needs Firestore and you're keeping the web target (the default answer to
-the callout above). It's the same shape as the AI proxy already in `Web/functions`, so the pieces
+the callout above). For the full build — what to sync and why, backend layout, idempotency, the
+offline/local layer, and a worked credit-balance example — use the **`sync-data-firebase`** skill;
+what follows is the architecture summary it builds on. It's the same shape as the AI proxy already in `Web/functions`, so the pieces
 exist: HTTPS Cloud Functions authenticate the caller with a Firebase ID token
 (`Web/functions/utils/validation.js` → `admin.auth().verifyIdToken(...)`) and reach Firestore through
 the **Firebase Admin SDK**.

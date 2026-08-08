@@ -103,6 +103,14 @@ the SDK **credentials** early if they want them.
   wraps in `Result`). Optionally test the backend locally first with
   `firebase emulators:start --only functions` from `Web/`.
 
+### 5b. Cloud data — optional, only if the app needs it — `sync-data-firebase`
+- **Agent Action** — Skip unless the developer wants data in Firestore, cross-device sync, or
+  server-authoritative state (a credit balance, an entitlement). Nothing in this phase requires it.
+- **User Action** — If they do want it, the `sync-data-firebase` skill opens with a question the
+  developer must answer: **no Firebase client SDK supports the `wasmJs` target**, so the choice is
+  keeping the web build (Firestore behind Cloud Functions) or dropping it (GitLive SDK in shared code).
+  **Stop and ask. Never decide this for them.**
+
 ### 6. Validation gate
 - **Validation** — Run `./scripts/check_env.sh --phase integrations` from `MobileApp/`. For the
   recommended anonymous-only path it should report clean once your real Firebase config is in place

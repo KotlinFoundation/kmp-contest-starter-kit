@@ -184,3 +184,6 @@ is invited by the TODOs there, but **three things silently break if you only cha
 ## Next
 
 Live remote calls + auth working completes the `integrations` phase → move to `publishing`.
+
+Adding Firestore-backed endpoints on top of this backend → `sync-data-firebase`. It reuses the same
+functions + ID-token shape, and starts with the `wasmJs` trade-off question the developer must answer.

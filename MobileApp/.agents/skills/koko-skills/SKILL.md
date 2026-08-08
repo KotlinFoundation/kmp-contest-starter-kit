@@ -63,9 +63,10 @@ These sequential guides walk you from first-run setup to monetization and growth
 | Skill Name | Location | Description |
 | :--- | :--- | :--- |
 | **`configure-environment`** | [SKILL.md](../../../../skills/configure-environment/SKILL.md) | Find and assign API keys and configuration constants across target environments. |
-| **`setup-firebase`** | [SKILL.md](../../../../skills/setup-firebase/SKILL.md) | Wire Android/iOS targets to Firebase Services and generate config credentials. Also covers adding **Firestore** (Wasm-safe Cloud Functions architecture vs GitLive SDK — read before adding any Firebase client SDK to shared code). |
+| **`setup-firebase`** | [SKILL.md](../../../../skills/setup-firebase/SKILL.md) | Wire Android/iOS targets to Firebase Services and generate config credentials. Owns the **wasmJs question** that must be put to the developer before any Firebase client SDK enters shared code. |
 | **`enable-auth`** | [SKILL.md](../../../../skills/enable-auth/SKILL.md) | Integrate Firebase Authentication with Google and Apple Sign-In. |
 | **`integrate-web-proxy`** | [SKILL.md](../../../../skills/integrate-web-proxy/SKILL.md) | Wire the app securely to Firebase Cloud Functions for backend logic. Includes "Swapping the Replicate model" — required reading before changing the AI model. |
+| **`sync-data-firebase`** | [SKILL.md](../../../../skills/sync-data-firebase/SKILL.md) | Put data in Firestore, sync across devices, or make state server-authoritative — opens with the wasmJs trade-off the developer must decide. |
 
 ---
 
