@@ -10,4 +10,4 @@ Entry format — one bullet per merged PR, tagged by scope:
 - **Manual:** anything a derived app must do by hand after the merge.
 
 Entries start with the first template change after the sync tooling landed — group them under a
-`## <year>-<month>` heading, newest first.
+`## <year>-<month>-<date>` heading, newest first.
