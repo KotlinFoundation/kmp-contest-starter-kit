@@ -435,7 +435,7 @@ Two layers:
 - **P3** `generate-app-icons`, `bump-version`, `setup-signing`, `capture-app-screens`, `setup-appstore-connect`, `setup-google-play`, `publish-release`
 - **P4** `design-paywall`, `setup-subscriptions`, `enable-credits`, `enable-ads`
 - **P5** `setup-analytics`, `enable-notifications`, `design-onboarding`, `add-virality-loop`
-- **Cross-phase** `verify-ui` (behaviour via headless Compose tests + appearance via a rendered PNG), `run-quality-gates`
+- **Cross-phase** `verify-ui` (behaviour via headless Compose tests + appearance via a rendered PNG), `run-quality-gates`, `sync-template` (pull template updates into a derived app)
 
 ### Screen Generation
 **Whenever the user asks for a new screen, run this from `MobileApp/`** instead of hand-creating files:
@@ -472,6 +472,9 @@ It scaffolds the domain model, `@Entity` (with mappers) and `@Dao` in `commonMai
 ./scripts/refactor_package.sh --app-id com.example.newapp --app-name NewApp --skip-package-rename   # IDs + name only
 ```
 Named flags `--app-id` / `--app-name` are both required (positional `<id> <name>` still accepted as a fallback). It rewrites Kotlin packages/dirs, Gradle files (including the custom task-group label, derived from the package's last segment), Firebase/Google-services configs, iOS `Info.plist`/`project.pbxproj`, the repo-root GitHub publish workflows, the helper scripts, and package references in docs/guidelines (READMEs, `AGENTS.md`, `skills/`, `AiGuidelines/`) — both the dotted id and the slashed `com/x/y` path. `--skip-package-rename` (default off — packages ARE renamed) updates IDs + name only. The values being replaced are **auto-detected** from the project (old id ← androidApp `namespace`; old name ← settings `rootProject.name`), so re-refactoring an already-renamed project just works — `--old-app-id` / `--old-app-name` only override detection. Edits in place + irreversible — it prompts for confirmation unless `-y` is passed. Idempotent. Requires `perl`.
+
+### Syncing a derived app with the template
+The rename above normally destroys the merge base with the template repo. **To pull template updates into an app created from this kit**, use `MobileApp/scripts/sync_template.sh` — it keeps a `template-base` branch of template snapshots *rendered as your app* (refactor applied to the incoming tree), so `git merge` sees only real feature changes. Works with "Use this template" repos (unrelated history) via `--bootstrap`. Records the synced commit in `.template-version`; release notes for each sync live in `CHANGELOG.md`. Full flow + conflict-resolution rules: the **`sync-template`** skill. Template maintainers: every feature PR adds a `CHANGELOG.md` entry.
 
 ### Store Screenshot Generation
 **To produce App Store / Play Store screenshots at storefront pixel sizes**, run this from `MobileApp/`:
