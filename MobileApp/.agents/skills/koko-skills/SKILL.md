@@ -112,6 +112,7 @@ These sequential guides walk you from first-run setup to monetization and growth
 | :--- | :--- | :--- |
 | **`run-quality-gates`** | [SKILL.md](../../../../skills/run-quality-gates/SKILL.md) | Execute codebase standard checks (Spotless code formatting check, unit tests, debug build validations). |
 | **`verify-ui`** | [SKILL.md](../../../../skills/verify-ui/SKILL.md) | Verify a screen's behaviour with a headless Compose test and its appearance by rendering a `@Preview` to a PNG. |
+| **`sync-template`** | [SKILL.md](../../../../skills/sync-template/SKILL.md) | Pull KMPStarterKit template updates into this app (vendor-branch sync that survives the package rename). |
 
 > [!NOTE]
 > When executing a skill, make sure you perform any associated bash/gradle commands from the `MobileApp/` directory. Every path inside the parent skills expects execution inside the mobile subproject.

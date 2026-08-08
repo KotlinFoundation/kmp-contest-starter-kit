@@ -128,3 +128,4 @@ no-Firebase AI path, so Firebase / Adapty / store accounts wait until the phase 
 |---|---|
 | [verify-ui](verify-ui/SKILL.md) | Confirming a screen behaves (headless Compose test, ~2s) and looks right (render a PNG and look at it) |
 | [run-quality-gates](run-quality-gates/SKILL.md) | Validating changes before commit/PR (lint, tests, build) |
+| [sync-template](sync-template/SKILL.md) | Pulling template updates into an app created from this kit (survives the package rename; see `CHANGELOG.md`) |
