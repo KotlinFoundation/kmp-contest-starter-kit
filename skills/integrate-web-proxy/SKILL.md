@@ -1,6 +1,6 @@
 ---
 name: integrate-web-proxy
-description: Deploy the Web/functions Cloud Functions AI proxy (OpenAI/Replicate), store API keys in Google Cloud Secret Manager, set CLOUD_FUNCTIONS_URL, and call it from a Ktor client with a Firebase Bearer token. Use when the developer wants live AI/backend calls, to deploy the Cloud Functions, or to wire the app to OpenAI/Replicate securely.
+description: Deploy the Web/functions Cloud Functions AI proxy (OpenAI/Replicate), store API keys in Google Cloud Secret Manager, set CLOUD_FUNCTIONS_URL, and call it from a Ktor client with a Firebase Bearer token. Use when the developer wants live AI/backend calls, to deploy the Cloud Functions, to wire the app to OpenAI/Replicate securely, or to swap the Replicate model (see "Swapping the Replicate model" below). To only add/extend one API call's DTOs/repository once the proxy exists, use add-api-service.
 ---
 
 # Integrate the web proxy (Cloud Functions AI backend)
@@ -17,9 +17,11 @@ uniform envelope. Requires a Blaze-plan Firebase project (`setup-firebase`) and 
 > the device (auto-detected; `AppConfiguration.USE_AI_PROXY_SERVER` overrides — `true`=proxy, `false`=direct).
 > **Not for production** — the key is
 > compiled into the app binary. Deploy this proxy and clear those keys before shipping. Note: text→image
-> is fully Firebase-free; image-*editing* still uploads the reference image via `KMPStorage`/Firebase
-> Storage. Direct calls return the provider's raw JSON (no `{statusCode,errorMessage,data}` envelope) —
-> `AiTransport` adapts it, so the DTOs and generation providers are unchanged.
+> is fully Firebase-free; image-*editing* is too — the reference image is hosted via a direct upload
+> (`TemporaryFileUploadApiService` → tempfile.org, no API key; see *File hosting* in `AGENTS.md`) so the
+> provider can fetch it by URL. Direct calls return the provider's raw JSON (no
+> `{statusCode,errorMessage,data}` envelope) — `AiTransport` adapts it, so the DTOs and generation
+> providers are unchanged.
 
 ## What's in `Web/functions`
 
@@ -97,7 +99,10 @@ The deploy prints the base URL, shaped
 > `AI_PROVIDERS=openai` or `AI_PROVIDERS=replicate,openai`). Only the listed providers' endpoints
 > deploy, so only **their** secrets need to exist in Secret Manager. To allow unauthenticated calls
 > on an endpoint (dev/testing only), set `requireAuth: false` in that function's
-> `Validation.validateAll(...)` call.
+> `Validation.validateAll(...)` call — but **never deploy that to production**: an unauthenticated
+> endpoint spends your provider credits for anyone who finds the URL. Revert to `requireAuth: true`
+> before shipping, and consider setting `maxInstances` on the functions plus a per-user quota if the
+> app grows (anonymous Firebase sign-in is easy to script, so ID-token auth alone is a soft limit).
 
 > **First deploy on a brand-new project fails?** Two common one-time causes: the Secret Manager
 > API isn't enabled (step 1), or the project has no default Cloud Storage bucket yet — see the
@@ -149,6 +154,35 @@ Specifics for this backend:
 
 On a real device/emulator with a signed-in (anonymous or social) user, invoke the wired call and
 confirm the function returns `data`. This is the phase's validation gate.
+
+## Swapping the Replicate model — read BEFORE changing MODEL_OWNER / MODEL_NAME
+
+The default model is wired in `ReplicateGenerationProvider.kt`
+(`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/data/source/ai/`) via the companion constants
+`MODEL_OWNER` / `MODEL_NAME` (official models) or `MODEL_VERSION` (community models). Swapping models
+is invited by the TODOs there, but **three things silently break if you only change the constants**:
+
+1. **Input keys must exactly match the new model's schema.** Look the schema up at
+   `https://replicate.com/<owner>/<name>/api` (or the "API" tab on the model page) before writing any
+   code. Official models validate inputs against their JSON Schema — a wrong key (e.g. sending
+   `image_input` to a model that expects `image` or `input_image`) returns a 422 or is silently
+   dropped, producing text-only/garbage output. The key for reference images is passed where the
+   generation input is built (see `KEY_REFERENCE_IMAGE` in `HomeViewModel.kt`); the internal default
+   `GenerationParam.DEFAULT_FILE_PARAM_KEY` is **not** a real Replicate field name for any model.
+2. **The output shape is model-defined.** `ReplicatePredictionResponse.output` is currently typed
+   `String?`, which matches the default model (`google/nano-banana` returns a single URI string). Many
+   popular image models (Flux family, SDXL, most community img2img models) return an **array** of
+   URIs instead — with those, deserialization throws (`Expected STRING, got BEGIN_ARRAY`). Check the
+   new model's output schema; if it's an array/object, change `output` to `JsonElement?` and normalize
+   (string → itself, array → first element, object → the documented field).
+3. **`Prefer: wait` blocks at most ~60 seconds.** If the prediction isn't finished (cold start, heavy
+   image-to-image, video models), Replicate returns HTTP 200 with `status: "starting"/"processing"`
+   and `output: null` — that is **"poll me", not an error**. `ReplicateGenerationProvider` handles
+   this: `awaitOutput()` polls `getPredictionStatus` with exponential backoff until the prediction
+   leaves the in-progress state. The budget is ~4.3 minutes (`POLL_INITIAL_DELAY`,
+   `POLL_MAX_INTERVAL`, `POLL_MAX_ATTEMPTS` in the provider's companion object) — raise it if your
+   model routinely runs longer, and note that the Cloud Function's own timeout still caps the
+   initial `Prefer: wait` call.
 
 ## Next
 

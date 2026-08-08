@@ -32,9 +32,10 @@ In the app → **iOS App** sidebar, a **1.0.0 Prepare for Submission** version e
   **Support URL**, **Marketing URL** (optional)
 - **Subtitle** (30 chars, shown under the name)
 - **What's New in This Version** (release notes)
-- **Screenshots** — required per device size. Generate them with the `store-screenshots`
-  skill (outputs at `distribution/store_screenshots/<locale>/<device>/`), then drag into
-  the 6.9"/6.5" iPhone and 13" iPad slots.
+- **Screenshots** — required per device size. Plain captures of your screens come from the
+  `capture-app-screens` skill (`distribution/store_screenshots/<locale>/<device>/`). Apple accepts
+  those as-is; if you want designed images with headlines and device frames, compose them in your
+  own design tool using these PNGs. Drag the result into the 6.9"/6.5" iPhone and 13" iPad slots.
 - **App Icon** — the 1024×1024 marketing icon (from the `generate-app-icons` skill).
 
 ## 3. Categories, age rating, and pricing

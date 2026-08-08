@@ -33,10 +33,16 @@ class ReplicateGenerationProvider(
         const val IS_OFFICIAL_MODEL = true
         const val PROMPT_KEY_PARAM = "prompt"
 
+        // Swapping the model? Changing the constants below is NOT enough — first read
+        // "Swapping the Replicate model" in skills/integrate-web-proxy/SKILL.md and check the new
+        // model's schema at https://replicate.com/<owner>/<name>/api. In particular: (1) input field
+        // keys must match the model's schema exactly, and (2) `ReplicatePredictionResponse.output`
+        // is typed String? for this default model — many models return an ARRAY of URIs instead.
+
         // The request is sent with `Prefer: wait`, which Replicate honours for at most ~60s. A model
         // that needs longer (cold start, heavy image-to-image, video) comes back HTTP 200 with
-        // status "starting"/"processing" and a null output — that means "poll me", not "failed".
-        // Tune these if your model routinely runs longer than the budget below.
+        // status "starting"/"processing" and a null output, which means "poll me", not "failed" —
+        // `awaitOutput()` below does that. Tune these if your model routinely outruns the budget.
         val POLL_INITIAL_DELAY = 5.seconds
         val POLL_MAX_INTERVAL = 15.seconds
         const val POLL_MAX_ATTEMPTS = 20

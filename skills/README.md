@@ -87,7 +87,7 @@ no-Firebase AI path, so Firebase / Adapty / store accounts wait until the phase 
 | Skill | Use when |
 |---|---|
 | [configure-environment](configure-environment/SKILL.md) | Figuring out where a config value / API key lives (local.properties, gradle.properties, AppConfiguration.kt, Constants.kt) |
-| [setup-firebase](setup-firebase/SKILL.md) | Connecting the app to Firebase (project, apps, anonymous auth) |
+| [setup-firebase](setup-firebase/SKILL.md) | Connecting the app to Firebase (project, apps, anonymous auth) — and the wasmJs question that must be asked before any Firebase client SDK enters shared code |
 | [enable-auth](enable-auth/SKILL.md) | Adding Google / Apple social sign-in |
 | [integrate-web-proxy](integrate-web-proxy/SKILL.md) | Deploying the Cloud Functions AI proxy and calling it securely |
 | [sync-data-firebase](sync-data-firebase/SKILL.md) | Putting data in Firestore / syncing across devices / making state server-authoritative (asks the wasmJs question first) |
@@ -99,7 +99,7 @@ no-Firebase AI path, so Firebase / Adapty / store accounts wait until the phase 
 | [generate-app-icons](generate-app-icons/SKILL.md) | Setting/replacing the app + launcher icons |
 | [bump-version](bump-version/SKILL.md) | Bumping versionCode / versionName for a release |
 | [setup-signing](setup-signing/SKILL.md) | Release signing + moving keys out of the app into CI secrets |
-| [store-screenshots](store-screenshots/SKILL.md) | Generating App Store / Play Store screenshots |
+| [capture-app-screens](capture-app-screens/SKILL.md) | Capturing your real screens as plain PNGs at store pixel sizes (no headlines / device frames — this kit has no design step) |
 | [setup-appstore-connect](setup-appstore-connect/SKILL.md) | Creating + configuring the App Store Connect listing |
 | [setup-google-play](setup-google-play/SKILL.md) | Creating + configuring the Google Play Console listing |
 | [publish-release](publish-release/SKILL.md) | Building signed artifacts and submitting for review |

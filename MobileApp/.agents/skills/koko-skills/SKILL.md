@@ -63,9 +63,10 @@ These sequential guides walk you from first-run setup to monetization and growth
 | Skill Name | Location | Description |
 | :--- | :--- | :--- |
 | **`configure-environment`** | [SKILL.md](../../../../skills/configure-environment/SKILL.md) | Find and assign API keys and configuration constants across target environments. |
-| **`setup-firebase`** | [SKILL.md](../../../../skills/setup-firebase/SKILL.md) | Wire Android/iOS targets to Firebase Services and generate config credentials. |
+| **`setup-firebase`** | [SKILL.md](../../../../skills/setup-firebase/SKILL.md) | Wire Android/iOS targets to Firebase Services and generate config credentials. Owns the **wasmJs question** that must be put to the developer before any Firebase client SDK enters shared code. |
 | **`enable-auth`** | [SKILL.md](../../../../skills/enable-auth/SKILL.md) | Integrate Firebase Authentication with Google and Apple Sign-In. |
-| **`integrate-web-proxy`** | [SKILL.md](../../../../skills/integrate-web-proxy/SKILL.md) | Wire the app securely to Firebase Cloud Functions for backend logic. |
+| **`integrate-web-proxy`** | [SKILL.md](../../../../skills/integrate-web-proxy/SKILL.md) | Wire the app securely to Firebase Cloud Functions for backend logic. Includes "Swapping the Replicate model" — required reading before changing the AI model. |
+| **`sync-data-firebase`** | [SKILL.md](../../../../skills/sync-data-firebase/SKILL.md) | Put data in Firestore, sync across devices, or make state server-authoritative — opens with the wasmJs trade-off the developer must decide. |
 
 ---
 
@@ -76,7 +77,7 @@ These sequential guides walk you from first-run setup to monetization and growth
 | **`generate-app-icons`** | [SKILL.md](../../../../skills/generate-app-icons/SKILL.md) | Automatically generate and export app launcher icons. |
 | **`bump-version`** | [SKILL.md](../../../../skills/bump-version/SKILL.md) | Increment build and marketing version descriptors in parallel for Android and iOS. |
 | **`setup-signing`** | [SKILL.md](../../../../skills/setup-signing/SKILL.md) | Setup secure build-signing keystores and push keys to CI environments. |
-| **`store-screenshots`** | [SKILL.md](../../../../skills/store-screenshots/SKILL.md) | Generate store preview assets from `@StoreScreenshot` annotated Compose previews. |
+| **`capture-app-screens`** | [SKILL.md](../../../../skills/capture-app-screens/SKILL.md) | Render your real screens to plain PNGs at store pixel sizes. Not designed marketing images — no design step exists here. |
 | **`setup-appstore-connect`** | [SKILL.md](../../../../skills/setup-appstore-connect/SKILL.md) | Step-by-step Apple developer console setup. |
 | **`setup-google-play`** | [SKILL.md](../../../../skills/setup-google-play/SKILL.md) | Step-by-step Google Play developer console setup. |
 | **`publish-release`** | [SKILL.md](../../../../skills/publish-release/SKILL.md) | Submit finalized builds to their respective App Stores for review. |

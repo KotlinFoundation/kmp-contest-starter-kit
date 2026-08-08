@@ -69,9 +69,9 @@ Firebase **DebugView** shows events in near-real-time from a debug-enabled devic
 - Then open **Firebase Console → Analytics → DebugView** and drive the app.
 
 Use `AppLogger`
-(`shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/logging/AppLogger.kt`,
-initialized in `AppInitializer`) for local `AppLogger.d(...)` traces alongside DebugView while
-confirming events fire.
+(the facade declared in `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/logging/Logger.kt`
+alongside the `Logger` interface it fans out to, initialized in `AppInitializer`) for local
+`AppLogger.d(...)` traces alongside DebugView while confirming events fire.
 
 ## Done
 An event appears in DebugView and a Remote Config parameter change flips your flag on next launch.

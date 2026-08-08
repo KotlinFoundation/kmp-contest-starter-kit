@@ -65,7 +65,7 @@ Once the KMP app is ready (the getting started skill mentioned above is complete
 - [ ] **[generate-app-icons](../../../skills/generate-app-icons/SKILL.md)**: Generate and set launcher icons.
 - [ ] **[bump-version](../../../skills/bump-version/SKILL.md)**: Increment build versions for Android and iOS simultaneously.
 - [ ] **[setup-signing](../../../skills/setup-signing/SKILL.md)**: Configure release signing and secure key management.
-- [ ] **[store-screenshots](../../../skills/store-screenshots/SKILL.md)**: Generate App Store/Play Store screenshots from Compose Previews.
+- [ ] **[capture-app-screens](../../../skills/capture-app-screens/SKILL.md)**: Render your real screens to plain PNGs at App Store / Play Store pixel sizes (plain UI captures, not designed marketing images).
 - [ ] **[setup-appstore-connect](../../../skills/setup-appstore-connect/SKILL.md)**: Set up the Apple App Store Connect listing.
 - [ ] **[setup-google-play](../../../skills/setup-google-play/SKILL.md)**: Set up the Google Play Console listing.
 - [ ] **[publish-release](../../../skills/publish-release/SKILL.md)**: Build and submit final artifacts for review.

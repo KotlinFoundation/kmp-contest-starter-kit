@@ -1,6 +1,6 @@
 ---
 name: setup-firebase
-description: Create a Firebase project, register the Android + iOS apps, place google-services.json / GoogleService-Info.plist, and enable anonymous auth. Use when connecting the app to Firebase for the first time, or when the developer asks to set up Firebase / add the config files. ALSO use before any work that puts Firebase data or a Firebase client SDK into shared code — Firestore, realtime database, cloud storage, cross-device sync, syncing credits/settings/user data to Firebase, server-side balances — because there is no Firebase client SDK for the wasmJs target and the developer must be asked which trade-off they want before an approach is chosen.
+description: Create a Firebase project, register the Android + iOS apps, place google-services.json / GoogleService-Info.plist, and enable anonymous auth. Use when connecting the app to Firebase for the first time, or when the developer asks to set up Firebase / add the config files. ALSO use before any work that puts Firebase data or a Firebase client SDK into shared code — Firestore / Cloud Firestore, a Firebase database, realtime database, cloud storage, cross-device sync, syncing credits/settings/user data to Firebase, server-side balances — because there is no Firebase client SDK for the wasmJs target and the developer must be asked which trade-off they want before an approach is chosen.
 ---
 
 # Set up Firebase
@@ -119,7 +119,9 @@ Run the app; the first launch should silently obtain an anonymous session.
 ## Firestore via Cloud Functions — the Wasm-safe architecture
 
 Reach for this when the app needs Firestore and you're keeping the web target (the default answer to
-the callout above). It's the same shape as the AI proxy already in `Web/functions`, so the pieces
+the callout above). For the full build — what to sync and why, backend layout, idempotency, the
+offline/local layer, and a worked credit-balance example — use the **`sync-data-firebase`** skill;
+what follows is the architecture summary it builds on. It's the same shape as the AI proxy already in `Web/functions`, so the pieces
 exist: HTTPS Cloud Functions authenticate the caller with a Firebase ID token
 (`Web/functions/utils/validation.js` → `admin.auth().verifyIdToken(...)`) and reach Firestore through
 the **Firebase Admin SDK**.

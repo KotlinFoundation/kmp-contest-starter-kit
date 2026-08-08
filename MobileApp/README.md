@@ -11,7 +11,6 @@ Compose Multiplatform mobile application targeting Android, iOS, Web (WASM), and
 ├── webApp/            # Wasm/JS browser entry point
 ├── designsystem/      # Reusable UI components library
 ├── libs/
-│   ├── auth/          # Authentication (API + Firebase implementation)
 │   └── subscription/  # Subscriptions (API + RevenueCat/Adapty implementations)
 ├── build-logic/       # Convention plugins for KMP library modules
 ├── iosApp/            # Xcode project wrapper
@@ -137,7 +136,7 @@ Optional (local only, not part of PR checks): Roborazzi screenshot comparison. R
 
 ## Store Screenshot Generation
 
-Render every `@Preview @StoreScreenshot` composable at App Store / Play Store pixel sizes, framed in pure Compose (no Fastlane / ImageMagick):
+Render every `@Preview @StoreScreenshot` composable at App Store / Play Store pixel sizes — the screen as it renders, no marketing chrome added (no Fastlane / ImageMagick):
 
 ```bash
 ./scripts/generate_store_screenshots.sh

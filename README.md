@@ -10,6 +10,12 @@ To get started, open this project in Android Studio and type `Proceed with @koko
 
 Documentation: [docs.kappmaker.com](https://docs.kappmaker.com)
 
+> **Cloning on Windows?** This repo uses git symlinks (`CLAUDE.md`/`GEMINI.md` → `AGENTS.md`,
+> `.claude/skills` → `skills/`). On Windows, clone with symlinks enabled or they become plain text
+> files and AI-agent skill discovery silently breaks: enable **Developer Mode** (Settings → For
+> developers), then `git clone -c core.symlinks=true <repo-url>`. Also note `Documentation/` is a
+> submodule — use `git clone --recurse-submodules` if you want the docs site locally (optional).
+
 ## Project Structure
 
 ```
@@ -48,7 +54,7 @@ Documentation: [docs.kappmaker.com](https://docs.kappmaker.com)
 - **Spotless + ktlint** — Run `./gradlew spotlessApply` to auto-format Kotlin source and Gradle KTS. Enforced on every PR.
 - **Unit & Compose UI tests** — `kotlinx-coroutines-test` for `Flow` / ViewModel tests; `runComposeUiTest` for headless UI tests on JVM. Run via `./gradlew :shared:jvmTest :shared:testAndroidHostTest`.
 - **Screenshot tests (optional, local)** — Roborazzi + ComposablePreviewScanner can snapshot every `@Preview` under `com.kotlinfoundation.koko.*`. Record baselines with `./gradlew :shared:recordRoborazziAndroidHostTest`, then compare with `./gradlew :shared:verifyRoborazziAndroidHostTest`. Goldens are not committed and verification is not part of PR checks.
-- **Storefront screenshot generator** — `./scripts/generate_store_screenshots.sh` renders every `@Preview @StoreScreenshot` composable at App Store / Play Store pixel sizes, framed in pure Compose, ready to upload. No Fastlane / ImageMagick required.
+- **Storefront screenshot generator** — `./scripts/generate_store_screenshots.sh` renders every `@Preview @StoreScreenshot` composable at App Store / Play Store pixel sizes, ready to upload. The capture is the screen as it renders — no marketing chrome, device frames, or headlines added. No Fastlane / ImageMagick required.
 
 ### Monetization & Growth
 - **[Google AdMob Ads](https://docs.kappmaker.com/features/admob-ads)** — Banner, interstitial, and rewarded ads
