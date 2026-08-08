@@ -62,16 +62,34 @@ before you generate anything — that's what makes the build resumable.
 
 Use the **`new-local-model`** and **`new-screen`** skills for the rules each one expects.
 
-## 3. Implement — **Agent Action, parallelize here**
+## 3. Implement — **Agent Action — fan out subagents in parallel**
 
-Once scaffolding is done, the per-feature work lives in **separate folders**, so it's safe to fan out
-**one subagent per screen/model**:
+Scaffolding was sequential; implementation must not be. The per-feature work lives in **separate
+folders**, so launch **one subagent per screen and per model — all at once, not one after another**.
+On a 4-screen app this is the single biggest time saving of the whole phase; only fall back to
+sequential if your harness has no subagent support.
+
+**File-ownership rule (what makes the fan-out safe):**
+
+- A subagent edits **only its own feature's files**: `presentation/screens/<feature>/` for a screen,
+  the model's `@Entity`/`@Dao`/domain files for a model.
+- **Shared files stay with you**, the orchestrator: `Routes.kt`, `AppNavigation.kt`, `root/Di.kt`,
+  `AppDatabase.kt`, `DatabaseModule.kt`, and `composeResources/values/strings.xml`. If a subagent
+  needs new string resources, have it **return them** and merge them yourself — two subagents
+  editing `strings.xml` concurrently is a lost update.
+- Subagents **don't run Gradle** — no per-screen builds or tests. Concurrent Gradle runs in one
+  checkout just serialize on the daemon lock. You validate everything once in step 5.
+
+What each subagent does:
 
 - **Models** — real columns on the `@Entity`, update both mappers, DAO queries the feature needs.
 - **Screens** — build the UI in the pure composable overload per `ui_ux.md`; keep logic in the
   ViewModel; use `designsystem` components (`AppButton`, `AppCard`, …).
 - **Navigation** — edit the generated `entry<…>` blocks in `AppNavigation.kt` to add the callbacks
   the flow needs. *(This file is shared — do this yourself, not in a subagent.)*
+
+The step-4 branding work below is independent of the feature screens — put it **in the same
+fan-out** rather than doing it afterwards.
 
 Reach for these only if the feature actually needs them:
 - **`add-api-service`** — a remote call (any public URL; no backend needed).
@@ -88,7 +106,9 @@ Reach for these only if the feature actually needs them:
 
 The kit **already includes an onboarding flow and a paywall** (`presentation/screens/onboarding/`,
 `presentation/screens/paywall/`). Out of the box they show boilerplate copy about the wrong product —
-the developer will hit them the moment they run the app, so fix them now, not at publish time:
+the developer will hit them the moment they run the app, so fix them now, not at publish time.
+Both jobs are independent of your feature screens — run them as **two more subagents in the step-3
+fan-out** (same ownership rule: they return their `strings.xml` entries; you merge them):
 
 - **Onboarding** — rebuild the copy/steps from
   [`AiGuidelines/project/onboarding.md`](../../AiGuidelines/project/onboarding.md): the chosen pattern,
@@ -103,6 +123,10 @@ the developer will hit them the moment they run the app, so fix them now, not at
     the real store products exist.
 
 ## 5. Validate — **Agent Action → User confirms**
+
+Run this **once, after all subagents are merged** — not per screen. One
+`recordRoborazziAndroidHostTest` run snapshots **every** `@Preview` in a single Gradle invocation,
+so N screens still cost one build.
 
 Verify each screen you built with the **`verify-ui`** skill *before* handing back:
 - **Behaviour** — a headless `runComposeUiTest` against the screen's pure `(uiState, onUiEvent)`

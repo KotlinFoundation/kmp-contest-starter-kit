@@ -153,6 +153,37 @@ These three scoped tasks ARE the whole validation. Do not improvise around them:
 ### `@Preview` annotation
 Always use `androidx.compose.ui.tooling.preview.Preview`, NOT `org.jetbrains.compose.ui.tooling.preview.Preview` (the latter is deprecated as of CMP 1.10 and not discovered by ComposablePreviewScanner). The multiplatform-aware AndroidX import comes from `org.jetbrains.compose.ui:ui-tooling-preview` (already wired in `shared` and `designsystem`).
 
+## Agent Working Style — parallelize by default
+
+Most tasks in this repo decompose into independent pieces (screens, models, docs, skills, per-file
+edits). Working through them one at a time is the main reason sessions feel slow. If your harness
+supports subagents / parallel tool calls (Claude Code, Cursor, Copilot Workspace, …), **fan out
+whenever the pieces are independent** — for any task, not just feature builds:
+
+- **Reads are always safe to parallelize.** Product docs, multiple source files, several skills —
+  read them concurrently, never one-by-one.
+- **Fan out implementation when files are disjoint.** One subagent per screen / model / feature
+  folder / doc file. The biggest case is `build-features` (see its step 3), but the same applies to
+  refactors, doc sweeps, multi-screen UI passes, test authoring.
+- **File-ownership rule** (what makes fan-out safe): a subagent edits **only files it exclusively
+  owns** (its feature folder). Shared, single-instance files are edited **only by the orchestrating
+  agent**, merging what subagents return: `Routes.kt`, `AppNavigation.kt`, `root/Di.kt`,
+  `AppDatabase.kt`, `DatabaseModule.kt`, `composeResources/values/strings.xml`, gradle files.
+  Two subagents writing one file concurrently = lost updates.
+- **Never parallelize the scaffold scripts** (`generate_screen.sh`, `make_local.sh`,
+  `refactor_package.sh`) — they patch shared files at insertion markers; concurrent runs corrupt
+  them. Scaffold sequentially (they're fast), then fan out the implementation.
+- **One Gradle invocation at a time, run by the orchestrator.** Subagents should not build or test;
+  concurrent Gradle runs in one checkout just serialize on the daemon lock. Validate **once** after
+  merging all subagent output — `spotlessApply`, the scoped gates, and a single
+  `recordRoborazziAndroidHostTest` run (it snapshots every `@Preview` in one pass).
+- **Long-running tasks run in the background** — `:desktopApp:run`, the wasm dev server. Don't block
+  a session waiting on a task that never exits (see Validation guardrails).
+- **Git worktrees** are for genuinely independent workstreams that must not interfere (a risky
+  refactor alongside feature work, two large PRs in flight) — each worktree pays a full fresh Gradle
+  build, so they are **not** worth it for per-screen fan-out. Default to subagents in one checkout;
+  reach for a worktree when isolation matters more than build reuse.
+
 ## Architecture & Key Conventions
 
 ### Core Principles

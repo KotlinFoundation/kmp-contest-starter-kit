@@ -81,6 +81,7 @@ Verify: `./scripts/check_env.sh --phase getting-started`.
 ### D. Build your features
 
 8. **Agent Action** — Build the MVP with the **`build-features`** skill: it derives the screens + local models from `prd.md`/`user_flow.md`, scaffolds them (`make_local.sh` / `generate_screen.sh`, **run sequentially** — they patch shared files), implements the UI per `ui_ux.md`, and brands the onboarding + paywall screens that already ship.
+   - **Speed matters here:** after the sequential scaffold, `build-features` step 3 **fans out one subagent per screen/model in parallel** (onboarding + paywall branding join the same fan-out). Implementing screens one after another is the main reason this phase feels slow — see "Agent Working Style" in the root `AGENTS.md`.
    - It records every model/screen in **`PROGRESS_FEATURES.md`** at the **git repo root** (the folder that contains `MobileApp/` — from the MobileApp Window that's one level up, `../PROGRESS_FEATURES.md`; never inside `MobileApp/`) and ticks them off as it goes — so if a session stops, the next one resumes from the first unchecked item instead of guessing.
    - Underlying skills it uses: **`new-local-model`**, **`new-screen`**, and — only if a feature needs them — **`add-api-service`** (any public URL, no backend), **`save-preferences`**, **`add-permission`**.
    - Everything stays local: **no Firebase, no provider account, no store account** in this phase. The paywall runs on the mock provider if you touch it.

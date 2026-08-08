@@ -60,6 +60,7 @@ Once the KMP app is ready (the getting started skill mentioned above is complete
 - [ ] **[setup-firebase](../../../skills/setup-firebase/SKILL.md)**: Connect the app to Firebase services.
 - [ ] **[enable-auth](../../../skills/enable-auth/SKILL.md)**: Integrate social sign-in (Google/Apple).
 - [ ] **[integrate-web-proxy](../../../skills/integrate-web-proxy/SKILL.md)**: Connect the mobile app to the Firebase Cloud Functions proxy.
+- [ ] **[sync-data-firebase](../../../skills/sync-data-firebase/SKILL.md)**: Put data in Firestore, sync across devices, or make state server-authoritative (optional — asks the wasmJs trade-off first).
 
 ### Phase 3: Publication
 - [ ] **[generate-app-icons](../../../skills/generate-app-icons/SKILL.md)**: Generate and set launcher icons.
