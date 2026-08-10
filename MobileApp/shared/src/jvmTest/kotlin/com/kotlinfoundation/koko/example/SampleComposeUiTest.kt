@@ -2,6 +2,7 @@ package com.kotlinfoundation.koko.example
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
@@ -18,7 +19,7 @@ import kotlin.test.assertTrue
  * How it works: every screen has a **pure overload** taking `uiState` + `onUiEvent` instead of a
  * ViewModel, so a test can render it with no Koin, no ViewModel, no device and no browser. Queries
  * go through Compose's semantics tree (the same data a screen reader uses), so
- * `onNodeWithText("42")` matches real rendered text rather than a pixel guess.
+ * `onNodeWithText("Create")` matches real rendered text rather than a pixel guess.
  *
  * Run: `./gradlew :shared:jvmTest` — ~2s warm, and part of the PR gate.
  *
@@ -28,34 +29,34 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class SampleComposeUiTest {
     @Test
-    fun `home screen renders the credit balance from uiState`() = runComposeUiTest {
+    fun `generate button is disabled until the prompt has text`() = runComposeUiTest {
         setContent {
             AppTheme {
-                HomeScreen(uiState = HomeUiState(creditBalance = 42), onUiEvent = {})
+                HomeScreen(uiState = HomeUiState(prompt = ""), onUiEvent = {})
             }
         }
 
-        // The toolbar credit chip reflects state directly.
-        onNodeWithText("42").assertExists()
+        // isGenerationButtonEnabled is derived from uiState, and the button reflects it directly.
+        onNodeWithText("Create").assertIsNotEnabled()
     }
 
     @Test
-    fun `clicking the credit chip emits OnClickToolbarCredits`() = runComposeUiTest {
+    fun `clicking generate emits OnClickGenerate`() = runComposeUiTest {
         val events = mutableListOf<HomeUiEvent>()
 
         setContent {
             AppTheme {
-                HomeScreen(uiState = HomeUiState(creditBalance = 7), onUiEvent = { events += it })
+                HomeScreen(uiState = HomeUiState(prompt = "a cat"), onUiEvent = { events += it })
             }
         }
 
-        onNodeWithText("7")
+        onNodeWithText("Create")
             .assertIsEnabled()
             .performClick()
 
         assertTrue(
-            events.any { it is HomeUiEvent.OnClickToolbarCredits },
-            "expected OnClickToolbarCredits, got $events",
+            events.any { it is HomeUiEvent.OnClickGenerate },
+            "expected OnClickGenerate, got $events",
         )
     }
 }

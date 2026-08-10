@@ -59,7 +59,7 @@ Documentation: https://kotlinfoundation.org/kmp-contest-starter-kit-documentatio
 ### Monetization & Growth
 - **[Google AdMob Ads](https://docs.kappmaker.com/features/admob-ads)** — Banner, interstitial, and rewarded ads
 - **[Flexible Credit System](https://docs.kappmaker.com/features/credits-system)** — Local credit system with renewable credits
-- **No-premium mode** — one switch (`AppConfiguration.PREMIUM_FEATURES_ENABLED = false`) removes all premium gating: no paywall, no subscriptions, credits off, all features free (`true` keeps premium features available; the app can still be free to download)
+- **No-premium mode** — the default (`AppConfiguration.PREMIUM_FEATURES_ENABLED = false`): no paywall, no subscriptions, credits off, all features free. Flip it to `true` when you add premium features (the app can still be free to download)
 
 ### AI & Backend
 - **[AI Integration](https://docs.kappmaker.com/features/ai-integration)** — OpenAI, Replicate, and DALL-E via Firebase Cloud Functions (secure API key handling)

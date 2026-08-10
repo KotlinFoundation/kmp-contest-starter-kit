@@ -60,15 +60,16 @@ object AppConfiguration {
     /**
      * Whether the app has any **premium (paid/gated) features**.
      *
-     * - `true` (default): the app HAS premium features — subscriptions, paywall, and credits are
-     *   available to gate or limit features. (The app itself can still be free to download.)
-     * - `false`: **no premium features** — everything is unlocked and free. No paywall, no
-     *   subscriptions/upgrade UI, the subscription SDK never initializes, and credits are off
-     *   (generation is free, credit UI hidden).
+     * - `false` (default): **no premium features** — everything is unlocked and free. No paywall,
+     *   no subscriptions/upgrade UI, the subscription SDK never initializes, and credits are off
+     *   (generation is free, credit UI hidden). Nothing to configure to run the app.
+     * - `true`: the app HAS premium features — subscriptions, paywall, and credits are available
+     *   to gate or limit features. (The app itself can still be free to download.) Flip this in
+     *   the monetization phase, once the store products exist (see the `monetization` skill).
      *
      * This is about premium *features*, not the app's price.
      */
-    const val PREMIUM_FEATURES_ENABLED = true
+    const val PREMIUM_FEATURES_ENABLED = false
 
     /**
      * The subscription provider is chosen in ONE place — the `SUBSCRIPTION_PROVIDER`

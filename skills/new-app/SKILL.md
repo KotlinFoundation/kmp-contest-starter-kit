@@ -81,8 +81,8 @@ any of it. Skip any row whose stated condition isn't met.
 
 | Decision | Where it goes | Default if deferred |
 |---|---|---|
-| Does the app have **premium (paid) features**? | `root/AppConfiguration.kt` → `PREMIUM_FEATURES_ENABLED` | `true` ✅ (paywall + credits available; app still free to download) |
-| **Subscription provider** — **only ask if premium is `true`**; ask it as a plain two-way pick, **Adapty ✅ or RevenueCat**, with no comparison | `MobileApp/gradle.properties` → `SUBSCRIPTION_PROVIDER` | `ADAPTY` ✅ — **mock provider runs until a real key is set, so no account is needed now** |
+| Does the app have **premium (paid) features**? | `root/AppConfiguration.kt` → `PREMIUM_FEATURES_ENABLED` | `false` ✅ (everything free; turn premium on in `monetization` when the store products exist) |
+| **Subscription provider** — **only ask if premium was set to `true`**; ask it as a plain two-way pick, **Adapty ✅ or RevenueCat**, with no comparison | `MobileApp/gradle.properties` → `SUBSCRIPTION_PROVIDER` | `ADAPTY` ✅ — **mock provider runs until a real key is set, so no account is needed now** |
 | **Google/Apple sign-in**? | `AppConfiguration.AUTH_SOCIAL_LOGIN_ENABLED` | `false` ✅ (anonymous auth is enough; revisit in `integrations`) |
 | **Backend / AI proxy** | `AppConfiguration.CLOUD_FUNCTIONS_URL` | `""` ✅ — **if the app uses AI**, direct mode works right now with **no Firebase**: put `OPENAI_API_KEY` / `REPLICATE_API_KEY` in `MobileApp/local.properties` and leave this blank. The proxy (keys off-device) comes in `integrations` before you publish. |
 | **Legal URLs, support email, App Store id** | `AppConfiguration.{URL_PRIVACY_POLICY, URL_TERMS_CONDITIONS, CONTACT_EMAIL, APPSTORE_APP_ID}` | leave as-is ✅ — **required only to publish** |
