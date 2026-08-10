@@ -7,7 +7,7 @@
 Monorepo with three main parts:
 - **MobileApp/** — Kotlin Compose Multiplatform mobile app (Android, iOS, JVM Desktop, Web/WASM)
 - **Web/** — Firebase Hosting landing page + Cloud Functions backend (Node.js)
-- **Documentation/** — Docusaurus documentation site (git submodule, published at docs.kappmaker.com)
+- **Documentation/** — Docusaurus documentation site (git submodule, published at kotlinfoundation.org/kmp-contest-starter-kit-documentation)
 
 Tech stack: Kotlin 2.3.20, Compose Multiplatform 1.10.0, AGP 9.2.0, Gradle 9.4.1, Gradle Kotlin DSL
 Package: `com.kotlinfoundation.koko`
@@ -655,7 +655,7 @@ Specialized system prompts for when acting in specific roles:
 - `easter_eggs.md` — Interactive surprises, mini-games, device-based interactions
 
 ### Documentation Site (`Documentation/`)
-Docusaurus-based docs (git submodule, published at docs.kappmaker.com):
+Docusaurus-based docs (git submodule, published at kotlinfoundation.org/kmp-contest-starter-kit-documentation):
 - Getting started, architecture overview, feature guides
 - Production: pre-publishing checklist, Fastlane lanes, Android/iOS publishing
 - Feature docs: auth, subscriptions, notifications, credits, ads, AI integration, etc.

@@ -21,7 +21,7 @@ Documentation: https://kotlinfoundation.org/kmp-contest-starter-kit-documentatio
 ```
 ├── MobileApp/         # Compose Multiplatform mobile app (Android, iOS, Web, Desktop)
 ├── Web/               # Firebase Hosting landing page + Cloud Functions backend
-├── Documentation/     # Docusaurus documentation site (git submodule) — docs.kappmaker.com
+├── Documentation/     # Docusaurus documentation site (git submodule) — kotlinfoundation.org/kmp-contest-starter-kit-documentation
 ├── AiGuidelines/      # AI-assisted development guidelines & agent prompts
 ├── skills/            # Agent-agnostic skills (SKILL.md format) for coding agents
 ├── .github/           # GitHub Actions workflows + composite actions (PR checks, publish, web build)
@@ -31,24 +31,24 @@ Documentation: https://kotlinfoundation.org/kmp-contest-starter-kit-documentatio
 ## Features
 
 ### Core
-- **[Authentication](https://docs.kappmaker.com/features/auth)** — Google & Apple sign-in via Firebase Authentication
-- **[In-App Purchases & Subscriptions](https://docs.kappmaker.com/features/inapp-purchases-subscription)** — Adapty (default) and RevenueCat integration (switchable via the `SUBSCRIPTION_PROVIDER` gradle property)
-- **[Push Notifications](https://docs.kappmaker.com/features/notifications)** — Firebase Cloud Messaging for Android & iOS
-- **[In-App Review](https://docs.kappmaker.com/features/inapp-review)** — Native app rating prompts
-- **[Feature Flags / Remote Config](https://docs.kappmaker.com/features/feature-flag)** — Runtime feature toggling via Firebase Remote Config
-- **[Firebase Integration](https://docs.kappmaker.com/features/firebase-integration)** — Analytics, Crashlytics, Messaging, Remote Config
+- **[Authentication](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/auth)** — Google & Apple sign-in via Firebase Authentication
+- **[In-App Purchases & Subscriptions](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/inapp-purchases-subscription)** — Adapty (default) and RevenueCat integration (switchable via the `SUBSCRIPTION_PROVIDER` gradle property)
+- **[Push Notifications](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/notifications)** — Firebase Cloud Messaging for Android & iOS
+- **[In-App Review](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/inapp-review)** — Native app rating prompts
+- **[Feature Flags / Remote Config](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/feature-flag)** — Runtime feature toggling via Firebase Remote Config
+- **[Firebase Integration](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/firebase-integration)** — Analytics, Crashlytics, Messaging, Remote Config
 
 ### Data & Networking
-- **[Network](https://docs.kappmaker.com/features/network)** — Ktor HTTP client with centralized config, JSON serialization, logging
-- **[Local Storage](https://docs.kappmaker.com/features/local-storage)** — Room database for offline persistence
-- **[User Preferences](https://docs.kappmaker.com/features/user-preferences)** — Jetpack DataStore Preferences on all targets (file-based on Android/iOS/JVM, `WebLocalStorage` on web)
+- **[Network](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/network)** — Ktor HTTP client with centralized config, JSON serialization, logging
+- **[Local Storage](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/local-storage)** — Room database for offline persistence
+- **[User Preferences](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/user-preferences)** — Jetpack DataStore Preferences on all targets (file-based on Android/iOS/JVM, `WebLocalStorage` on web)
 - **Runtime Permissions** — [Calf](https://github.com/MohamedRejeb/Calf)-backed `AppPermissionState` API with ready-made helpers for notification, camera, gallery, location, and microphone permissions
 - **Splash Screen** — native launch screen on both platforms (no library): Android `core-splashscreen` theme + iOS declarative `UILaunchScreen`. Rebrand by editing the color/icon (see the *Splash Screen* section in `AGENTS.md`/`CLAUDE.md`)
 
 ### UI & Development
-- **[UI Components](https://docs.kappmaker.com/features/ui-components)** — Pre-built design system with reusable Compose components
-- **[Screen Generator](https://docs.kappmaker.com/features/screen-generator)** — Bash script to scaffold new screens with boilerplate
-- **[Logging](https://docs.kappmaker.com/features/logging)** — Structured logging via Napier
+- **[UI Components](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/ui-components)** — Pre-built design system with reusable Compose components
+- **[Screen Generator](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/screen-generator)** — Bash script to scaffold new screens with boilerplate
+- **[Logging](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/logging)** — Structured logging via Napier
 
 ### Quality & Testing
 - **Spotless + ktlint** — Run `./gradlew spotlessApply` to auto-format Kotlin source and Gradle KTS. Enforced on every PR.
@@ -57,29 +57,29 @@ Documentation: https://kotlinfoundation.org/kmp-contest-starter-kit-documentatio
 - **Storefront screenshot generator** — `./scripts/generate_store_screenshots.sh` renders every `@Preview @StoreScreenshot` composable at App Store / Play Store pixel sizes, ready to upload. The capture is the screen as it renders — no marketing chrome, device frames, or headlines added. No Fastlane / ImageMagick required.
 
 ### Monetization & Growth
-- **[Google AdMob Ads](https://docs.kappmaker.com/features/admob-ads)** — Banner, interstitial, and rewarded ads
-- **[Flexible Credit System](https://docs.kappmaker.com/features/credits-system)** — Local credit system with renewable credits
+- **[Google AdMob Ads](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/admob-ads)** — Banner, interstitial, and rewarded ads
+- **[Flexible Credit System](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/credits-system)** — Local credit system with renewable credits
 - **No-premium mode** — the default (`AppConfiguration.PREMIUM_FEATURES_ENABLED = false`): no paywall, no subscriptions, credits off, all features free. Flip it to `true` when you add premium features (the app can still be free to download)
 
 ### AI & Backend
-- **[AI Integration](https://docs.kappmaker.com/features/ai-integration)** — OpenAI, Replicate, and DALL-E via Firebase Cloud Functions (secure API key handling)
-- **[App Landing Page](https://docs.kappmaker.com/features/app-landing-page)** — Pre-built landing page template deployable to Firebase Hosting
+- **[AI Integration](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/ai-integration)** — OpenAI, Replicate, and DALL-E via Firebase Cloud Functions (secure API key handling)
+- **[App Landing Page](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/app-landing-page)** — Pre-built landing page template deployable to Firebase Hosting
 
 ### DevOps
-- **[GitHub CI/CD Actions](https://docs.kappmaker.com/features/github-ci-cd)** — `pr_checks.yml` runs format/test/screenshot/build gates on every PR; release workflows publish to Play Store and App Store from tag pushes. Workflows live at the repo root in `.github/workflows/`.
-- **[Fastlane](https://docs.kappmaker.com/production/fastlane)** — Pre-configured lanes for Play Store & App Store publishing
-- **[Scripts](https://docs.kappmaker.com/features/scripts)** — Helper scripts for package/app-ID refactor, version bumps, keystore generation, module creation, ASO metadata, store-screenshot rendering
+- **[GitHub CI/CD Actions](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/github-ci-cd)** — `pr_checks.yml` runs format/test/screenshot/build gates on every PR; release workflows publish to Play Store and App Store from tag pushes. Workflows live at the repo root in `.github/workflows/`.
+- **[Fastlane](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/production/fastlane)** — Pre-configured lanes for Play Store & App Store publishing
+- **[Scripts](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/scripts)** — Helper scripts for package/app-ID refactor, version bumps, keystore generation, module creation, ASO metadata, store-screenshot rendering
 
 ## Contributing
 
 We welcome contributions from the community! If you'd like to help improve the Koko template, please review our [Contributing Guidelines](CONTRIBUTING.md) for information on our workflow, code style, and how to submit a Pull Request.
 
 ### Production
-- **[Pre-Publishing Checklist](https://docs.kappmaker.com/production/pre-publishing-checklist)** — Step-by-step checklist for app icons, API keys, signing, and store setup
-- **[Android Production](https://docs.kappmaker.com/production/android)** — Android keystore and Play Store publishing
-- **[iOS Production](https://docs.kappmaker.com/production/iOS)** — App Store publishing and certificate setup
+- **[Pre-Publishing Checklist](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/production/pre-publishing-checklist)** — Step-by-step checklist for app icons, API keys, signing, and store setup
+- **[Android Production](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/production/android)** — Android keystore and Play Store publishing
+- **[iOS Production](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/production/iOS)** — App Store publishing and certificate setup
 
-For more details, visit the [full documentation](https://docs.kappmaker.com).
+For more details, visit the [full documentation](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation).
 
 ## Tech Stack
 

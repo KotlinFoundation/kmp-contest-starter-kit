@@ -115,7 +115,7 @@ Rename the app's package / `applicationId` / iOS bundle ID + display name across
 ./scripts/refactor_package.sh --app-id com.example.newapp --app-name NewApp                    # full refactor
 ./scripts/refactor_package.sh --app-id com.example.newapp --app-name NewApp --skip-package-rename   # IDs + name only
 ```
-`--app-id` / `--app-name` are required. `--skip-package-rename` (default off) keeps Kotlin packages. Edits files in place (commit/back up first; it prompts unless `-y`). See [Scripts docs](https://docs.kappmaker.com/features/scripts) for all options.
+`--app-id` / `--app-name` are required. `--skip-package-rename` (default off) keeps Kotlin packages. Edits files in place (commit/back up first; it prompts unless `-y`). See [Scripts docs](https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/features/scripts) for all options.
 
 ## Quality Gates
 
