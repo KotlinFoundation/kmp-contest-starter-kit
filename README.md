@@ -4,11 +4,11 @@
 
 ## Getting Started
 
-We have built the KMP Contest Starter Kit (nicknamed Koko) as the fastest way to transform your idea from a production-grade app on Google Play and the App Store.
+We have built the KMP Contest Starter Kit (nicknamed Koko) as the fastest way to transform your idea from a production-grade app on Google Play and the App Store. If you are looking to get started with KMP, we recommend that you run through the "KMP Quickstart" at https://kotlinlang.org/docs/multiplatform/quickstart.html and the "Create Your First Compose Multiplatform app" at https://kotlinlang.org/docs/multiplatform/compose-multiplatform-create-first-app.html - and then come back once you have completed both of those. 
 
-To get started, open this project in Android Studio and type `Proceed with @koko-getting-started` into the agent's chat panel.
+To get started with Koko, open this project in Android Studio and type `Proceed with koko-getting-started skill` into the agent's chat panel.
 
-Documentation: [docs.kappmaker.com](https://docs.kappmaker.com)
+Documentation: 
 
 > **Cloning on Windows?** This repo uses git symlinks (`CLAUDE.md`/`GEMINI.md` → `AGENTS.md`,
 > `.claude/skills` → `skills/`). On Windows, clone with symlinks enabled or they become plain text
