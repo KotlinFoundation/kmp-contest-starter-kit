@@ -8,7 +8,7 @@ We have built the KMP Contest Starter Kit (nicknamed Koko) as the fastest way to
 
 To get started with Koko, open this project in Android Studio and type `Proceed with koko-getting-started skill` into the agent's chat panel.
 
-Documentation: 
+Documentation: https://kotlinfoundation.org/kmp-contest-starter-kit-documentation/ 
 
 > **Cloning on Windows?** This repo uses git symlinks (`CLAUDE.md`/`GEMINI.md` → `AGENTS.md`,
 > `.claude/skills` → `skills/`). On Windows, clone with symlinks enabled or they become plain text
