@@ -14,7 +14,7 @@ Entries start with the first template change after the sync tooling landed — g
 
 ## 2026-08-14
 
-- `[app]` **Aligned Firebase library versions** (#45): KMPAuth 3.0.3 → 3.0.5, KMPNotifier 2.0.0 → 2.0.1,
+- `[app]` **Aligned Firebase library versions** (#47): KMPAuth 3.0.3 → 3.0.5, KMPNotifier 2.0.0 → 2.0.1,
   Firebase BOM 34.14.1 → 34.17.0. KMPNotifier now declares firebase-ios-sdk as a range instead of an
   exact pin, and KMPAuth moved to GitLive firebase 3.0.0-alpha01, so the three no longer fight over
   firebase-ios-sdk on iOS. Manual: the iOS project pin moves 12.14.0 → **12.17.0** (the new floor) and
