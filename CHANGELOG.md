@@ -20,3 +20,9 @@ Entries start with the first template change after the sync tooling landed — g
   firebase-ios-sdk on iOS. Manual: the iOS project pin moves 12.14.0 → **12.17.0** (the new floor) and
   the linkage package is regenerated — in Xcode run Reset Package Caches → Resolve Package Versions
   after pulling. Also fixes offline Google sign-in on Android.
+- `[app]` **Web builds work with the configuration cache again** (#47): the `commonWebpackConfig { }`
+  block in `webApp/build.gradle.kts` is a Gradle script object reference and cannot be serialized, so
+  every `:webApp:wasmJs*` task failed once the configuration cache was enabled. The dev-server
+  settings (the AI CORS proxies for OpenAI, Replicate and replicate.delivery) moved to
+  `webApp/webpack.config.d/dev-server-proxy.js`. Manual: none, unless you added your own
+  `commonWebpackConfig` block — move it to `webpack.config.d/` too.

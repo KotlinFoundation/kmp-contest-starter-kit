@@ -37,8 +37,9 @@ prep identifiers and the SHA-1, but the developer performs the console clicks an
 > "Recommended, default" describes which option to *present first*, not permission to skip the ask.
 > The web target is a deliverable the developer chose; trading it away is theirs to decide.
 >
-> If GitLive is used, take the **latest stable version** from its
-> [releases](https://github.com/GitLiveApp/firebase-kotlin-sdk/releases) — don't pin an old one.
+> If GitLive is used, take at least **`3.0.0-alpha01`** from its
+> [releases](https://github.com/GitLiveApp/firebase-kotlin-sdk/releases) — KMPAuth 3.0.5 already
+> depends on GitLive 3, so an older release clashes over `firebase-ios-sdk` on iOS.
 
 ## 1. Prep the identifiers — Agent Action
 

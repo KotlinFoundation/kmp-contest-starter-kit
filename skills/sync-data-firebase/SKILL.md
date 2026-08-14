@@ -32,8 +32,8 @@ Present both options:
 | Cost | More backend code: functions, security rules, DTOs, an API service. | Shorter path. Realtime listeners and offline persistence come free. |
 | Reversible | Yes. | Removing/re-adding the `wasmJs` target is a real chunk of work. |
 
-The rest of this skill covers the **Keep Wasm** path. For Drop Wasm, check the [GitHub releases page](https://github.com/GitLiveApp/firebase-kotlin-sdk/releases) explicitly 
-to take the latest stable GitLive version — don't pin an old one — and remove the `wasmJs` target from `shared`, `designsystem`, and `webApp`. Always use **at least version `2.6.0`** of the Gitlive Firebase Kotlin SDK.
+The rest of this skill covers the **Keep Wasm** path. For Drop Wasm, check the [GitHub releases page](https://github.com/GitLiveApp/firebase-kotlin-sdk/releases) explicitly
+to take the latest GitLive version — don't pin an old one — and remove the `wasmJs` target from `shared`, `designsystem`, and `webApp`. Use **at least `3.0.0-alpha01`** of the GitLive Firebase Kotlin SDK: KMPAuth 3.0.5 already depends on GitLive 3, so anything older clashes over `firebase-ios-sdk` on iOS.
 
 
 ## 1. Ask what the sync is actually for
