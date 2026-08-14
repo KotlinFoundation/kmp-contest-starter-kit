@@ -113,7 +113,7 @@ keep Wasm and put Firestore behind the Cloud Functions backend this kit already 
 ### iOS
 **Do NOT run iOS builds/tests for routine validation** — they are slow. Only run when the issue explicitly requires iOS behavior or the user asks.
 
-**iOS SwiftPM linkage (generic — any SwiftPM-backed dependency).** When the shared framework consumes a Swift Package Manager dependency (today: `kmpnotifier-push-firebase` → `firebase-ios-sdk`/FirebaseMessaging; tomorrow: any other SPM-backed lib), Kotlin 2.4 + embed-and-sign needs the committed `iosApp/KotlinMultiplatformLinkedPackage/` (a generated local Swift package that force-links the SPM products) plus `ENABLE_USER_SCRIPT_SANDBOXING = NO` on the app target. It is a **build-once, commit-once** artifact (portable — no app-specific paths), so generated apps inherit it. **Regenerate ONLY when the SwiftPM dependency/product set changes**, via `XCODEPROJ_PATH="$PWD/iosApp/iosApp.xcodeproj" ./gradlew :shared:integrateEmbedAndSign :shared:integrateLinkagePackage` (from `MobileApp/`), then add the matching Swift package version in Xcode (e.g. `firebase-ios-sdk` exact `12.14.0`) and commit the diff. The per-build `embedAndSignAppleFrameworkForXcode` run-script phase is already wired and is NOT something to run manually. Full guide: `Documentation/docs/production/iOS.md`.
+**iOS SwiftPM linkage (generic — any SwiftPM-backed dependency).** When the shared framework consumes a Swift Package Manager dependency (today: `kmpnotifier-push-firebase` → `firebase-ios-sdk`/FirebaseMessaging; tomorrow: any other SPM-backed lib), Kotlin 2.4 + embed-and-sign needs the committed `iosApp/KotlinMultiplatformLinkedPackage/` (a generated local Swift package that force-links the SPM products) plus `ENABLE_USER_SCRIPT_SANDBOXING = NO` on the app target. It is a **build-once, commit-once** artifact (portable — no app-specific paths), so generated apps inherit it. **Regenerate ONLY when the SwiftPM dependency/product set changes**, via `XCODEPROJ_PATH="$PWD/iosApp/iosApp.xcodeproj" GRADLE_PROJECT_PATH=":shared" ./gradlew :shared:integrateEmbedAndSign :shared:integrateLinkagePackage` (from `MobileApp/`; both env vars are required), then add the matching Swift package version in Xcode (e.g. `firebase-ios-sdk` exact `12.17.0`) and commit the diff. The per-build `embedAndSignAppleFrameworkForXcode` run-script phase is already wired and is NOT something to run manually. Full guide: `Documentation/docs/production/iOS.md`.
 
 ### JVM Desktop
 - Full app: `./gradlew :desktopApp:run` (or `:desktopApp:packageDistributionForCurrentOS` for native installer)
@@ -575,12 +575,13 @@ Period units are **plurals** (`paywall_unit_day`, `paywall_unit_day_count`, etc.
 | compileSdk | 37 | Android compile SDK (KMPNotifier 2.0 Android artifacts require API 37+; `targetSdk` unchanged) |
 | Koin | 4.2.1 | Dependency injection |
 | Ktor | 3.5.0 | HTTP client |
-| KMPNotifier | 2.0.0 | Notifications (split modules: `kmpnotifier-local` + `kmpnotifier-push-firebase`; new `KMPNotifier` API). iOS Firebase via SwiftPM, deployment target 16.0+. |
+| KMPNotifier | 2.0.1 | Notifications (split modules: `kmpnotifier-local` + `kmpnotifier-push-firebase`; new `KMPNotifier` API). iOS Firebase via SwiftPM, deployment target 16.0+. |
+| KMPAuth | 3.0.5 | Auth facade (Google/Apple/anonymous, Firebase backend). Uses GitLive firebase 3.0.0-alpha01; iOS floor firebase-ios-sdk 12.17.0. |
 | Room | 3.0.0-alpha06 | Local database (KMP — `androidx.room3:*`, plugin id `androidx.room3`) |
 | SQLite | 2.7.0-alpha06 | `sqlite-bundled` (native) + `sqlite-web` (wasmJs OPFS). **Keep Room and SQLite on the same alpha train** — they're coupled (Room's generated code targets a specific `androidx.sqlite` API surface), so bump both together, never one alone. |
 | Navigation 3 | 1.1.1 | Navigation (`org.jetbrains.androidx.navigation3` KMP) |
 | Lifecycle ViewModel Navigation 3 | 2.10.0 | Per-NavEntry ViewModel scoping |
-| Firebase BOM | 34.14.1 | Analytics, Messaging, Crashlytics, RemoteConfig |
+| Firebase BOM | 34.17.0 | Analytics, Messaging, Crashlytics, RemoteConfig |
 | Adapty | 3.17.0 | In-app purchases — **default provider** (`adapty-kmp`). Selected via the `SUBSCRIPTION_PROVIDER` gradle property. |
 | RevenueCat | 3.0.6 | In-app purchases — alternate provider (`purchases-kmp` 3.x — bundles purchases-hybrid-common internally; no iOS pod needed). Set `SUBSCRIPTION_PROVIDER=REVENUECAT` to use. |
 | Coil | 3.5.0 | Image loading |
