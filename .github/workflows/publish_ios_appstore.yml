@@ -1,5 +1,7 @@
 name: Publish iOS App
 
+# kappmaker-workflow-version: 3
+
 # Builds and ships the iOS app on a GitHub macOS runner, so no Mac is needed
 # locally. Signing certificates are created on the runner by fastlane `match`
 # from your App Store Connect API key — nothing has to be exported from a Mac.
