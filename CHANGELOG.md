@@ -12,6 +12,20 @@ Entry format — one bullet per merged PR, tagged by scope:
 Entries start with the first template change after the sync tooling landed — group them under a
 `## <year>-<month>-<date>` heading, newest first.
 
+## 2026-08-16
+
+- `[app]` **iOS publishing works without a Mac** (#48): the iOS publish workflow had never run on a
+  generated app. Signing now goes through fastlane `match`, which creates the certificate on the
+  runner from the App Store Connect API key and stores it encrypted on a `match-certificates` branch
+  of the same repo — no hand-exported `.p12`, no second repo, no personal access token. The
+  `local.properties` written by CI was also writing two keys the build no longer reads while missing
+  fourteen it does, so releases shipped green with dead sign-in, analytics and paywall; and archive
+  and export disagreed about signing style. Signing settings are applied per target
+  (Swift Package dependencies reject a provisioning profile), and the workflow drives the project's
+  own Fastfile instead of a parallel xcodebuild. Manual: set `APPSTORE_ISSUER_ID`, `APPSTORE_KEY_ID`,
+  `APPSTORE_PRIVATE_KEY` and `MATCH_PASSWORD` as repo secrets; the old
+  `IOS_APP_CERTIFICATE_P12_BASE64` and friends are no longer needed.
+
 ## 2026-08-14
 
 - `[app]` **Aligned Firebase library versions** (#47): KMPAuth 3.0.3 → 3.0.5, KMPNotifier 2.0.0 → 2.0.1,
