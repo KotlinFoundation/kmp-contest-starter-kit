@@ -150,9 +150,18 @@ the certs repo is a different one. That is the whole reason a PAT is needed.
 
 **The first run must bootstrap the store.** Releases run `match` in read-only mode so a build can
 never mint a certificate; that protects the two account-wide slots. For the very first release,
-when the certs repo is still empty, set `MATCH_READONLY=false` once so `match` can create and
-store the certificate. Unset it afterwards — leaving it off lets any later build create another
-certificate and exhaust the account.
+when the certs repo is still empty, add a repository **variable** `MATCH_READONLY` set to `false`
+so `match` can create and store the certificate, then delete it — leaving it off lets any later
+build create another certificate and exhaust the account.
+
+```bash
+gh variable set MATCH_READONLY --body false     # bootstrap only
+gh variable delete MATCH_READONLY               # back to read-only
+```
+
+A variable, not a secret: a secret whose value is `false` masks that word throughout the build
+log. And it must be read before fastlane's `setup_ci` runs, because that action sets
+`MATCH_READONLY=true` itself — the lane already handles this.
 
 Losing `MATCH_PASSWORD` means the stored certificates can no longer be decrypted — you would have
 to wipe the repo and burn one of your two slots, so keep it safe.

@@ -1,15 +1,14 @@
 name: Publish iOS App
 
 # Builds and ships the iOS app on a GitHub macOS runner, so no Mac is needed
-# locally. Signing certificates are created on the runner by fastlane `match`
-# from your App Store Connect API key — nothing has to be exported from a Mac.
+# locally. fastlane `match` creates the signing certificate on the runner from
+# your App Store Connect API key — nothing is exported from a Mac.
 #
 # Signing material lives in a SEPARATE PRIVATE repository shared by all of your
-# apps, because an iOS distribution certificate belongs to your Apple Developer
-# *account*, not to one app — and Apple only allows three of them. Giving each
-# app its own certificate store would mint a new certificate per app and lock you
-# out on the fourth. One store means one certificate, reused, with a per-app
-# provisioning profile alongside it.
+# apps: a distribution certificate belongs to your Apple Developer *account*,
+# not to one app, and Apple issues only two. A store per app would mint a
+# certificate per app and lock you out. One store, one certificate, reused, with
+# a per-app provisioning profile alongside it.
 #
 # Required secrets:
 #   APPSTORE_KEY_ID          App Store Connect API key ID          ) same values
@@ -22,17 +21,18 @@ name: Publish iOS App
 #                            that repo>". The built-in GITHUB_TOKEN cannot be
 #                            used: it only reaches the repo it runs in.
 #   GRADLE_CACHE_ENCRYPTION_KEY
-#   …plus one secret per key listed in MobileApp/local.properties.example.
-#      That file is the single source of truth — add a key there and set a repo
-#      secret of the same name; this workflow needs no edit.
+#   …plus one secret per key in MobileApp/local.properties.example. That file is
+#      the source of truth — add a key there, set a repo secret of the same
+#      name, and this workflow needs no edit.
 #
-# If several apps share an organisation, the account-level secrets above are good
-# candidates for GitHub organisation secrets, so a new app only needs its own
-# build keys.
+# To populate an EMPTY certificate store, set the repository variable
+# MATCH_READONLY=false for that one run, then delete it. Builds are otherwise
+# read-only so a transient failure cannot consume one of the two certificates.
 #
-# To set the certs repo up once per Apple account: create an empty PRIVATE
-# GitHub repo (e.g. ios-certificates), put its https URL in MATCH_GIT_URL, and
-# create a fine-grained PAT with read access to it. See the setup-signing skill.
+# Set the certs repo up once per Apple account: create an empty PRIVATE GitHub
+# repo, put its https URL in MATCH_GIT_URL, and make a PAT with read access to
+# it. Account-level secrets above are good organisation secrets when several
+# apps share an org. See the setup-signing skill.
 
 on:
   workflow_dispatch:
@@ -92,22 +92,15 @@ jobs:
         with:
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
-      # local.properties is gitignored, so a CI checkout has none of these keys.
-      # Every getRequiredProperty() in build.gradle.kts declares a defaultValue,
-      # so a MISSING key does not fail the build — it silently bakes in "" or
-      # "testValue" and ships an app with broken sign-in, analytics and paywall.
-      #
-      # The key list comes from local.properties.example rather than being
-      # repeated here, so adding a new key to that file is all it takes: set a
-      # repo secret of the same name and this step picks it up. sdk.dir is
-      # skipped because the runner's Android setup already writes it.
+      # Every getRequiredProperty() in build.gradle.kts has a defaultValue, so a
+      # MISSING key does not fail the build — it silently ships placeholders.
+      # Keys come from local.properties.example, so this step never needs editing.
       - name: Write secrets to local.properties
         env:
           ALL_SECRETS: ${{ toJSON(secrets) }}
         run: |
           set -euo pipefail
-          # POSIX sed, not a grep lookahead: the runner is macOS and BSD grep
-          # has no lookahead support.
+          # POSIX sed: BSD grep on the macOS runner has no lookahead.
           keys=$(sed -n 's/^\([A-Z][A-Z0-9_]*\)=.*/\1/p' local.properties.example)
           [ -n "$keys" ] || { echo "No keys found in local.properties.example"; exit 1; }
           missing=""
@@ -117,8 +110,6 @@ jobs:
             printf '%s=%s\n' "$key" "$value" >> local.properties
           done
           echo "Wrote $(printf '%s\n' $keys | wc -l | tr -d ' ') keys to local.properties"
-          # Loud, but not fatal: a placeholder only breaks the feature that uses
-          # it, and half-configured apps still need to reach TestFlight.
           if [ -n "$missing" ]; then
             echo "::warning title=Missing build secrets::No repo secret set for:$missing — the app will build but those features ship with placeholder values."
           fi
@@ -130,18 +121,17 @@ jobs:
           bundler-cache: true
           working-directory: MobileApp
 
-      # Uses the project's own Fastfile, so a local release and a CI release run
-      # the same lane and cannot drift apart.
       - name: Build, sign and upload
         env:
           ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           ASC_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          # A private repo shared across your apps — see the note at the top of
-          # this file for why it is not this repository.
           MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          # A variable, not a secret: a secret valued "false" masks that word
+          # throughout the build log. Set it only for the bootstrap run.
+          MATCH_READONLY: ${{ vars.MATCH_READONLY }}
           FASTLANE_SKIP_UPDATE_CHECK: '1'
           FASTLANE_HIDE_CHANGELOG: '1'
         run: |
@@ -151,8 +141,7 @@ jobs:
             upload_metadata:"${{ inputs.upload_metadata || 'false' }}" \
             upload_screenshots:"${{ inputs.upload_screenshots || 'false' }}"
 
-      # The .ipa is the expensive artefact — keep it reachable when a later step
-      # fails, rather than paying another 20 minutes to rebuild it.
+      # Keep the .ipa reachable when a later step fails.
       - name: Upload .ipa artifact
         if: always()
         uses: actions/upload-artifact@v4

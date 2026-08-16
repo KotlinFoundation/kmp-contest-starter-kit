@@ -215,12 +215,10 @@ platform :ios do
 
 
   # Ships iOS from a CI macOS runner, so no Mac is needed locally. Differs from
-  # `appstore_release` in three ways that only matter on CI:
-  #   - credentials come from env vars, not ~/credentials/*.json
-  #   - `setup_ci` makes a temporary keychain (a CI runner has no unlocked login keychain)
-  #   - `match` supplies the signing identity instead of Xcode automatic signing,
-  #     because automatic signing mints a NEW distribution certificate per run and
-  #     Apple caps those at 3 per account — three green builds, then every build fails.
+  # `appstore_release` only in what CI forces: credentials come from env vars,
+  # `setup_ci` builds a temporary keychain, and `match` supplies the signing
+  # identity instead of Xcode automatic signing — automatic signing mints a NEW
+  # distribution certificate per run, and Apple allows only two per account.
   desc "Build and ship from CI (no local Mac required)"
   lane :ci_appstore_release do |options|
     track              = (options[:track] || "testflight").to_s
@@ -236,45 +234,32 @@ platform :ios do
       in_house: false
     )
 
+    # Read BEFORE setup_ci: that action sets MATCH_READONLY=true itself, so
+    # anything the workflow passed in is gone by the time match runs.
+    readonly_mode = ENV["MATCH_READONLY"].to_s != "false"
+
     setup_ci if ENV["CI"]
 
-
-    # readonly:false so the FIRST run can create and store the certificate. Later
-    # runs find it already there and reuse it.
-    # READONLY BY DEFAULT — this protects a scarce, account-wide resource.
-    #
-    # Apple issues at most TWO Apple Distribution certificates per developer
-    # account, and they are shared by every app you ship. With readonly:false
-    # match re-verifies against the portal on every build and mints a NEW
-    # certificate whenever it is not satisfied — so a couple of unlucky builds
-    # can consume both slots and lock the account out of iOS releases entirely.
-    #
-    # Set MATCH_READONLY=false for the single bootstrap run that populates an
-    # empty store, then leave it unset.
+    # Read-only by default: Apple allows two Apple Distribution certificates per
+    # account, shared by every app, and with write access match mints a new one
+    # whenever it is unsatisfied — two unlucky builds lock the account out.
+    # MATCH_READONLY=false is for the one run that populates an empty store.
     match(
       type: "appstore",
       app_identifier: bundle_id,
       api_key: api_key,
-      readonly: ENV["MATCH_READONLY"].to_s != "false",
+      readonly: readonly_mode,
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"]
     )
 
-    # match publishes what it installed through these env vars.
     profile_name = ENV["sigh_#{bundle_id}_appstore_profile-name"]
     team_id      = ENV["sigh_#{bundle_id}_appstore_team-id"]
     UI.user_error!("match did not install a profile for #{bundle_id}") if profile_name.to_s.empty?
 
-    # Signing must be set on the APP TARGET, and nowhere else.
-    #
-    # Through xcargs the settings hit EVERY target, and the Swift Package
-    # dependencies (Firebase, GoogleUtilities, nanopb, promises...) reject a
-    # provisioning profile outright — "does not support provisioning profiles".
-    # This action edits the pbxproj for the named target only.
-    #
-    # It also has to be manual: left on automatic, Xcode hunts for an iOS App
-    # DEVELOPMENT profile and fails, because match installed an App Store one.
-    # The project ships no DEVELOPMENT_TEAM either, so team_id comes from match.
+    # Signing goes on the app target only: applied globally (via xcargs) the
+    # Swift Package dependencies reject it outright. It must also be manual —
+    # automatic signing hunts for a DEVELOPMENT profile and fails.
     update_code_signing_settings(
       path: "iosApp/iosApp.xcodeproj",
       use_automatic_signing: false,
