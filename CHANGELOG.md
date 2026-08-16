@@ -25,6 +25,12 @@ Entries start with the first template change after the sync tooling landed — g
   own Fastfile instead of a parallel xcodebuild. Manual: set `APPSTORE_ISSUER_ID`, `APPSTORE_KEY_ID`,
   `APPSTORE_PRIVATE_KEY` and `MATCH_PASSWORD` as repo secrets; the old
   `IOS_APP_CERTIFICATE_P12_BASE64` and friends are no longer needed.
+- `[app]` **Android releases and PR checks write every build key** (#48): both workflows wrote the same
+  stale three-key `local.properties` block, two of which the build no longer reads, so Play Store
+  releases shipped with placeholder sign-in, ads, AI and paywall exactly like iOS did. All three
+  workflows now derive the key list from `MobileApp/local.properties.example`, so adding a key there
+  needs no workflow edit. Manual: set a repo secret for each key you use — the release workflows warn
+  about any that are missing.
 
 ## 2026-08-14
 
