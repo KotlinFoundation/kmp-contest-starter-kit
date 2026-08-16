@@ -1,6 +1,52 @@
 name: Publish iOS App
 
+# Builds and ships the iOS app on a GitHub macOS runner, so no Mac is needed
+# locally. Signing certificates are created on the runner by fastlane `match`
+# from your App Store Connect API key — nothing has to be exported from a Mac.
+#
+# The certificates are encrypted with MATCH_PASSWORD and committed to the
+# `match-certificates` branch of THIS repository, so the built-in GITHUB_TOKEN
+# can reach them. No second repo, and no personal access token.
+#
+# Required secrets:
+#   APPSTORE_KEY_ID          App Store Connect API key ID
+#   APPSTORE_ISSUER_ID       its issuer ID
+#   APPSTORE_PRIVATE_KEY     the .p8 contents, base64-encoded
+#   MATCH_PASSWORD           any long random string; it encrypts the certificates.
+#                            Keep it — losing it means the stored certificates
+#                            can never be decrypted and the branch must be reset.
+#   GRADLE_CACHE_ENCRYPTION_KEY
+#   …plus one secret per key listed in MobileApp/local.properties.example.
+#      That file is the single source of truth — add a key there and set a repo
+#      secret of the same name; this workflow needs no edit.
+#
+# If this repository is public, note that the encrypted certificates are public
+# too. They are useless without MATCH_PASSWORD, but a private repo is safer.
+
 on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: Where to send the build
+        required: true
+        default: testflight
+        type: choice
+        options: [testflight, appstore]
+      submit_for_review:
+        description: Submit for App Store review (appstore track only)
+        required: false
+        default: false
+        type: boolean
+      upload_metadata:
+        description: Also upload App Store listing text (appstore track only)
+        required: false
+        default: false
+        type: boolean
+      upload_screenshots:
+        description: Also upload App Store screenshots (appstore track only)
+        required: false
+        default: false
+        type: boolean
   push:
     tags:
       - '*-ios'
@@ -9,17 +55,21 @@ defaults:
   run:
     working-directory: MobileApp
 
+concurrency:
+  # Two releases at once would race over the certificates in match's repo.
+  group: publish-ios
+  cancel-in-progress: false
+
 jobs:
   publish_app:
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     name: Publishing iOS App
     permissions:
       contents: write
     env:
       github_token: ${{ secrets.GITHUB_TOKEN }}
-      bundle_id: com.kotlinfoundation.koko
-      app_name: Koko
+      app_name: KAppMakerAllModules
 
     steps:
       - uses: actions/checkout@v4
@@ -31,98 +81,88 @@ jobs:
         with:
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
+      # local.properties is gitignored, so a CI checkout has none of these keys.
+      # Every getRequiredProperty() in build.gradle.kts declares a defaultValue,
+      # so a MISSING key does not fail the build — it silently bakes in "" or
+      # "testValue" and ships an app with broken sign-in, analytics and paywall.
+      #
+      # The key list comes from local.properties.example rather than being
+      # repeated here, so adding a new key to that file is all it takes: set a
+      # repo secret of the same name and this step picks it up. sdk.dir is
+      # skipped because the runner's Android setup already writes it.
       - name: Write secrets to local.properties
+        env:
+          ALL_SECRETS: ${{ toJSON(secrets) }}
         run: |
-          echo "GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}" >> "local.properties"
-          echo "REVENUECAT_ANDROID_API_KEY=${{ secrets.REVENUECAT_ANDROID_API_KEY }}" >> "local.properties"
-          echo "REVENUECAT_IOS_API_KEY=${{ secrets.REVENUECAT_IOS_API_KEY }}" >> "local.properties"
+          set -euo pipefail
+          # POSIX sed, not a grep lookahead: the runner is macOS and BSD grep
+          # has no lookahead support.
+          keys=$(sed -n 's/^\([A-Z][A-Z0-9_]*\)=.*/\1/p' local.properties.example)
+          [ -n "$keys" ] || { echo "No keys found in local.properties.example"; exit 1; }
+          missing=""
+          for key in $keys; do
+            value=$(printf '%s' "$ALL_SECRETS" | jq -r --arg k "$key" '.[$k] // ""')
+            if [ -z "$value" ]; then missing="$missing $key"; fi
+            printf '%s=%s\n' "$key" "$value" >> local.properties
+          done
+          echo "Wrote $(printf '%s\n' $keys | wc -l | tr -d ' ') keys to local.properties"
+          # Loud, but not fatal: a placeholder only breaks the feature that uses
+          # it, and half-configured apps still need to reach TestFlight.
+          if [ -n "$missing" ]; then
+            echo "::warning title=Missing build secrets::No repo secret set for:$missing — the app will build but those features ship with placeholder values."
+          fi
 
+      # match clones over HTTPS; the built-in token is enough because the
+      # certificates live on a branch of this same repository.
+      - name: Prepare match credentials
+        run: echo "match_git_auth=$(printf 'x-access-token:%s' "${{ secrets.GITHUB_TOKEN }}" | base64 | tr -d '\n')" >> "$GITHUB_ENV"
 
-      - name: Import Apple Certificates
-        uses: apple-actions/import-codesign-certs@v3
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
         with:
-          p12-file-base64: ${{ secrets.IOS_APP_CERTIFICATE_P12_BASE64 }}
-          p12-password: ${{ secrets.IOS_APP_CERTIFICATE_P12_PASSWORD }}
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: MobileApp
 
-      - name: Download Provisioning Profiles
-        uses: apple-actions/download-provisioning-profiles@v3
+      # Uses the project's own Fastfile, so a local release and a CI release run
+      # the same lane and cannot drift apart.
+      - name: Build, sign and upload
+        env:
+          ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          # This repo, on a dedicated branch — both derived from the Actions
+          # context, so neither needs to be configured as a secret.
+          MATCH_GIT_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          MATCH_GIT_BRANCH: match-certificates
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ env.match_git_auth }}
+          FASTLANE_SKIP_UPDATE_CHECK: '1'
+          FASTLANE_HIDE_CHANGELOG: '1'
+        run: |
+          bundle exec fastlane ios ci_appstore_release \
+            track:"${{ inputs.track || 'testflight' }}" \
+            submit_for_review:"${{ inputs.submit_for_review || 'false' }}" \
+            upload_metadata:"${{ inputs.upload_metadata || 'false' }}" \
+            upload_screenshots:"${{ inputs.upload_screenshots || 'false' }}"
+
+      # The .ipa is the expensive artefact — keep it reachable when a later step
+      # fails, rather than paying another 20 minutes to rebuild it.
+      - name: Upload .ipa artifact
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          bundle-id: ${{ env.bundle_id }}
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
-
-      - name: Build iOSApp archive
-        run: |
-          cd iosApp
-
-          xcrun xcodebuild \
-            -project iosApp.xcodeproj \
-            -scheme "iosApp" \
-            -sdk "iphoneos" \
-            -configuration "Release" \
-            -destination "generic/platform=iOS" \
-            -parallelizeTargets \
-            -showBuildTimingSummary \
-            -derivedDataPath "${RUNNER_TEMP}/Build/DerivedData" \
-            -archivePath "${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive" \
-            -resultBundlePath "${RUNNER_TEMP}/Build/Artifacts/iosApp.xcresult" \
-            -destination "generic/platform=iOS" \
-            DEVELOPMENT_TEAM="${{ secrets.APPSTORE_TEAM_ID }}" \
-            CODE_SIGN_STYLE="Manual" \
-            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_APP_DEVELOPMENT_PROVISION_UUID }}" \
-            clean archive
-
-
-      - name: Generate ExportOptions.plist
-        run: |
-          cat <<EOF > ${RUNNER_TEMP}/Build/ExportOptions.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-            <dict>
-              <key>destination</key>
-              <string>export</string>
-              <key>manageAppVersionAndBuildNumber</key>
-              <true/>
-              <key>method</key>
-              <string>app-store-connect</string>
-              <key>signingStyle</key>
-              <string>automatic</string>
-              <key>stripSwiftSymbols</key>
-              <true/>
-              <key>teamID</key>
-              <string>${{ secrets.APPSTORE_TEAM_ID }}</string>
-              <key>uploadSymbols</key>
-              <true/>
-            </dict>
-          </plist>
-          EOF
-
-      - id: export_archive
-        name: Export Archive
-        run: |
-          xcrun xcodebuild \
-            -exportArchive \
-            -exportOptionsPlist "${RUNNER_TEMP}/Build/ExportOptions.plist" \
-            -archivePath "${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive" \
-            -exportPath "${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive"
-
-          echo "ipa_path=${RUNNER_TEMP}/Build/Archives/iosApp.xcarchive/${{ env.app_name }}.ipa" >> $GITHUB_ENV
-
-      - name: Upload to TestFlight
-        uses: Apple-Actions/upload-testflight-build@v1
-        with:
-          app-path: ${{ env.ipa_path }}
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+          name: ios-ipa
+          path: MobileApp/distribution/ios/*.ipa
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Create new release from tag
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: true
           files: |
-            ${{ env.ipa_path }}
+            MobileApp/distribution/ios/*.ipa
           body_path: MobileApp/distribution/whatsnew/whatsnew-en-US
           token: ${{ env.github_token }}
