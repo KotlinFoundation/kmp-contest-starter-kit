@@ -110,14 +110,17 @@ Verify AppConfiguration config: `./scripts/check_env.sh --phase publishing`.
   `./scripts/generate_android_keystore.sh "Name" "Org"` (or `keytool` manually) to create the
   gitignored `keystore.jks` + `keystore.properties`. Confirm `androidApp/build.gradle.kts`
   picks them up (it does automatically).
-- **User Action** — Create iOS certificates (Apple Development + Distribution → `Certificates.p12`)
-  and provisioning profiles, select them in Xcode. **Back up the keystore + passwords safely**
-  (losing the Android keystore means you can never update the app). **Stop and confirm.**
+- **User Action** — iOS signing needs **no certificate export** when releasing through CI: fastlane
+  `match` creates it on the runner from the App Store Connect API key. Only building locally in
+  Xcode needs certificates on your machine. **Back up the Android keystore + passwords safely**
+  (losing the keystore means you can never update the app). **Stop and confirm.**
 - **User Action (optional — only if publishing via the CI workflows)** — Add the signing secrets to
   GitHub Actions: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`,
-  `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, `IOS_APP_CERTIFICATE_P12_BASE64` (+ password),
-  `APPSTORE_KEY_ID` / `APPSTORE_ISSUER_ID` / `APPSTORE_PRIVATE_KEY` / `APPSTORE_TEAM_ID`,
-  the two provision UUIDs, and `GRADLE_CACHE_ENCRYPTION_KEY`. Skip this for a manual store upload.
+  `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, `APPSTORE_KEY_ID` / `APPSTORE_ISSUER_ID` /
+  `APPSTORE_PRIVATE_KEY`, `MATCH_PASSWORD` (a passphrase you invent), and
+  `GRADLE_CACHE_ENCRYPTION_KEY`. **Plus one secret per key in `MobileApp/local.properties.example`**
+  — the workflows rebuild `local.properties` from those, and a missing one silently ships a
+  placeholder rather than failing. Skip all of this for a manual store upload.
 - **Validation** — `./gradlew :androidApp:bundleRelease` produces a **signed** AAB
   (`keytool -printcert -jarfile <aab>` shows your cert, not the debug cert).
 
