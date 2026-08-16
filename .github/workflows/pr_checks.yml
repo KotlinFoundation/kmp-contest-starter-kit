@@ -30,11 +30,21 @@ jobs:
         with:
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
+      # Keys come from local.properties.example, so adding one there needs no
+      # workflow edit. These checks never ship a binary, so empty values are
+      # fine — on pull requests from forks no secrets are available at all and
+      # every getRequiredProperty() falls back to its default.
       - name: Write secrets to local.properties
+        env:
+          ALL_SECRETS: ${{ toJSON(secrets) }}
         run: |
-          echo "GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}" >> "local.properties"
-          echo "REVENUECAT_ANDROID_API_KEY=${{ secrets.REVENUECAT_ANDROID_API_KEY }}" >> "local.properties"
-          echo "REVENUECAT_IOS_API_KEY=${{ secrets.REVENUECAT_IOS_API_KEY }}" >> "local.properties"
+          set -euo pipefail
+          keys=$(sed -n 's/^\([A-Z][A-Z0-9_]*\)=.*/\1/p' local.properties.example)
+          [ -n "$keys" ] || { echo "No keys found in local.properties.example"; exit 1; }
+          for key in $keys; do
+            value=$(printf '%s' "$ALL_SECRETS" | jq -r --arg k "$key" '.[$k] // ""')
+            printf '%s=%s\n' "$key" "$value" >> local.properties
+          done
 
       - name: Spotless check (ktlint)
         run: ./gradlew spotlessCheck

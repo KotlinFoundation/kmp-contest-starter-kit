@@ -29,11 +29,34 @@ jobs:
         with:
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
+      # local.properties is gitignored, so a CI checkout has none of these keys.
+      # Every getRequiredProperty() in build.gradle.kts declares a defaultValue,
+      # so a MISSING key does not fail the build — it silently bakes in "" or
+      # "testValue" and ships an app with broken sign-in, analytics and paywall.
+      #
+      # The key list comes from local.properties.example rather than being
+      # repeated here, so adding a new key to that file is all it takes: set a
+      # repo secret of the same name and this step picks it up. sdk.dir is
+      # skipped because the runner's Android setup already writes it.
       - name: Write secrets to local.properties
+        env:
+          ALL_SECRETS: ${{ toJSON(secrets) }}
         run: |
-          echo "GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}" >> "local.properties"
-          echo "REVENUECAT_ANDROID_API_KEY=${{ secrets.REVENUECAT_ANDROID_API_KEY }}" >> "local.properties"
-          echo "REVENUECAT_IOS_API_KEY=${{ secrets.REVENUECAT_IOS_API_KEY }}" >> "local.properties"
+          set -euo pipefail
+          keys=$(sed -n 's/^\([A-Z][A-Z0-9_]*\)=.*/\1/p' local.properties.example)
+          [ -n "$keys" ] || { echo "No keys found in local.properties.example"; exit 1; }
+          missing=""
+          for key in $keys; do
+            value=$(printf '%s' "$ALL_SECRETS" | jq -r --arg k "$key" '.[$k] // ""')
+            if [ -z "$value" ]; then missing="$missing $key"; fi
+            printf '%s=%s\n' "$key" "$value" >> local.properties
+          done
+          echo "Wrote $(printf '%s\n' $keys | wc -l | tr -d ' ') keys to local.properties"
+          # Loud, but not fatal: a placeholder only breaks the feature that uses
+          # it, and half-configured apps still need to reach the Play Store.
+          if [ -n "$missing" ]; then
+            echo "::warning title=Missing build secrets::No repo secret set for:$missing — the app will build but those features ship with placeholder values."
+          fi
 
       - name: Decode Android Keystore
         env:
