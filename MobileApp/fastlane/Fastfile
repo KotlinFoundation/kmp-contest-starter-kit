@@ -241,11 +241,21 @@ platform :ios do
 
     # readonly:false so the FIRST run can create and store the certificate. Later
     # runs find it already there and reuse it.
+    # READONLY BY DEFAULT — this protects a scarce, account-wide resource.
+    #
+    # Apple issues at most TWO Apple Distribution certificates per developer
+    # account, and they are shared by every app you ship. With readonly:false
+    # match re-verifies against the portal on every build and mints a NEW
+    # certificate whenever it is not satisfied — so a couple of unlucky builds
+    # can consume both slots and lock the account out of iOS releases entirely.
+    #
+    # Set MATCH_READONLY=false for the single bootstrap run that populates an
+    # empty store, then leave it unset.
     match(
       type: "appstore",
       app_identifier: bundle_id,
       api_key: api_key,
-      readonly: false,
+      readonly: ENV["MATCH_READONLY"].to_s != "false",
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"]
     )
