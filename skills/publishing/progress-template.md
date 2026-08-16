@@ -34,7 +34,7 @@
 - [ ] **[Agent]** Generate keystore (`generate_android_keystore.sh` or `keytool`) + gitignored `keystore.properties`
 - [ ] **[User]** iOS certificates — only needed for local Xcode builds; CI releases create them on the runner via fastlane `match`
 - [ ] **[User]** Back up keystore + passwords safely (losing the Android keystore = can never update the app)
-- [ ] **[User]** *(optional — only if publishing via CI)* Add signing secrets to GitHub Actions: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`, `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, `APPSTORE_KEY_ID`/`APPSTORE_ISSUER_ID`/`APPSTORE_PRIVATE_KEY`, `MATCH_PASSWORD`, `GRADLE_CACHE_ENCRYPTION_KEY`, plus one secret per key in `MobileApp/local.properties.example`
+- [ ] **[User]** *(optional — only if publishing via CI)* Add signing secrets to GitHub Actions: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`, `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, `APPSTORE_KEY_ID`/`APPSTORE_ISSUER_ID`/`APPSTORE_PRIVATE_KEY`, `MATCH_PASSWORD`, `MATCH_GIT_URL`, `MATCH_GIT_BASIC_AUTHORIZATION`, `GRADLE_CACHE_ENCRYPTION_KEY`, plus one secret per key in `MobileApp/local.properties.example`
 - [ ] **[Validate]** `:androidApp:bundleRelease` produces a signed AAB (`keytool -printcert -jarfile` = your cert)
 
 ## 5. Store screenshots — `capture-app-screens`

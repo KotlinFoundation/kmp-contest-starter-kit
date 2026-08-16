@@ -36,6 +36,13 @@ Entries start with the first template change after the sync tooling landed — g
   hand-exported `.p12` flow and two RevenueCat keys the build no longer reads. They now list the four
   iOS secrets that exist, say that `MATCH_PASSWORD` is a passphrase you invent, and state the rule the
   workflows rely on: every key in `local.properties.example` needs a repo secret of the same name.
+- `[app]` **One certificates repo per Apple account, not per app** (#48): certificates were stored on a
+  branch of each app's own repo, but an iOS distribution certificate belongs to the Apple account and
+  Apple issues at most three — so every new app burned a slot and the fourth locked the account out.
+  Signing material now lives in a private repo shared across the account. Manual: create an empty
+  private certs repo plus a fine-grained PAT with write access to it, and set `MATCH_GIT_URL` and
+  `MATCH_GIT_BASIC_AUTHORIZATION`; `APPSTORE_PRIVATE_KEY` is now the **base64** of the `.p8`, not its
+  raw contents.
 
 ## 2026-08-14
 

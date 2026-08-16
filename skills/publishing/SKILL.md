@@ -117,8 +117,9 @@ Verify AppConfiguration config: `./scripts/check_env.sh --phase publishing`.
 - **User Action (optional — only if publishing via the CI workflows)** — Add the signing secrets to
   GitHub Actions: `SIGNING_KEY_STORE_FILE_BASE64`, `SIGNING_KEY_STORE_PROPERTIES_BASE64`,
   `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, `APPSTORE_KEY_ID` / `APPSTORE_ISSUER_ID` /
-  `APPSTORE_PRIVATE_KEY`, `MATCH_PASSWORD` (a passphrase you invent), and
-  `GRADLE_CACHE_ENCRYPTION_KEY`. **Plus one secret per key in `MobileApp/local.properties.example`**
+  `APPSTORE_PRIVATE_KEY` (base64 of the `.p8`), `MATCH_PASSWORD` (a passphrase you invent),
+  `MATCH_GIT_URL` + `MATCH_GIT_BASIC_AUTHORIZATION` (a private certificates repo shared across
+  your Apple account — see `setup-signing`), and `GRADLE_CACHE_ENCRYPTION_KEY`. **Plus one secret per key in `MobileApp/local.properties.example`**
   — the workflows rebuild `local.properties` from those, and a missing one silently ships a
   placeholder rather than failing. Skip all of this for a manual store upload.
 - **Validation** — `./gradlew :androidApp:bundleRelease` produces a **signed** AAB

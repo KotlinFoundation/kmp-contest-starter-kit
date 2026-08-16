@@ -113,34 +113,52 @@ base64 -i distribution/android/keystore/keystore.properties | pbcopy # → SIGNI
 | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Play service-account JSON contents (see `setup-google-play`) |
 | `GRADLE_CACHE_ENCRYPTION_KEY` | `openssl rand -base64 16` |
 
-**iOS — no Mac needed.** You do not export a certificate. fastlane `match` creates the
+**iOS — no Mac needed.** You never export a certificate. fastlane `match` creates the
 distribution certificate and provisioning profile on the CI runner from your App Store Connect
-API key, encrypts them with `MATCH_PASSWORD`, and commits them to a `match-certificates` branch
-of this same repository. Later runs reuse them.
+API key, encrypts them with `MATCH_PASSWORD`, and stores them in a **private certificates repo
+shared across your whole Apple account**.
 
-| Secret | Value |
-|--------|-------|
-| `APPSTORE_KEY_ID` | App Store Connect API **Key ID** |
-| `APPSTORE_ISSUER_ID` | App Store Connect API **Issuer ID** |
-| `APPSTORE_PRIVATE_KEY` | full contents of the downloaded `AuthKey_*.p8`, `-----BEGIN` line included |
-| `MATCH_PASSWORD` | passphrase encrypting the stored certificates — invent one, e.g. `openssl rand -base64 24`, and keep it |
+> **Why a separate repo, and not this one?** An iOS distribution certificate belongs to the
+> Apple *account*, and Apple issues at most **three**. A per-app store would mint a new
+> certificate for every app and lock the account out on the fourth. The provisioning profile is
+> the per-app piece; the certificate is shared. One certs repo per Apple account, reused by
+> every app.
 
-Create the ASC API key at App Store Connect → **Users and Access → Integrations → API Keys**.
-Give it the **App Manager** role — *Developer* cannot create certificates and the run fails at
-`match`. The Issuer ID sits above the table, the Key ID is the row, and the `.p8` downloads
-**once** — save it, Apple will not show it again.
+| Secret | Value | Where it comes from |
+|--------|-------|---------------------|
+| `APPSTORE_KEY_ID` | API **Key ID** | App Store Connect → Users and Access → Integrations → API Keys; it is the row's Key ID column |
+| `APPSTORE_ISSUER_ID` | API **Issuer ID** | same page, shown above the key table |
+| `APPSTORE_PRIVATE_KEY` | **base64** of the `.p8` | `base64 -i AuthKey_XXXX.p8 \| pbcopy` — base64, not the raw file |
+| `MATCH_PASSWORD` | a passphrase you invent | `openssl rand -base64 24`; save it in your password manager |
+| `MATCH_GIT_URL` | https URL of the certs repo | e.g. `https://github.com/<you>/ios-certificates` |
+| `MATCH_GIT_BASIC_AUTHORIZATION` | base64 of `x-access-token:<PAT>` | `printf 'x-access-token:%s' <PAT> \| base64 \| tr -d '\n'` |
 
-`MATCH_PASSWORD` is yours to choose, not something Apple gives you. Losing it means the stored
-certificates cannot be decrypted; delete the `match-certificates` branch and the next run
-recreates them. Apple caps distribution certificates at **three per account**, so do not delete
-that branch casually.
+**Create the API key** at App Store Connect → **Users and Access → Integrations → API Keys**.
+Give it the **App Manager** role — a *Developer* key cannot create certificates and the run fails
+inside `match`. The `.p8` downloads **once**; Apple will not show it again.
 
-> If this repository is public, the encrypted certificates are public too. They are useless
-> without `MATCH_PASSWORD`, but a private repo is safer.
+**Create the certs repo, once per Apple account:**
+
+1. Make a new **private, empty** GitHub repo, e.g. `ios-certificates`. It must be private — it
+   holds your signing material, and it must not be the app repo.
+2. Create a **fine-grained personal access token** (GitHub → Settings → Developer settings →
+   Personal access tokens) with **Contents: Read and write** on that repo only.
+3. Encode it: `printf 'x-access-token:%s' <PAT> | base64 | tr -d '\n'` → `MATCH_GIT_BASIC_AUTHORIZATION`.
+
+The built-in `GITHUB_TOKEN` cannot be used here — it only reaches the repository it runs in, and
+the certs repo is a different one. That is the whole reason a PAT is needed.
+
+The first release fills the certs repo; later ones reuse it. Losing `MATCH_PASSWORD` means the
+stored certificates can no longer be decrypted — you would have to wipe the repo and burn one of
+your three certificate slots, so keep it safe.
 
 No `IOS_APP_CERTIFICATE_P12_BASE64`, `IOS_APP_CERTIFICATE_P12_PASSWORD`, `APPSTORE_TEAM_ID` or
 provisioning-profile UUIDs — `match` derives all of it. If you set them for an older version of
 this kit, delete them.
+
+**Sharing across apps.** `APPSTORE_*`, `MATCH_*` are identical for every app on the same Apple
+account, so they are good candidates for **GitHub organisation secrets**; a new app then only
+needs its own build keys.
 
 **Every key in `MobileApp/local.properties.example` also needs a repo secret of the same name.**
 The workflows read that file to decide what to write into `local.properties` on the runner. A
