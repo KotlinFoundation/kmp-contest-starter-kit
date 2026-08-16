@@ -159,6 +159,9 @@ gh variable set MATCH_READONLY --body false     # bootstrap only
 gh variable delete MATCH_READONLY               # back to read-only
 ```
 
+After that run the certs repo holds the certificate on its **`main`** branch — check there to
+confirm the bootstrap worked.
+
 A variable, not a secret: a secret whose value is `false` masks that word throughout the build
 log. And it must be read before fastlane's `setup_ci` runs, because that action sets
 `MATCH_READONLY=true` itself — the lane already handles this.

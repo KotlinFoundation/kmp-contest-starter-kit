@@ -48,7 +48,9 @@ Entries start with the first template change after the sync tooling landed — g
   is now read before `setup_ci`, passed to match explicitly, and sourced from a repository
   **variable**, since a secret valued `false` masks that word throughout the log. Manual: bootstrap an
   empty certs repo with `gh variable set MATCH_READONLY --body false`, run the release once, then
-  `gh variable delete MATCH_READONLY`.
+  `gh variable delete MATCH_READONLY`. `match` is also pinned to the `main` branch of the certs repo:
+  it defaults to `master`, which would leave the certificate on a second branch of a repo whose
+  default is `main`.
 
 ## 2026-08-14
 
