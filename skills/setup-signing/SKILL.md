@@ -119,9 +119,9 @@ API key, encrypts them with `MATCH_PASSWORD`, and stores them in a **private cer
 shared across your whole Apple account**.
 
 > **Why a separate repo, and not this one?** An iOS distribution certificate belongs to the
-> Apple *account*, and Apple issues at most **three**. A per-app store would mint a new
-> certificate for every app and lock the account out on the fourth. The provisioning profile is
-> the per-app piece; the certificate is shared. One certs repo per Apple account, reused by
+> Apple *account*, and Apple issues at most **two**. A per-app store would mint a new
+> certificate for every app and lock the account out almost immediately. The provisioning profile
+> is the per-app piece; the certificate is shared. One certs repo per Apple account, reused by
 > every app.
 
 | Secret | Value | Where it comes from |
@@ -148,9 +148,14 @@ inside `match`. The `.p8` downloads **once**; Apple will not show it again.
 The built-in `GITHUB_TOKEN` cannot be used here — it only reaches the repository it runs in, and
 the certs repo is a different one. That is the whole reason a PAT is needed.
 
-The first release fills the certs repo; later ones reuse it. Losing `MATCH_PASSWORD` means the
-stored certificates can no longer be decrypted — you would have to wipe the repo and burn one of
-your three certificate slots, so keep it safe.
+**The first run must bootstrap the store.** Releases run `match` in read-only mode so a build can
+never mint a certificate; that protects the two account-wide slots. For the very first release,
+when the certs repo is still empty, set `MATCH_READONLY=false` once so `match` can create and
+store the certificate. Unset it afterwards — leaving it off lets any later build create another
+certificate and exhaust the account.
+
+Losing `MATCH_PASSWORD` means the stored certificates can no longer be decrypted — you would have
+to wipe the repo and burn one of your two slots, so keep it safe.
 
 No `IOS_APP_CERTIFICATE_P12_BASE64`, `IOS_APP_CERTIFICATE_P12_PASSWORD`, `APPSTORE_TEAM_ID` or
 provisioning-profile UUIDs — `match` derives all of it. If you set them for an older version of

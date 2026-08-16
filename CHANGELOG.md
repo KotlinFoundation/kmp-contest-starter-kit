@@ -38,7 +38,9 @@ Entries start with the first template change after the sync tooling landed — g
   workflows rely on: every key in `local.properties.example` needs a repo secret of the same name.
 - `[app]` **One certificates repo per Apple account, not per app** (#48): certificates were stored on a
   branch of each app's own repo, but an iOS distribution certificate belongs to the Apple account and
-  Apple issues at most three — so every new app burned a slot and the fourth locked the account out.
+  Apple issues at most two — so every new app burned a slot and the account was locked out almost
+  immediately. `match` also now runs read-only on releases, since with write access it mints a new
+  certificate whenever it is unsatisfied; set `MATCH_READONLY=false` for the one bootstrap run.
   Signing material now lives in a private repo shared across the account. Manual: create an empty
   private certs repo plus a fine-grained PAT with write access to it, and set `MATCH_GIT_URL` and
   `MATCH_GIT_BASIC_AUTHORIZATION`; `APPSTORE_PRIVATE_KEY` is now the **base64** of the `.p8`, not its
