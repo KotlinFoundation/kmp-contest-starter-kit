@@ -30,7 +30,9 @@ name: Publish iOS App
 # candidates for GitHub organisation secrets, so a new app only needs its own
 # build keys.
 #
-# `kappmaker ios-ci init` creates the certs repo and sets all of this for you.
+# To set the certs repo up once per Apple account: create an empty PRIVATE
+# GitHub repo (e.g. ios-certificates), put its https URL in MATCH_GIT_URL, and
+# create a fine-grained PAT with read access to it. See the setup-signing skill.
 
 on:
   workflow_dispatch:
