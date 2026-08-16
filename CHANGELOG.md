@@ -31,6 +31,11 @@ Entries start with the first template change after the sync tooling landed — g
   workflows now derive the key list from `MobileApp/local.properties.example`, so adding a key there
   needs no workflow edit. Manual: set a repo secret for each key you use — the release workflows warn
   about any that are missing.
+- `[docs]` **Publishing docs match the new secrets** (#48): `setup-signing`, the `publishing` guide and
+  its progress template, the docs-site CI page and the iOS production page all still described the
+  hand-exported `.p12` flow and two RevenueCat keys the build no longer reads. They now list the four
+  iOS secrets that exist, say that `MATCH_PASSWORD` is a passphrase you invent, and state the rule the
+  workflows rely on: every key in `local.properties.example` needs a repo secret of the same name.
 
 ## 2026-08-14
 
