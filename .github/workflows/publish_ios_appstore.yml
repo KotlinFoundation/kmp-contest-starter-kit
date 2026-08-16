@@ -4,24 +4,33 @@ name: Publish iOS App
 # locally. Signing certificates are created on the runner by fastlane `match`
 # from your App Store Connect API key — nothing has to be exported from a Mac.
 #
-# The certificates are encrypted with MATCH_PASSWORD and committed to the
-# `match-certificates` branch of THIS repository, so the built-in GITHUB_TOKEN
-# can reach them. No second repo, and no personal access token.
+# Signing material lives in a SEPARATE PRIVATE repository shared by all of your
+# apps, because an iOS distribution certificate belongs to your Apple Developer
+# *account*, not to one app — and Apple only allows three of them. Giving each
+# app its own certificate store would mint a new certificate per app and lock you
+# out on the fourth. One store means one certificate, reused, with a per-app
+# provisioning profile alongside it.
 #
 # Required secrets:
-#   APPSTORE_KEY_ID          App Store Connect API key ID
-#   APPSTORE_ISSUER_ID       its issuer ID
-#   APPSTORE_PRIVATE_KEY     the .p8 contents, base64-encoded
-#   MATCH_PASSWORD           any long random string; it encrypts the certificates.
-#                            Keep it — losing it means the stored certificates
-#                            can never be decrypted and the branch must be reset.
+#   APPSTORE_KEY_ID          App Store Connect API key ID          ) same values
+#   APPSTORE_ISSUER_ID       its issuer ID                         ) for every app
+#   APPSTORE_PRIVATE_KEY     the .p8 contents, base64-encoded      ) on one Apple
+#   MATCH_PASSWORD           passphrase encrypting the store       ) account
+#   MATCH_GIT_URL            https URL of your private certs repo  )
+#   MATCH_GIT_BASIC_AUTHORIZATION                                  )
+#                            base64 of "x-access-token:<PAT with read access to
+#                            that repo>". The built-in GITHUB_TOKEN cannot be
+#                            used: it only reaches the repo it runs in.
 #   GRADLE_CACHE_ENCRYPTION_KEY
 #   …plus one secret per key listed in MobileApp/local.properties.example.
 #      That file is the single source of truth — add a key there and set a repo
 #      secret of the same name; this workflow needs no edit.
 #
-# If this repository is public, note that the encrypted certificates are public
-# too. They are useless without MATCH_PASSWORD, but a private repo is safer.
+# If several apps share an organisation, the account-level secrets above are good
+# candidates for GitHub organisation secrets, so a new app only needs its own
+# build keys.
+#
+# `kappmaker ios-ci init` creates the certs repo and sets all of this for you.
 
 on:
   workflow_dispatch:
@@ -56,7 +65,7 @@ defaults:
     working-directory: MobileApp
 
 concurrency:
-  # Two releases at once would race over the certificates in match's repo.
+  # Two releases at once would race over the shared certificate store.
   group: publish-ios
   cancel-in-progress: false
 
@@ -112,11 +121,6 @@ jobs:
             echo "::warning title=Missing build secrets::No repo secret set for:$missing — the app will build but those features ship with placeholder values."
           fi
 
-      # match clones over HTTPS; the built-in token is enough because the
-      # certificates live on a branch of this same repository.
-      - name: Prepare match credentials
-        run: echo "match_git_auth=$(printf 'x-access-token:%s' "${{ secrets.GITHUB_TOKEN }}" | base64 | tr -d '\n')" >> "$GITHUB_ENV"
-
       - name: Set up Ruby and fastlane
         uses: ruby/setup-ruby@v1
         with:
@@ -132,11 +136,10 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           ASC_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          # This repo, on a dedicated branch — both derived from the Actions
-          # context, so neither needs to be configured as a secret.
-          MATCH_GIT_URL: ${{ github.server_url }}/${{ github.repository }}.git
-          MATCH_GIT_BRANCH: match-certificates
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ env.match_git_auth }}
+          # A private repo shared across your apps — see the note at the top of
+          # this file for why it is not this repository.
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           FASTLANE_SKIP_UPDATE_CHECK: '1'
           FASTLANE_HIDE_CHANGELOG: '1'
         run: |
