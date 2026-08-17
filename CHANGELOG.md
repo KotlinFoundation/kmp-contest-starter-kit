@@ -14,6 +14,11 @@ Entries start with the first template change after the sync tooling landed — g
 
 ## 2026-08-17
 
+- `[app]` **Info.plist declares orientations and export compliance** (#53): the target builds for
+  iPhone and iPad but declared no orientations, so App Store Connect rejects the upload with
+  ITMS-90474. All four orientations are now declared for both device families.
+  `ITSAppUsesNonExemptEncryption=false` answers the export-compliance question once instead of on
+  every upload. Manual: nothing, unless you ship non-exempt cryptography — then set it `true`.
 - `[app]` **Only the permission modules the app uses are linked** (#52): the kit depended on Calf's
   umbrella `calf-permissions` artifact, which links every permission API — location, bluetooth,
   contacts and the rest. App Store review scans for those symbols, so uploads came back with
