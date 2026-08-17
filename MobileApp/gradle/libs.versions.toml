@@ -10,7 +10,7 @@ androidx-core-splashscreen = "1.0.1"
 androidx-uiTest = "1.9.4"
 androidxLifecycle = "2.9.4"
 buildConfig = "6.0.10"
-calf = "0.12.0"
+calf = "0.13.0"
 coil = "3.5.0"
 composablePreviewScanner = "0.9.0"
 compose = "1.11.1"
@@ -58,7 +58,10 @@ androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-p
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidxLifecycle" }
 androidx-uitest-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-uiTest" }
 androidx-uitest-testManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-uiTest" }
-calf-permissions = { module = "com.mohamedrejeb.calf:calf-permissions", version.ref = "calf" }
+calf-permissions-core = { module = "com.mohamedrejeb.calf:calf-permissions-core", version.ref = "calf" }
+calf-permissions-camera = { module = "com.mohamedrejeb.calf:calf-permissions-camera", version.ref = "calf" }
+calf-permissions-gallery = { module = "com.mohamedrejeb.calf:calf-permissions-gallery", version.ref = "calf" }
+calf-permissions-notifications = { module = "com.mohamedrejeb.calf:calf-permissions-notifications", version.ref = "calf" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 composable-preview-scanner-android = { module = "io.github.sergio-sastre.ComposablePreviewScanner:android", version.ref = "composablePreviewScanner" }

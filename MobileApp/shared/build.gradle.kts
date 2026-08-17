@@ -101,7 +101,14 @@ kotlin {
             implementation(libs.koin.compose.navigation3)
             implementation(libs.lifecyle.runtime)
             implementation(libs.uuid)
-            implementation(libs.calf.permissions)
+            // Only the permission modules this app actually uses. The umbrella
+            // calf-permissions artifact links location, bluetooth, contacts and more,
+            // and App Store review then demands a purpose string for each (ITMS-90683)
+            // even though nothing calls them. Add a module here when you add a permission.
+            implementation(libs.calf.permissions.core)
+            implementation(libs.calf.permissions.camera)
+            implementation(libs.calf.permissions.gallery)
+            implementation(libs.calf.permissions.notifications)
             implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.coil.compose)
             implementation(libs.coil.ktor)

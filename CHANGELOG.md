@@ -12,6 +12,20 @@ Entry format — one bullet per merged PR, tagged by scope:
 Entries start with the first template change after the sync tooling landed — group them under a
 `## <year>-<month>-<date>` heading, newest first.
 
+## 2026-08-17
+
+- `[app]` **Only the permission modules the app uses are linked** (#52): the kit depended on Calf's
+  umbrella `calf-permissions` artifact, which links every permission API — location, bluetooth,
+  contacts and the rest. App Store review scans for those symbols, so uploads came back with
+  **ITMS-90683: Missing purpose string in Info.plist** demanding `NSLocationWhenInUseUsageDescription`
+  for a permission the app never requests. Calf 0.12.0 → 0.13.0 and the dependency is now
+  `calf-permissions-core` plus one module per permission actually used: camera, gallery,
+  notifications. Manual: `rememberLocationPermissionState()` and `rememberMicrophonePermissionState()`
+  are gone — if you used them, add `calf-permissions-location` / `-microphone` in
+  `libs.versions.toml` and `shared/build.gradle.kts` and call
+  `rememberAppPermissionState(Permission.FineLocation)` instead. Do not switch back to the umbrella
+  module.
+
 ## 2026-08-16
 
 - `[app]` **iOS publishing works without a Mac** (#48): the iOS publish workflow had never run on a

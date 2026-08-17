@@ -357,9 +357,9 @@ Per-app compile-time config lives in **`root/AppConfiguration.kt`** (`object App
 - `expect`/`actual` for platform abstractions
 
 ### Runtime Permissions
-- Backed by **Calf** (`calf-permissions`, commonMain — real dialogs on Android/iOS, granted no-ops on desktop/web).
+- Backed by **Calf** (commonMain — real dialogs on Android/iOS, granted no-ops on desktop/web). Only the **per-permission modules** the app uses are on the classpath: `calf-permissions-core`, `-camera`, `-gallery`, `-notifications`. **Never depend on the umbrella `calf-permissions`** — it links every permission API and App Store review then fails the upload with ITMS-90683, demanding purpose strings for permissions the app never requests.
 - App-level API: `util/permissions/AppPermissionState.kt`. Never use Calf types directly in screens — go through `AppPermissionState`.
-- Per-permission helpers: `rememberNotificationPermissionState()`, `rememberCameraPermissionState()`, `rememberGalleryPermissionState()`, `rememberLocationPermissionState()`, `rememberMicrophonePermissionState()`. Each returns `AppPermissionState { isGranted, shouldShowRationale, request(), openSettings() }`.
+- Per-permission helpers: `rememberNotificationPermissionState()`, `rememberCameraPermissionState()`, `rememberGalleryPermissionState()`. Each returns `AppPermissionState { isGranted, shouldShowRationale, request(), openSettings() }`. Adding another permission means adding its Calf module first, then `rememberAppPermissionState(Permission.X)`.
 - Any other permission: `rememberAppPermissionState(Permission.X)` — same wrapper, one extra import.
 - Ask-on-entry pattern: `RequestPermissionOnEntry(state)` (skips if already granted or rationale pending). Used for the notification permission in `HomeScreen`.
 - iOS: camera/gallery/location/microphone need their `NS*UsageDescription` keys in `iosApp/iosApp/Info.plist`; notification permission needs none.
@@ -587,7 +587,7 @@ Period units are **plurals** (`paywall_unit_day`, `paywall_unit_day_count`, etc.
 | RevenueCat | 3.0.6 | In-app purchases — alternate provider (`purchases-kmp` 3.x — bundles purchases-hybrid-common internally; no iOS pod needed). Set `SUBSCRIPTION_PROVIDER=REVENUECAT` to use. |
 | Coil | 3.5.0 | Image loading |
 | DataStore | 1.3.0-alpha09 | Preferences storage (KMP — pin to 1.3.0-alpha09+, first version with js/wasmJs targets) |
-| Calf | 0.12.0 | Runtime permissions (`calf-permissions`, all targets) |
+| Calf | 0.13.0 | Runtime permissions (`calf-permissions-core` + one module per permission used, all targets) |
 | Napier | — | Logging |
 | Spotless | 8.6.0 | Formatting + ktlint runner (root `build.gradle.kts`) |
 | ktlint | 1.8.0 | Kotlin linter (driven by Spotless) |

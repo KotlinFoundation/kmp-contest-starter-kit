@@ -6,12 +6,10 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.mohamedrejeb.calf.permissions.Camera
 import com.mohamedrejeb.calf.permissions.ExperimentalPermissionsApi
-import com.mohamedrejeb.calf.permissions.FineLocation
 import com.mohamedrejeb.calf.permissions.Gallery
 import com.mohamedrejeb.calf.permissions.Notification
 import com.mohamedrejeb.calf.permissions.Permission
 import com.mohamedrejeb.calf.permissions.PermissionState
-import com.mohamedrejeb.calf.permissions.RecordAudio
 import com.mohamedrejeb.calf.permissions.isGranted
 import com.mohamedrejeb.calf.permissions.rememberPermissionState
 import com.mohamedrejeb.calf.permissions.shouldShowRationale
@@ -48,9 +46,14 @@ interface AppPermissionState {
 /**
  * Remembers an [AppPermissionState] for any Calf [Permission].
  *
- * To support a permission that has no dedicated helper below, call this directly:
- * `rememberAppPermissionState(Permission.Bluetooth)` (after adding the matching
- * iOS usage-description key to Info.plist).
+ * Only the permissions this app ships are on the classpath: camera, gallery and
+ * notifications. To use another one, add its Calf module in `shared/build.gradle.kts`
+ * (e.g. `calf-permissions-location`) and the matching iOS usage-description key, then
+ * call this directly: `rememberAppPermissionState(Permission.FineLocation)`.
+ *
+ * Do not reach for the umbrella `calf-permissions` artifact. It links every permission
+ * API, and App Store review then rejects the build with ITMS-90683 for each purpose
+ * string you have not written — for permissions your app never uses.
  *
  * @param onResult called with the grant result after [AppPermissionState.request].
  */
@@ -78,16 +81,6 @@ fun rememberCameraPermissionState(onResult: (Boolean) -> Unit = {}): AppPermissi
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun rememberGalleryPermissionState(onResult: (Boolean) -> Unit = {}): AppPermissionState = rememberAppPermissionState(Permission.Gallery, onResult)
-
-/** Precise location permission. iOS requires NSLocationWhenInUseUsageDescription in Info.plist. */
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun rememberLocationPermissionState(onResult: (Boolean) -> Unit = {}): AppPermissionState = rememberAppPermissionState(Permission.FineLocation, onResult)
-
-/** Microphone permission. iOS requires NSMicrophoneUsageDescription in Info.plist. */
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun rememberMicrophonePermissionState(onResult: (Boolean) -> Unit = {}): AppPermissionState = rememberAppPermissionState(Permission.RecordAudio, onResult)
 
 /**
  * Requests [permissionState] once when it enters composition, unless already granted

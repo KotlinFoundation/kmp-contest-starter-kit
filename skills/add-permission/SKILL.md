@@ -1,6 +1,6 @@
 ---
 name: add-permission
-description: Request a runtime permission (camera, gallery, location, microphone, notifications, or any other) via the app-level AppPermissionState API. Use when a screen needs to ask the user for a device permission. For full push/FCM setup (not just the notification permission prompt), use enable-notifications instead.
+description: Request a runtime permission (notifications, camera, gallery out of the box; location, microphone or any other after adding its Calf module) via the app-level AppPermissionState API. Use when a screen needs to ask the user for a device permission. For full push/FCM setup (not just the notification permission prompt), use enable-notifications instead.
 ---
 
 # Add a runtime permission
@@ -17,10 +17,28 @@ Helpers live in `shared/src/commonMain/kotlin/com/kotlinfoundation/koko/util/per
 | `rememberNotificationPermissionState()` | — |
 | `rememberCameraPermissionState()` | `NSCameraUsageDescription` |
 | `rememberGalleryPermissionState()` | `NSPhotoLibraryUsageDescription` |
-| `rememberLocationPermissionState()` | `NSLocationWhenInUseUsageDescription` |
-| `rememberMicrophonePermissionState()` | `NSMicrophoneUsageDescription` |
 
-Any other permission: `rememberAppPermissionState(Permission.Bluetooth)`.
+Those three are the permissions the kit ships. **Any other permission needs its Calf module added
+first** — the kit deliberately does not depend on the umbrella `calf-permissions` artifact:
+
+```kotlin
+// MobileApp/gradle/libs.versions.toml
+calf-permissions-location = { module = "com.mohamedrejeb.calf:calf-permissions-location", version.ref = "calf" }
+
+// MobileApp/shared/build.gradle.kts, commonMain
+implementation(libs.calf.permissions.location)
+```
+
+Then call the generic helper and add the iOS key:
+
+```kotlin
+rememberAppPermissionState(Permission.FineLocation)   // + NSLocationWhenInUseUsageDescription
+```
+
+> **Never switch to the umbrella `calf-permissions` module.** It links every permission API, so
+> App Store review rejects the build with **ITMS-90683** demanding a purpose string for location,
+> bluetooth, contacts and the rest — permissions the app never uses. One module per permission you
+> actually request.
 
 ## Use it in a screen
 
