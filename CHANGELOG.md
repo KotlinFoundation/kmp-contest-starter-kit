@@ -12,6 +12,14 @@ Entry format — one bullet per merged PR, tagged by scope:
 Entries start with the first template change after the sync tooling landed — group them under a
 `## <year>-<month>-<date>` heading, newest first.
 
+## 2026-08-21
+
+- `[app]` **AGP 9.2.0 → 9.3.1, Gradle 9.4.1 → 9.7.1** (#55): Android Studio flagged the AGP version as
+  out of date. AGP 9.3.1 requires Gradle 9.5.0 or newer, so the wrapper moves too, to the current
+  stable 9.7.1. Gradle 9.6 deprecated the `by getting` delegate used for the `debug` and `release`
+  build types in `androidApp/build.gradle.kts`; those now use `getByName(...)`, so the build is
+  warning free again. Manual: none — the wrapper pulls the new distribution on first run.
+
 ## 2026-08-17
 
 - `[app]` **Info.plist declares orientations and export compliance** (#53): the target builds for

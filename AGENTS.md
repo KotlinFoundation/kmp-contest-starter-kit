@@ -9,7 +9,7 @@ Monorepo with three main parts:
 - **Web/** — Firebase Hosting landing page + Cloud Functions backend (Node.js)
 - **Documentation/** — Docusaurus documentation site (git submodule, published at kotlinfoundation.org/kmp-contest-starter-kit-documentation)
 
-Tech stack: Kotlin 2.3.20, Compose Multiplatform 1.10.0, AGP 9.2.0, Gradle 9.4.1, Gradle Kotlin DSL
+Tech stack: Kotlin 2.4.0, Compose Multiplatform 1.11.1, AGP 9.3.1, Gradle 9.7.1, Gradle Kotlin DSL
 Package: `com.kotlinfoundation.koko`
 
 ## Repository Structure
@@ -579,8 +579,8 @@ Period units are **plurals** (`paywall_unit_day`, `paywall_unit_day_count`, etc.
 |---------|---------|---------|
 | Kotlin | 2.4.0 | Language (bumped from 2.3.20 — required by KMPNotifier 2.0) |
 | Compose Multiplatform | 1.10.3 | UI framework |
-| Android Gradle Plugin | 9.2.0 | Android build tooling |
-| Gradle | 9.4.1 | Build system |
+| Android Gradle Plugin | 9.3.1 | Android build tooling (requires Gradle 9.5+) |
+| Gradle | 9.7.1 | Build system |
 | compileSdk | 37 | Android compile SDK (KMPNotifier 2.0 Android artifacts require API 37+; `targetSdk` unchanged) |
 | Koin | 4.2.1 | Dependency injection |
 | Ktor | 3.5.0 | HTTP client |

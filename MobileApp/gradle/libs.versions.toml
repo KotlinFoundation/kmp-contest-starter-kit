@@ -1,7 +1,7 @@
 [versions]
 adapty = "3.17.0"
 admob = "25.3.0"
-agp = "9.2.0"
+agp = "9.3.1"
 android-compileSdk="37"
 android-inappreview = "2.0.2"
 android-minSdk="24"
