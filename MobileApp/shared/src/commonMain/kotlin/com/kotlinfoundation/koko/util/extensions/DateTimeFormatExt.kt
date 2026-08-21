@@ -3,6 +3,7 @@
 package com.kotlinfoundation.koko.util.extensions
 
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -17,8 +18,8 @@ fun Long.asFormattedDate(
 ): String {
     val dateTime = Instant.fromEpochMilliseconds(this).toLocalDateTime(timeZone)
 
-    return format.replace("dd", dateTime.dayOfMonth.toString().padStart(2, '0'))
-        .replace("MM", dateTime.monthNumber.toString().padStart(2, '0'))
+    return format.replace("dd", dateTime.day.toString().padStart(2, '0'))
+        .replace("MM", dateTime.month.number.toString().padStart(2, '0'))
         .replace("yyyy", dateTime.year.toString())
 }
 

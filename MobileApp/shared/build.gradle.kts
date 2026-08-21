@@ -137,7 +137,7 @@ kotlin {
 
         // Android host tests run on the JVM via Robolectric. Roborazzi snapshots
         // every @Preview discovered by ComposablePreviewScanner.
-        val androidHostTest by getting {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.robolectric)
@@ -174,13 +174,13 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
         }
 
-        val nonWebMain by getting {
+        getByName("nonWebMain") {
             dependencies {
                 implementation(libs.sqlite.bundled)
             }
         }
 
-        val webMain by getting {
+        getByName("webMain") {
             dependencies {
                 implementation(libs.ktor.client.js)
                 implementation(libs.sqlite.web)

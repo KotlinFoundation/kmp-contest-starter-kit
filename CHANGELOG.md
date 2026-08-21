@@ -12,6 +12,31 @@ Entry format — one bullet per merged PR, tagged by scope:
 Entries start with the first template change after the sync tooling landed — group them under a
 `## <year>-<month>-<date>` heading, newest first.
 
+## 2026-08-21
+
+- `[app]` **Dependency bumps across the board** (#55): Kotlin 2.4.0 → 2.4.10, KSP 2.3.9 → 2.3.11,
+  Ktor 3.5.0 → 3.5.2, Koin 4.2.1 → 4.2.2, kotlinx-datetime 0.7.1 → 0.8.0, RevenueCat 3.0.6 → 3.5.1,
+  Roborazzi 1.64.0 → 1.72.0, Spotless 8.6.0 → 8.10.0, Firebase BOM 34.17.0 → 34.18.0, AdMob
+  25.3.0 → 25.4.0, FileKit 0.14.1 → 0.15.0, DataStore 1.3.0-alpha09 → alpha10, plus the AndroidX
+  and Compose lifecycle/activity/test artifacts. Manual: `kotlinx-datetime` 0.8.0 deprecates
+  `dayOfMonth` and `monthNumber` — use `day` and `month.number` (the latter is an extension, so add
+  `import kotlinx.datetime.number`). FileKit's `openFileSaver(extension = …)` is now
+  `defaultExtension = …`.
+- `[app]` **Room and SQLite leave the alpha train** (#55): Room 3.0.0-alpha06 → **3.0.1** and
+  androidx.sqlite 2.7.0-alpha06 → **2.7.0**, both now stable. They stay coupled, so bump them
+  together. Manual: none — no schema or API change.
+- `[app]` **Room survives R8 in release builds** (#55): release builds are minified, and Room looks
+  up its generated `AppDatabase_Impl` by name at runtime. `androidApp/proguard-rules.pro` now keeps
+  it with `-keep class * extends androidx.room3.RoomDatabase { <init>(); }`, the rule Google's Room
+  KMP guide requires. Without it debug works and the release build crashes on first database access.
+  Manual: if you already shipped a minified release, add the same rule.
+- `[app]` **AGP 9.2.0 → 9.3.1, Gradle 9.4.1 → 9.7.1** (#55): Android Studio flagged the AGP version as
+  out of date. AGP 9.3.1 requires Gradle 9.5.0 or newer, so the wrapper moves too, to the current
+  stable 9.7.1. Gradle 9.6 deprecated the `by getting` delegate, used for the build types in
+  `androidApp/build.gradle.kts` and for three source sets in `shared/build.gradle.kts`; those now use
+  `getByName(...)`, so the build reports no Gradle deprecations. Manual: none — the wrapper pulls
+  the new distribution on first run.
+
 ## 2026-08-17
 
 - `[app]` **Info.plist declares orientations and export compliance** (#53): the target builds for

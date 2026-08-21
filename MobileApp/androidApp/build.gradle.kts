@@ -49,7 +49,7 @@ android {
     }
 
     buildTypes {
-        val debug by getting {
+        getByName("debug") {
             isMinifyEnabled = false
             isDebuggable = true
 
@@ -57,7 +57,7 @@ android {
             resValue("string", "admobAppId", "ca-app-pub-3940256099942544~3347511713")
         }
 
-        val release by getting {
+        getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

@@ -76,7 +76,7 @@ class FileManagerImpl(
 
         val pickedFileLocationToSave: PlatformFile? = FileKit.openFileSaver(
             suggestedName = file.nameWithoutExtension,
-            extension = file.extension,
+            defaultExtension = file.extension,
         )
 
         if (pickedFileLocationToSave == null) return Result.failure(Exception("Failed to save file"))
@@ -95,7 +95,7 @@ class FileManagerImpl(
         )
         val pickedFileLocationToSave: PlatformFile? = FileKit.openFileSaver(
             suggestedName = galleryFileNameWithoutExtension,
-            extension = fileExtension,
+            defaultExtension = fileExtension,
         )
 
         if (pickedFileLocationToSave == null) return Result.failure(Exception("Failed to save file"))

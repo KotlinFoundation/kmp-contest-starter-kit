@@ -9,7 +9,7 @@ Monorepo with three main parts:
 - **Web/** — Firebase Hosting landing page + Cloud Functions backend (Node.js)
 - **Documentation/** — Docusaurus documentation site (git submodule, published at kotlinfoundation.org/kmp-contest-starter-kit-documentation)
 
-Tech stack: Kotlin 2.3.20, Compose Multiplatform 1.10.0, AGP 9.2.0, Gradle 9.4.1, Gradle Kotlin DSL
+Tech stack: Kotlin 2.4.10, Compose Multiplatform 1.11.1, AGP 9.3.1, Gradle 9.7.1, Gradle Kotlin DSL
 Package: `com.kotlinfoundation.koko`
 
 ## Repository Structure
@@ -138,6 +138,14 @@ These three scoped tasks ARE the whole validation. Do not improvise around them:
 - **`assembleDebug` succeeding IS the Android validation.** Do **not** then auto-install + launch via `adb` and poll to "confirm it works" — the launcher Activity is `.AppActivity` (Application class `.AndroidApp`), but guessing/parsing it via adb is fragile and is what spirals into a loop. To see the app actually render, use the `verify-ui` skill (headless PNG) or hand off to the developer to hit Run in the IDE.
 - **Run tasks are long-running and never exit**: `:desktopApp:run`, `:webApp:wasmJsBrowserDevelopmentRun`, `:androidApp:installDebug`+launch. Start once (background if you need the shell back); a task that hasn't returned is **running, not hung** — do not kill and re-run.
 - **Configuration cache is on** (`org.gradle.configuration-cache=true`). Anything that must run at execution time has to be configuration-cache safe. In particular, **do not add a `commonWebpackConfig { }` block to `webApp/build.gradle.kts`** — it is a Gradle script object reference and cannot be serialized, which fails every `:webApp:wasmJs*` task. Dev-server settings (the AI CORS proxies) live in `webApp/webpack.config.d/*.js` instead.
+- **Android Studio's Build Analyzer reports four "always-run tasks"; ignore them.** They are
+  `kmpPartiallyResolvedDependenciesChecker`, one per KMP module, and they come from the AGP KMP
+  library plugin, not from this repo. They cost about **0.04s of a ~1.8s incremental build**.
+  Build Analyzer lists always-run tasks by existence, not by cost, so it flags them regardless.
+  Suppressing another plugin's correctness check to silence the panel is not worth it. To see the
+  numbers yourself: `./gradlew :androidApp:assembleDebug --profile` writes the same data to
+  `build/reports/profile/*.html`, and running the build twice while grepping
+  `'^> Task'` for lines without `UP-TO-DATE` shows exactly which tasks re-run.
 - **A failed or slow gate is not a retry signal.** Read the error and fix it, or STOP and report to the developer. Never re-run the same command hoping it passes. First build is slow (downloads JBR + Compose) — expected, not a hang.
 
 ### Other test paths
@@ -459,6 +467,7 @@ The script is idempotent (safe to re-run). Insertion points in the three target 
   - Android / iOS / JVM (`androidMain`, `iosMain`, `jvmMain`) → `BundledSQLiteDriver`
   - wasmJs + js → `WebWorkerSQLiteDriver` backed by [`shared/sqlite-wasm-worker/worker.js`](shared/sqlite-wasm-worker/worker.js) (OPFS persistence). The `DatabaseProviderImpl` class lives once in **`webMain`**; the only per-target difference is `createSQLiteWorker()` — an `internal expect fun` with a `@JsFun` actual (wasmJs) and a `js("…")` actual (js). The `webDatabaseModule` Koin wiring is also a single `webMain` `val` (no expect/actual).
 - Repositories inject DAOs directly and convert with extension-function mappers (`Entity.toModel()` / `Model.toEntity()`); there is **no** `LocalDataSource` abstraction or `EntityMapper` interface.
+- Android release builds are minified, and Room looks up its generated `*_Impl` class by name at runtime, so `androidApp/proguard-rules.pro` keeps it: `-keep class * extends androidx.room3.RoomDatabase { <init>(); }`. Without it a release build crashes on first database access while debug works.
 
 **Whenever the user asks for a new locally-stored model**, run this from `MobileApp/`:
 ```bash
@@ -569,29 +578,29 @@ Period units are **plurals** (`paywall_unit_day`, `paywall_unit_day_count`, etc.
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Kotlin | 2.4.0 | Language (bumped from 2.3.20 — required by KMPNotifier 2.0) |
+| Kotlin | 2.4.10 | Language |
 | Compose Multiplatform | 1.10.3 | UI framework |
-| Android Gradle Plugin | 9.2.0 | Android build tooling |
-| Gradle | 9.4.1 | Build system |
+| Android Gradle Plugin | 9.3.1 | Android build tooling (requires Gradle 9.5+) |
+| Gradle | 9.7.1 | Build system |
 | compileSdk | 37 | Android compile SDK (KMPNotifier 2.0 Android artifacts require API 37+; `targetSdk` unchanged) |
-| Koin | 4.2.1 | Dependency injection |
-| Ktor | 3.5.0 | HTTP client |
+| Koin | 4.2.2 | Dependency injection |
+| Ktor | 3.5.2 | HTTP client |
 | KMPNotifier | 2.0.1 | Notifications (split modules: `kmpnotifier-local` + `kmpnotifier-push-firebase`; new `KMPNotifier` API). iOS Firebase via SwiftPM, deployment target 16.0+. |
 | KMPAuth | 3.0.5 | Auth facade (Google/Apple/anonymous, Firebase backend). Uses GitLive firebase 3.0.0-alpha01; iOS floor firebase-ios-sdk 12.17.0. |
-| Room | 3.0.0-alpha06 | Local database (KMP — `androidx.room3:*`, plugin id `androidx.room3`) |
-| SQLite | 2.7.0-alpha06 | `sqlite-bundled` (native) + `sqlite-web` (wasmJs OPFS). **Keep Room and SQLite on the same alpha train** — they're coupled (Room's generated code targets a specific `androidx.sqlite` API surface), so bump both together, never one alone. |
+| Room | 3.0.1 | Local database (KMP — `androidx.room3:*`, plugin id `androidx.room3`) |
+| SQLite | 2.7.0 | `sqlite-bundled` (native) + `sqlite-web` (wasmJs OPFS). **Keep Room and SQLite on the same release train** — they're coupled (Room's generated code targets a specific `androidx.sqlite` API surface), so bump both together, never one alone. |
 | Navigation 3 | 1.1.1 | Navigation (`org.jetbrains.androidx.navigation3` KMP) |
 | Lifecycle ViewModel Navigation 3 | 2.10.0 | Per-NavEntry ViewModel scoping |
-| Firebase BOM | 34.17.0 | Analytics, Messaging, Crashlytics, RemoteConfig |
+| Firebase BOM | 34.18.0 | Analytics, Messaging, Crashlytics, RemoteConfig |
 | Adapty | 3.17.0 | In-app purchases — **default provider** (`adapty-kmp`). Selected via the `SUBSCRIPTION_PROVIDER` gradle property. |
-| RevenueCat | 3.0.6 | In-app purchases — alternate provider (`purchases-kmp` 3.x — bundles purchases-hybrid-common internally; no iOS pod needed). Set `SUBSCRIPTION_PROVIDER=REVENUECAT` to use. |
+| RevenueCat | 3.5.1 | In-app purchases — alternate provider (`purchases-kmp` 3.x — bundles purchases-hybrid-common internally; no iOS pod needed). Set `SUBSCRIPTION_PROVIDER=REVENUECAT` to use. |
 | Coil | 3.5.0 | Image loading |
-| DataStore | 1.3.0-alpha09 | Preferences storage (KMP — pin to 1.3.0-alpha09+, first version with js/wasmJs targets) |
+| DataStore | 1.3.0-alpha10 | Preferences storage (KMP — pin to 1.3.0-alpha09+, first version with js/wasmJs targets; the 1.2.x stable line has none) |
 | Calf | 0.13.0 | Runtime permissions (`calf-permissions-core` + one module per permission used, all targets) |
 | Napier | — | Logging |
-| Spotless | 8.6.0 | Formatting + ktlint runner (root `build.gradle.kts`) |
+| Spotless | 8.10.0 | Formatting + ktlint runner (root `build.gradle.kts`) |
 | ktlint | 1.8.0 | Kotlin linter (driven by Spotless) |
-| Roborazzi | 1.64.0 | Screenshot recording / verification |
+| Roborazzi | 1.72.0 | Screenshot recording / verification |
 | Robolectric | 4.16.1 | Android-on-JVM test runtime for screenshot tests |
 | ComposablePreviewScanner | 0.9.0 | `@Preview` discovery for screenshot pipeline |
 
