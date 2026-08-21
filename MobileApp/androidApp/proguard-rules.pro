@@ -9,3 +9,6 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 -keep,allowobfuscation,allowshrinking class **ScreenRoute$$serializer { *; }
+
+# Room resolves the generated *_Impl database class by name at runtime.
+-keep class * extends androidx.room3.RoomDatabase { <init>(); }
