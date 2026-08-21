@@ -138,6 +138,14 @@ These three scoped tasks ARE the whole validation. Do not improvise around them:
 - **`assembleDebug` succeeding IS the Android validation.** Do **not** then auto-install + launch via `adb` and poll to "confirm it works" — the launcher Activity is `.AppActivity` (Application class `.AndroidApp`), but guessing/parsing it via adb is fragile and is what spirals into a loop. To see the app actually render, use the `verify-ui` skill (headless PNG) or hand off to the developer to hit Run in the IDE.
 - **Run tasks are long-running and never exit**: `:desktopApp:run`, `:webApp:wasmJsBrowserDevelopmentRun`, `:androidApp:installDebug`+launch. Start once (background if you need the shell back); a task that hasn't returned is **running, not hung** — do not kill and re-run.
 - **Configuration cache is on** (`org.gradle.configuration-cache=true`). Anything that must run at execution time has to be configuration-cache safe. In particular, **do not add a `commonWebpackConfig { }` block to `webApp/build.gradle.kts`** — it is a Gradle script object reference and cannot be serialized, which fails every `:webApp:wasmJs*` task. Dev-server settings (the AI CORS proxies) live in `webApp/webpack.config.d/*.js` instead.
+- **Android Studio's Build Analyzer reports four "always-run tasks"; ignore them.** They are
+  `kmpPartiallyResolvedDependenciesChecker`, one per KMP module, and they come from the AGP KMP
+  library plugin, not from this repo. They cost about **0.04s of a ~1.8s incremental build**.
+  Build Analyzer lists always-run tasks by existence, not by cost, so it flags them regardless.
+  Suppressing another plugin's correctness check to silence the panel is not worth it. To see the
+  numbers yourself: `./gradlew :androidApp:assembleDebug --profile` writes the same data to
+  `build/reports/profile/*.html`, and running the build twice while grepping
+  `'^> Task'` for lines without `UP-TO-DATE` shows exactly which tasks re-run.
 - **A failed or slow gate is not a retry signal.** Read the error and fix it, or STOP and report to the developer. Never re-run the same command hoping it passes. First build is slow (downloads JBR + Compose) — expected, not a hang.
 
 ### Other test paths
