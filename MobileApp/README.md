@@ -22,7 +22,7 @@ Compose Multiplatform mobile application targeting Android, iOS, Web (WASM), and
 ## Prerequisites
 
 - JDK 17 or higher (required by AGP 9)
-- Android Studio Narwhal Feature Drop or newer (for AGP 9 support)
+- Android Studio, latest stable release (AGP 9 needs a recent one; Google publishes no per-AGP Studio minimum)
 - Android SDK path configured in `local.properties` (`sdk.dir=/path/to/sdk`)
 - For iOS: Xcode installed
 - Optional: Check your system with [KDoctor](https://github.com/Kotlin/kdoctor)
