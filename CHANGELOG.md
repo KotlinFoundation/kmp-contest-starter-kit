@@ -49,10 +49,19 @@ Entries start with the first template change after the sync tooling landed — g
   gone. **Manual:** none. Generated sources, expect/actual signatures, Swift entry points and the
   `AppConfiguration` feature flags were deliberately left alone — simplifying those booleans would
   delete the gating they exist for.
+- `[app]` **iOS splash logo is scale-aware** (#58): `ic_logo.imageset` held one universal image with
+  no scale, and a launch image is drawn centred at its **point** size rather than scaled to fit. That
+  made pixels equal points, so replacing the logo with a 512 px file rendered it at 512 pt — wider
+  than any iPhone — and it overflowed the screen. The set now has proper `1x` / `2x` / `3x` slots at
+  120 / 240 / 360 px, giving a 120 pt logo, and the artwork is transparent so it works over the splash
+  background in dark mode too. **Manual:** if you rebranded, regenerate all three files at those
+  sizes instead of copying your full-size logo in, and leave `Contents.json` alone.
 - `[skills]` **`generate-app-icons` matches reality** (#58): the skill told agents the
   `mipmap-anydpi-v26/` descriptors were already present and to leave them as-is, while they did not
   exist. It now documents the monochrome layer alongside them and explains that it must stay one flat
-  shape, redrawn per rebrand.
+  shape, redrawn per rebrand. It also states the iOS splash logo sizing that nothing documented
+  before — the point-size rule, the three scale slots, resize commands, and a validation step — which
+  is what let full-size logos end up on the launch screen. `AGENTS.md` carries the same note.
 - `[docs]` **Favicon transparency and the getting-started clone step** (#58): the docs favicon had an
   opaque white notch instead of a transparent one, so it read wrong on dark browser tabs; it is
   regenerated from the official Kotlin icon with alpha. "Fork or clone the repository" now names a

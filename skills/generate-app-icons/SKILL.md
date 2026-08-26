@@ -94,10 +94,35 @@ sizes (rendered px = size × scale):
 Publishing branding also touches the native splash screens (see `AGENTS.md` → *Splash
 Screen*). The splash uses the **brand logo shown uncut**, not the masked launcher icon:
 
-- iOS splash logo → `iosApp/iosApp/Assets.xcassets/ic_logo.imageset/ic_logo.png` (single
-  universal image). Splash background → `SplashBackground.colorset` (keep equal to the
-  app window background `windowBackgroundColor`, currently `#F0EDE5`, so the hand-off has
-  no flash).
+- iOS splash logo → `iosApp/iosApp/Assets.xcassets/ic_logo.imageset/` — **three files**,
+  `ic_logo.png` (1x), `ic_logo@2x.png`, `ic_logo@3x.png`. Splash background →
+  `SplashBackground.colorset` (keep equal to the app window background
+  `windowBackgroundColor`, currently `#F0EDE5`, so the hand-off has no flash).
+
+  **Size matters here, and getting it wrong is the usual mistake.** A launch image is drawn
+  centred at its **point** size, never scaled to fit the screen. The imageset ships at
+  **120 pt** (120 / 240 / 360 px), which is roughly a third of the width of a 390 pt iPhone.
+  Dropping a 512 px logo into the 1x slot makes it 512 pt — wider than any iPhone — so it
+  overflows and is clipped. Do not copy the full-size source logo (or
+  `designsystem/.../ic_logo.webp`) straight in.
+
+  Regenerate all three from the source, keeping transparency so the logo sits on the splash
+  background in both light and dark mode:
+
+  ```bash
+  cd iosApp/iosApp/Assets.xcassets/ic_logo.imageset
+  # from an SVG:
+  rsvg-convert -w 120 -h 120 -o ic_logo.png    logo.svg
+  rsvg-convert -w 240 -h 240 -o ic_logo@2x.png logo.svg
+  rsvg-convert -w 360 -h 360 -o ic_logo@3x.png logo.svg
+  # or from a large PNG:
+  sips -Z 120 logo.png --out ic_logo.png
+  sips -Z 240 logo.png --out ic_logo@2x.png
+  sips -Z 360 logo.png --out ic_logo@3x.png
+  ```
+
+  Leave `Contents.json` alone — it maps the three filenames to the `1x` / `2x` / `3x` slots,
+  which is what keeps pixels from being read as points.
 - Android splash background → `windowBackgroundColor` in
   `androidApp/src/main/res/values/colors.xml` (the native splash icon is the masked
   adaptive launcher icon; the uncut brand logo is drawn by the Compose onboarding
@@ -109,3 +134,6 @@ Screen*). The splash uses the **brand logo shown uncut**, not the masked launche
   launcher icon renders crisp and uncropped in the app drawer.
 - iOS: open the workspace in Xcode, check the target's **General → App Icons** shows a full
   set with no missing-slot warnings.
+- iOS splash: confirm `ic_logo.png` is around 120 px, not the full-size source
+  (`magick identify iosApp/iosApp/Assets.xcassets/ic_logo.imageset/*.png`), then launch and
+  check the logo sits centred at a sane size instead of filling or overflowing the screen.
