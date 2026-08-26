@@ -6,7 +6,6 @@ import com.kotlinfoundation.koko.data.repository.CreditRepository
 import com.kotlinfoundation.koko.data.repository.GenerationRepository
 import com.kotlinfoundation.koko.data.repository.SubscriptionRepository
 import com.kotlinfoundation.koko.data.repository.UserRepository
-import com.kotlinfoundation.koko.data.source.ai.OpenAiImageGenerationProvider
 import com.kotlinfoundation.koko.data.source.ai.ReplicateGenerationProvider
 import com.kotlinfoundation.koko.data.source.preferences.PreferencesDataStoreProvider
 import com.kotlinfoundation.koko.data.source.preferences.UserPreferences
@@ -155,10 +154,10 @@ private val presentationModule = module {
 
 private fun Module.initializeCreditSystem() {
     single {
-        val userPreferences = get<UserPreferences>()
         val subscriptionRepository = get<SubscriptionRepository>()
         val appCreditSystemConfig = creditSystemConfig {
             oneTimeBonus("welcome_bonus_credit", 1)
+//            val userPreferences = get<UserPreferences>()
 //            oneTimeBonus(
 //                id = "referral_bonus",
 //                amount = 1,

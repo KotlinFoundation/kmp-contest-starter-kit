@@ -3,7 +3,6 @@ package com.kotlinfoundation.koko.presentation.components.ads.rewarded
 import androidx.activity.ComponentActivity
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.OnUserEarnedRewardListener
 import com.kotlinfoundation.koko.presentation.components.ads.AdsRewardItem
 import com.kotlinfoundation.koko.presentation.components.ads.FullScreenAdDisplayer
 import com.kotlinfoundation.koko.presentation.components.ads.FullScreenAdLoader
@@ -44,17 +43,14 @@ class RewardedAdDisplayer(
                 AppLogger.d("Rewarded ad is shown")
             }
         }
-        rewardedAd.show(
-            activity,
-            OnUserEarnedRewardListener { rewardItem ->
-                val adsRewardItem = AdsRewardItem(
-                    amount = rewardItem.amount,
-                    type = rewardItem.type,
-                )
+        rewardedAd.show(activity) { rewardItem ->
+            val adsRewardItem = AdsRewardItem(
+                amount = rewardItem.amount,
+                type = rewardItem.type,
+            )
 
-                onRewarded(adsRewardItem)
-                AppLogger.d("User earned reward: amount: ${rewardItem.amount}, type: ${rewardItem.type}")
-            },
-        )
+            onRewarded(adsRewardItem)
+            AppLogger.d("User earned reward: amount: ${rewardItem.amount}, type: ${rewardItem.type}")
+        }
     }
 }

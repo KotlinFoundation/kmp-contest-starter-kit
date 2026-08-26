@@ -69,6 +69,7 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun HomeScreen(
@@ -113,7 +114,7 @@ fun HomeScreen(
     LaunchedEffect(uiState.generatedResult) {
         uiState.generatedResult?.let { generatedResult ->
             showConfetti = true
-            delay(100)
+            delay(100.milliseconds)
             onGenerationResult(generatedResult)
             viewModel.onGenerationResultHandled()
             showConfetti = false

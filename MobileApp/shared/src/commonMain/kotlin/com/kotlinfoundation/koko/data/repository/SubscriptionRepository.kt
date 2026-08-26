@@ -35,7 +35,7 @@ class SubscriptionRepository(
     private val subscriptionProvider: SubscriptionProvider,
     private val userPreferences: UserPreferences,
     private val analytics: Analytics,
-    private val backgroundExecutor: BackgroundExecutor = BackgroundExecutor.IO,
+    backgroundExecutor: BackgroundExecutor = BackgroundExecutor.IO,
 ) {
 
     // Emits the current premium subscription. Emits twice on change: a fast value first, then

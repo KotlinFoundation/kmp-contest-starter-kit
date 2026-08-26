@@ -29,8 +29,6 @@ import kotlinx.io.buffered
 import kotlinx.io.readByteArray
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 class FileManagerImpl(
     private val backgroundExecutor: BackgroundExecutor = BackgroundExecutor.IO,
@@ -123,9 +121,9 @@ class FileManagerImpl(
 
         fileSink.use { bufferedSink ->
             AppLogger.d("Started Downloading file to ${file.absolutePath()}")
-            val savedFileName = httpClient.prepareGet(url, {
+            val savedFileName = httpClient.prepareGet(url) {
                 headers[HttpHeaders.ContentType] = ""
-            }).execute { httpResponse ->
+            }.execute { httpResponse ->
 
                 val channel: ByteReadChannel = httpResponse.body()
                 val responseLength = httpResponse.contentLength()

@@ -29,7 +29,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints.Companion.Infinity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -40,6 +39,7 @@ import kotlinx.coroutines.delay
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 data class ConfettiConfigUiState(
     val particleCount: Int,
@@ -144,9 +144,8 @@ fun ConfettiParticlesAnimatedFromBottom(
     var animationState by remember { mutableStateOf(0f) }
 
     LaunchedEffect(Unit) {
-        val duration = durationInMs
         val steps = 60
-        val stepDelay = duration / steps
+        val stepDelay = durationInMs.milliseconds / steps
 
         repeat(steps) {
             animationState = (it + 1).toFloat() / steps

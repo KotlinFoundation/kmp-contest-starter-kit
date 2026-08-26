@@ -28,6 +28,7 @@ androidApp/src/main/res/
 ├── mipmap-xxhdpi/   …
 ├── mipmap-xxxhdpi/  …
 ├── mipmap-anydpi-v26/  ic_launcher.xml, ic_launcher_round.xml   (adaptive descriptors — leave as-is)
+├── drawable/        ic_launcher_monochrome.xml   (themed-icon layer — redraw per rebrand)
 └── values/colors.xml   → <color name="ic_launcher_background">…</color>
 ```
 
@@ -54,6 +55,14 @@ adaptive background in `androidApp/src/main/res/values/colors.xml`
 
 The adaptive-icon descriptors in `mipmap-anydpi-v26/` and the `<color>` names are already
 correct — only the pixels and the background color change.
+
+**Themed icons (Android 13+).** Each descriptor also declares a `<monochrome>` layer
+pointing at `drawable/ic_launcher_monochrome.xml`. That is a single-path vector of the
+logo silhouette — the system ignores its color and tints it to the user's wallpaper
+palette, so it must be one flat shape with no gradient. Redraw it when the logo changes;
+Android Studio's Image Asset wizard can emit it from the same source under the
+*Monochrome* layer tab. Dropping the layer costs you the themed icon on Android 13+ and
+trips the `MonochromeLauncherIcon` lint check.
 
 ## iOS — `iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/`
 

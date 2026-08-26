@@ -42,6 +42,6 @@ data class GenerationInput(
         fun getSystemPrompt(): String = """
 
         """.trimIndent()
-        val DEFAULT_CAN_ACCEPT_MULTIPLE_FILES: Boolean = true // For nano banana this is always true
+        const val DEFAULT_CAN_ACCEPT_MULTIPLE_FILES: Boolean = true // For nano banana this is always true
     }
 }

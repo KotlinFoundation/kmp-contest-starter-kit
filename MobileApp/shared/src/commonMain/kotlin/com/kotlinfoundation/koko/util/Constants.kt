@@ -68,5 +68,5 @@ object Constants {
             "https://apps.apple.com/account/subscriptions"
         }
 
-    val MAX_FILE_UPLOAD_SIZE = 10 * 1024 * 1024L // 10mb
+    const val MAX_FILE_UPLOAD_SIZE = 10 * 1024 * 1024L // 10mb
 }

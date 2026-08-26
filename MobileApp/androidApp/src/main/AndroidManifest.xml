@@ -8,6 +8,7 @@
     <application
         android:name=".AndroidApp"
         android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="Koko"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity

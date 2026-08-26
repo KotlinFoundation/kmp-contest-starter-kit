@@ -34,7 +34,7 @@ class PaywallViewModel(
     private val subscriptionRepository: SubscriptionRepository,
     private val creditRepository: CreditRepository,
     private val userRepository: UserRepository,
-    private val featureFlagManager: FeatureFlagManager,
+    featureFlagManager: FeatureFlagManager,
     private val mapper: PaywallUiStateMapper = PaywallUiStateMapper(),
 ) : ViewModel() {
     private val mode: PaywallMode =

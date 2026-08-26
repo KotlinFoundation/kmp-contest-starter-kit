@@ -50,7 +50,6 @@ import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiEvent
 import com.kotlinfoundation.koko.presentation.screens.paywall.PaywallUiState
 import com.kotlinfoundation.koko.root.AppConfiguration
 import com.kotlinfoundation.koko.subscription.api.PurchasePackageId
-import com.kotlinfoundation.koko.util.StoreDevice
 import com.kotlinfoundation.koko.util.StoreScreenshot
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

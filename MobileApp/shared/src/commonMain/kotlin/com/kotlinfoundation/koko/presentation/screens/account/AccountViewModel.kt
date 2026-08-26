@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 class AccountViewModel(
     private val userRepository: UserRepository,
-    private val subscriptionRepository: SubscriptionRepository,
+    subscriptionRepository: SubscriptionRepository,
 ) : ViewModel() {
 
     private val subscriptionsItem = SettingsItemUiState(

@@ -31,6 +31,7 @@ import com.kotlinfoundation.koko.designsystem.theme.AppTheme
 import com.kotlinfoundation.koko.designsystem.util.PreviewHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 sealed interface LoadingProgressMode {
     data object CIRCULAR : LoadingProgressMode
@@ -131,7 +132,7 @@ internal fun LoadingProgressPreview() {
         if (isDialogVisible) {
             LoadingProgressOverlay()
             coroutineScope.launch {
-                delay(2000)
+                delay(2.seconds)
                 isDialogVisible = false
             }
         }

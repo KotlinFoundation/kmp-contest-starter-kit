@@ -16,8 +16,8 @@ import kotlinx.serialization.Serializable
  *     messages {
  *         assistantText("Act as an UI/UX expert")
  *         userContentItems {
- *             text("What primary colors are used in the logo of kappmaker.com?")
- *             image("https://kappmaker.com/images/logo-light.png")
+ *             text("What primary colors are used in the logo of example.com?")
+ *             image("https://example.com/images/logo-light.png")
  *         }
  *     }
  * }

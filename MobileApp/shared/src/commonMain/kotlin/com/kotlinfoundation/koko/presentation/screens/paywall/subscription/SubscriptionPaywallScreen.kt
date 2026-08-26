@@ -41,7 +41,6 @@ import com.kotlinfoundation.koko.designsystem.generated.resources.ic_close
 import com.kotlinfoundation.koko.designsystem.generated.resources.ic_crown
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
 import com.kotlinfoundation.koko.generated.resources.Res
-import com.kotlinfoundation.koko.generated.resources.btn_skip
 import com.kotlinfoundation.koko.generated.resources.paywall_btn_restore
 import com.kotlinfoundation.koko.generated.resources.paywall_sub_subtitle
 import com.kotlinfoundation.koko.generated.resources.paywall_sub_title

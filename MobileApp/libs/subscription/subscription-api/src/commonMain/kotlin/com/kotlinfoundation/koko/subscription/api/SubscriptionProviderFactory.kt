@@ -1,7 +1,7 @@
 package com.kotlinfoundation.koko.subscription.api
 
 interface SubscriptionProviderFactory {
-    companion object {}
+    companion object
 
     fun createProvider(): SubscriptionProvider
 
