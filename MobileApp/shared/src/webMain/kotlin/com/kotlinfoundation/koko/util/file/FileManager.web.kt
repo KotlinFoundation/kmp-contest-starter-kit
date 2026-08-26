@@ -40,7 +40,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 @OptIn(ExperimentalEncodingApi::class)
 class FileManagerImpl(
     private val backgroundExecutor: BackgroundExecutor = BackgroundExecutor.IO,
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val httpClient: HttpClient = HttpClient(),
 ) : FileManager {
 

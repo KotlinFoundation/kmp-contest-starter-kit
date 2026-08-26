@@ -87,17 +87,11 @@ internal class AdaptySubscriptionProvider : SubscriptionProvider {
 
     override suspend fun purchase(purchasePackageId: PurchasePackageId): Result<SubscriptionProviderUser> {
         val packageToBuy = paywallProductsCache[purchasePackageId]
-
-        if (packageToBuy ==
-            null
-        ) {
-            return Result.failure(
+            ?: return Result.failure(
                 Exception("Package is not found in Adapty paywall cache. Make sure, you called getPurchasePackages first"),
             )
-        }
-        val purchaseResult = Adapty.makePurchase(packageToBuy)
 
-        return when (purchaseResult) {
+        return when (val purchaseResult = Adapty.makePurchase(packageToBuy)) {
             is AdaptyResult.Error -> Result.failure(purchaseResult.error)
 
             is AdaptyResult.Success<AdaptyPurchaseResult> -> {
@@ -140,23 +134,17 @@ internal class AdaptySubscriptionProvider : SubscriptionProvider {
             )
 
         val paywall = paywallResult.getOrNull()
-
-        if (paywall == null) {
-            return Result.failure(
+            ?: return Result.failure(
                 paywallResult.exceptionOrNull()
                     ?: Exception("Paywall is not found for placementId: $currentPlacementId"),
             )
-        }
 
         val paywallProductsResult = Adapty.getPaywallProducts(paywall)
         val paywallProducts = paywallProductsResult.getOrNull()
-
-        if (paywallProducts == null) {
-            return Result.failure(
+            ?: return Result.failure(
                 paywallProductsResult.exceptionOrNull()
                     ?: Exception("Paywall products are not found for paywall: ${paywall.name}"),
             )
-        }
 
         paywallProducts.forEach { paywallProduct ->
             paywallProductsCache[PurchasePackageId(paywallProduct.vendorProductId)] = paywallProduct

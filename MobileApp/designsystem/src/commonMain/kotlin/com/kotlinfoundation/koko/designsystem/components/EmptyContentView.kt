@@ -16,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kotlinfoundation.koko.designsystem.generated.resources.UiRes
-import com.kotlinfoundation.koko.designsystem.generated.resources.ic_logo
 import com.kotlinfoundation.koko.designsystem.generated.resources.illustration_empty
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
 import com.kotlinfoundation.koko.designsystem.util.PreviewHelper

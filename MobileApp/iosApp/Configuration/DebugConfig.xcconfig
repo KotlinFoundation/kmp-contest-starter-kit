@@ -1,4 +1,4 @@
-//Override any field values from BaseConfig that should be overriden in debug build
+//Override any field values from BaseConfig that should be overridden in debug build
 
 #include "BaseConfig.xcconfig"  // Include base config
 

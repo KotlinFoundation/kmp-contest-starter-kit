@@ -13,7 +13,7 @@ class AppUtilImpl : AppUtil {
         val items = listOf("$shareMessage ${getAppStoreLink()}")
         val activityViewController = UIActivityViewController(items, null)
         val uiController = UIApplication.sharedApplication.keyWindow?.rootViewController
-        uiController?.let { it.presentViewController(activityViewController, true, {}) }
+        uiController?.presentViewController(activityViewController, true) {}
     }
 
     override fun openFeedbackMail() {
@@ -23,7 +23,7 @@ class AppUtilImpl : AppUtil {
             mailComposeViewController.setSubject("$appName Feedback/Bug Report")
             mailComposeViewController.setToRecipients(listOf(AppConfiguration.CONTACT_EMAIL))
             val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
-            rootViewController?.presentViewController(mailComposeViewController, true, {})
+            rootViewController?.presentViewController(mailComposeViewController, true) {}
         } catch (e: Exception) {
             val mailUrl = NSURL(string = "mailto:${AppConfiguration.CONTACT_EMAIL}")
             UIApplication.sharedApplication.openURL(mailUrl)

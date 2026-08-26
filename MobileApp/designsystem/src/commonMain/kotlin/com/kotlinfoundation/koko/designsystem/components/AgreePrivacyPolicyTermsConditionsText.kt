@@ -61,8 +61,8 @@ fun AgreePrivacyPolicyTermsConditionsText(
 internal fun AgreePrivacyPolicyPreview() {
     PreviewHelper {
         AgreePrivacyPolicyTermsConditionsText(
-            privacyPolicyUrl = "https://kappmaker.com/privacy-policy",
-            termsConditionsUrl = "https://kappmaker.com/terms-of-service",
+            privacyPolicyUrl = "https://example.com/privacy-policy",
+            termsConditionsUrl = "https://example.com/terms-of-service",
         )
     }
 }

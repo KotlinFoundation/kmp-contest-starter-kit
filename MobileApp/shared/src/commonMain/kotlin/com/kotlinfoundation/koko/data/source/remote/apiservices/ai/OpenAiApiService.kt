@@ -35,7 +35,7 @@ class OpenAiApiService(private val aiTransport: AiTransport) {
      *         assistantText("Act as an KMP expert")
      *         userContentItems {
      *             text("What is KMPStarterKit?")
-     *             image("https://kappmaker.com/images/logo-light.png")
+     *             image("https://example.com/images/logo-light.png")
      *             text("What do you see in the image, is it a logo of KMPStarterKit?")
      *         }
      *     }

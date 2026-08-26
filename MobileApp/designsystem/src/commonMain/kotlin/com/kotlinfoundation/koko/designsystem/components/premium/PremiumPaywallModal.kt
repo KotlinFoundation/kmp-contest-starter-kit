@@ -42,28 +42,29 @@ import androidx.compose.ui.unit.sp
 import com.kotlinfoundation.koko.designsystem.components.AppButton
 import com.kotlinfoundation.koko.designsystem.theme.AppTheme
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 // TODO Update Premium Benefits according to app itself
-private fun getPremiumBenefits(): List<PremiumBenefit> = listOf(
+internal fun defaultPremiumBenefits(): List<PremiumBenefit> = listOf(
     PremiumBenefit(
-        icon = "🎬",
-        title = "30 UGC Videos Per Month",
-        description = "Enough content to keep your app visible all month",
+        icon = "🚀",
+        title = "Unlimited Generations",
+        description = "Create as much as you want, with no monthly cap.",
     ),
     PremiumBenefit(
         icon = "🤖",
-        title = "Access to 20+ AI Influencers",
-        description = "New faces added regularly to keep things fresh.",
+        title = "Premium AI Models",
+        description = "Access the highest quality models available.",
     ),
     PremiumBenefit(
         icon = "✨",
-        title = "AI Influencer Generation",
-        description = "Create up to 3 unique branded influencers each month.",
+        title = "Priority Processing",
+        description = "Skip the queue — your requests run first.",
     ),
     PremiumBenefit(
         icon = "💎",
         title = "No Watermark",
-        description = "Clean, ready-to-post videos every single time.",
+        description = "Clean, ready-to-share results every single time.",
     ),
 )
 
@@ -79,14 +80,18 @@ fun PremiumPaywallModal(
     onDismiss: () -> Unit,
     onUpgrade: () -> Unit,
     modifier: Modifier = Modifier,
+    titleText: String = "Get More With Premium",
+    descriptionText: String = "Unlock unlimited generations, premium AI models, and faster processing.",
+    benefits: List<PremiumBenefit> = defaultPremiumBenefits(),
     priceText: String = "$14.99",
     priceSuffixText: String = "/month",
     ctaBtnEnabled: Boolean = true,
     subtitleText: String = "7-day free trial • Cancel anytime",
     ctaBtnText: String = "Start Free Trial",
+    dismissBtnText: String = "Maybe Later",
     bottomExtraContent: (@Composable () -> Unit)? = null,
 ) {
-    val premiumBenefits = getPremiumBenefits()
+    val premiumBenefits = benefits
     val infiniteTransition = rememberInfiniteTransition(label = "paywall_effects")
 
     val crownBounce by infiniteTransition.animateFloat(
@@ -107,7 +112,7 @@ fun PremiumPaywallModal(
     ) {
         // Top section with dismiss button
         Box(modifier = Modifier.fillMaxWidth()) {
-            SkipButton(modifier = Modifier.align(Alignment.TopEnd), onClick = onDismiss)
+            SkipButton(modifier = Modifier.align(Alignment.TopEnd), text = dismissBtnText, onClick = onDismiss)
         }
 
         // Scrollable content section
@@ -138,14 +143,14 @@ fun PremiumPaywallModal(
             ) {
                 // Compelling headline
                 Text(
-                    text = "Get More From ClipUGC",
+                    text = titleText,
                     style = AppTheme.typography.h4,
                     color = AppTheme.colors.text.primary,
                     textAlign = TextAlign.Center,
                 )
 
                 Text(
-                    text = "Create more videos, access premium AI models, and get professional quality exports.",
+                    text = descriptionText,
                     style = AppTheme.typography.bodyLarge,
                     color = AppTheme.colors.text.secondary,
                     textAlign = TextAlign.Center,
@@ -160,7 +165,7 @@ fun PremiumPaywallModal(
                     var isVisible by remember { mutableStateOf(false) }
 
                     LaunchedEffect(Unit) {
-                        delay(index * 150L)
+                        delay(150.milliseconds * index)
                         isVisible = true
                     }
 
@@ -290,6 +295,7 @@ private fun PremiumBenefitCard(
 
 @Composable
 private fun SkipButton(
+    text: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
@@ -299,7 +305,7 @@ private fun SkipButton(
         onClick = { onClick() },
     ) {
         Text(
-            text = "Maybe Later",
+            text = text,
             style = AppTheme.typography.bodyMedium,
             color = AppTheme.colors.text.secondary,
         )

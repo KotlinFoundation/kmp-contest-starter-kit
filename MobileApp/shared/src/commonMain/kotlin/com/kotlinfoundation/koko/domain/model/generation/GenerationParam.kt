@@ -66,7 +66,7 @@ class GenerationParam(
             return GenerationParam(key, ParamType.FILE, value)
         }
 
-        fun serialize(params: Map<String, GenerationParam>): String = params.entries.joinToString(LIST_SEPARATOR) { (key, param) ->
+        fun serialize(params: Map<String, GenerationParam>): String = params.entries.joinToString(LIST_SEPARATOR) { (_, param) ->
             "${param.key}$ITEM_SEPARATOR${param.type.value}$ITEM_SEPARATOR${param.value}"
         }
 

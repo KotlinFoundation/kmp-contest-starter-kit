@@ -91,7 +91,7 @@ internal class RevenueCatSubscriptionProvider : SubscriptionProvider {
 
     override suspend fun setCustomAttributes(attributes: Map<String, Any?>) {
         val mappedAttributes =
-            attributes.mapValues { (key, value) ->
+            attributes.mapValues { (_, value) ->
                 when (value) {
                     null -> null
                     is String -> value
@@ -122,7 +122,7 @@ internal class RevenueCatSubscriptionProvider : SubscriptionProvider {
             if (placementId == null) {
                 offerings.current
             } else {
-                offerings.get(placementId) ?: offerings.current
+                offerings[placementId] ?: offerings.current
             }
 
         val packages =

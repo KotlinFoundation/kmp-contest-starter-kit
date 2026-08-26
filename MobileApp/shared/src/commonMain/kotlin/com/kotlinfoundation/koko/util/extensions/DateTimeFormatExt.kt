@@ -2,26 +2,31 @@
 
 package com.kotlinfoundation.koko.util.extensions
 
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+
+/** Day-first date format, e.g. `07.03.2026`. */
+val DayMonthYearFormat: DateTimeFormat<LocalDate> = LocalDate.Format {
+    day()
+    char('.')
+    monthNumber()
+    char('.')
+    year()
+}
 
 /** Current wall-clock time in epoch milliseconds. */
 fun nowEpochMillis(): Long = Clock.System.now().toEpochMilliseconds()
 
 fun Long.asFormattedDate(
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
-    format: String = "dd.MM.yyyy",
-): String {
-    val dateTime = Instant.fromEpochMilliseconds(this).toLocalDateTime(timeZone)
-
-    return format.replace("dd", dateTime.day.toString().padStart(2, '0'))
-        .replace("MM", dateTime.month.number.toString().padStart(2, '0'))
-        .replace("yyyy", dateTime.year.toString())
-}
+    format: DateTimeFormat<LocalDate> = DayMonthYearFormat,
+): String = format.format(Instant.fromEpochMilliseconds(this).toLocalDateTime(timeZone).date)
 
 fun Long.asRelativeTimeString(
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
