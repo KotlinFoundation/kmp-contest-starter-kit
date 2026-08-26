@@ -12,6 +12,54 @@ Entry format — one bullet per merged PR, tagged by scope:
 Entries start with the first template change after the sync tooling landed — group them under a
 `## <year>-<month>-<date>` heading, newest first.
 
+## 2026-08-26
+
+- `[app]` **Date formatting uses the kotlinx-datetime API** (#58): `asFormattedDate` built its output
+  by string-replacing `dd`, `MM` and `yyyy` inside a pattern, so a typo like `"ddd-MM-yyy"` silently
+  produced garbage. It now takes a `DateTimeFormat<LocalDate>` built with `LocalDate.Format { }`, and
+  the tests that guarded the old string handling are gone — formatting is the library's job.
+  **Manual:** the `format` parameter changed type. `asFormattedDate(format = "yyyy-MM-dd")` becomes
+  `asFormattedDate(format = LocalDate.Format { year(); char('-'); monthNumber(); char('-'); day() })`.
+  Callers using the default are unaffected.
+- `[app]` **The adaptive launcher icon actually applies** (#58): `mipmap-anydpi-v26/` never existed,
+  so Android had no adaptive descriptor to read and every launcher fell back to the legacy
+  `ic_launcher.webp` bitmap on API 26+, shrunk and badged. `ic_launcher_foreground`,
+  `ic_launcher_round` and `@color/ic_launcher_background` sat unreferenced as a result. The two
+  descriptors now exist, they declare a `<monochrome>` layer so themed icons work on Android 13+,
+  and the manifest sets `android:roundIcon`. `drawable/ic_launcher_foreground.xml` is deleted: it was
+  a second copy of the logo that nothing pointed at, and the descriptors reference the webp set that
+  the Image Asset flow regenerates. **Manual:** if you already rebranded, redraw
+  `androidApp/src/main/res/drawable/ic_launcher_monochrome.xml` as a single flat path of your own
+  logo — the system tints it and ignores its colour, so gradients do not survive. Leaving the Kotlin
+  K there means your themed icon shows the wrong mark.
+- `[app]` **Leftover branding removed from the paywall modal** (#58): `PremiumPaywallModal` shipped
+  another product's copy — the headline read "Get More From ClipUGC" and all four benefits described
+  UGC videos and AI influencers. Title, description, benefit list and the dismiss button are now
+  parameters with product-neutral defaults, matching how `priceText` and `ctaBtnText` already worked.
+  `getPremiumBenefits()` is now `internal fun defaultPremiumBenefits()`. `kappmaker.com` URLs in one
+  `@Preview` and two KDoc examples are now `example.com`. **Manual:** none — the new parameters have
+  defaults, so existing call sites compile unchanged.
+- `[app]` **Inspection cleanup across the source tree** (#58): Android Studio's inspections reported
+  roughly 4000 findings, nearly all of them inside `build/` output. The real ones are fixed: 19 unused
+  imports, `delay(2000L)`-style calls converted to `Duration`, four constructor `private val`s that
+  are read once demoted to plain parameters, three if-null returns folded to elvis plus one variable
+  moved into `when` in `AdaptySubscriptionProvider`, lambdas moved out of parentheses, two `const val`
+  promotions, a redundant SAM constructor, an empty class body and an explicit `get` call. Unused
+  destructured names became `_`. The unused `compose-components-uiToolingPreview` catalog alias is
+  gone. **Manual:** none. Generated sources, expect/actual signatures, Swift entry points and the
+  `AppConfiguration` feature flags were deliberately left alone — simplifying those booleans would
+  delete the gating they exist for.
+- `[skills]` **`generate-app-icons` matches reality** (#58): the skill told agents the
+  `mipmap-anydpi-v26/` descriptors were already present and to leave them as-is, while they did not
+  exist. It now documents the monochrome layer alongside them and explains that it must stay one flat
+  shape, redrawn per rebrand.
+- `[docs]` **Favicon transparency and the getting-started clone step** (#58): the docs favicon had an
+  opaque white notch instead of a transparent one, so it read wrong on dark browser tabs; it is
+  regenerated from the official Kotlin icon with alpha. "Fork or clone the repository" now names a
+  single default — fork, then clone your fork — and spells out the trade-offs of *Use this template*
+  and a plain clone, including how to repoint `origin` if you clone directly. Also fixed a broken
+  anchor in the Firebase integration page.
+
 ## 2026-08-21
 
 - `[app]` **Dependency bumps across the board** (#55): Kotlin 2.4.0 → 2.4.10, KSP 2.3.9 → 2.3.11,
