@@ -12,6 +12,17 @@ Entry format — one bullet per merged PR, tagged by scope:
 Entries start with the first template change after the sync tooling landed — group them under a
 `## <year>-<month>-<date>` heading, newest first.
 
+## 2026-09-04
+
+- `[app]` **WorkManager survives R8** (#59): release builds crashed at launch with
+  `Failed to create an instance of androidx.work.impl.WorkDatabase`. The keep rule added in #55
+  covers `androidx.room3.RoomDatabase`, the namespace the app's own database uses, but AdMob pulls in
+  `androidx.work:work-runtime`, whose `WorkDatabase` extends the Room 2.x
+  `androidx.room.RoomDatabase`. That is a different hierarchy as far as R8 is concerned, so its
+  no-arg constructor was stripped.
+  `proguard-rules.pro` now keeps both namespaces. Release only: debug builds and tests never hit it.
+  **Manual:** none, unless you replaced `proguard-rules.pro`, in which case copy the new rule across.
+
 ## 2026-08-26
 
 - `[app]` **Date formatting uses the kotlinx-datetime API** (#58): `asFormattedDate` built its output
