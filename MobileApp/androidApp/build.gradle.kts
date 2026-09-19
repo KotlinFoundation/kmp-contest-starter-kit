@@ -110,8 +110,8 @@ fun getRequiredProperty(
     defaultValue: String? = null,
     errorMessage: String = "Make sure you added `$key` in local.properties",
 ): String {
-    val propertyValue: String? = gradleLocalProperties(rootDir, providers).getProperty(key)
-    if (propertyValue.isNullOrEmpty() && defaultValue == null) {
+    val propertyValue: String? = gradleLocalProperties(rootDir, providers).getProperty(key)?.takeIf { it.isNotBlank() }
+    if (propertyValue == null && defaultValue == null) {
         throw IllegalArgumentException(errorMessage)
     }
     return propertyValue ?: defaultValue ?: ""
