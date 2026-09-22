@@ -81,14 +81,41 @@ loaders are singletons so preloading is safe.
 
 ## 5. Store data-safety implications (User Action)
 
-AdMob collects the **advertising ID** and device/usage data. You must disclose this:
+AdMob collects the **advertising ID** and device/usage data. You must disclose this in store consoles:
 
-- **Google Play** → App content → **Data safety**: declare collection of advertising ID + usage data,
-  and complete the ads declaration.
-- **App Store Connect** → App Privacy: declare the data types the ad SDK collects; add
-  **App Tracking Transparency** prompt handling on iOS if you track across apps.
+### Google Play Console (Policy and programs → App content)
 
-Skipping this can get the app rejected or pulled.
+1. **Ads Declaration**:
+   - Navigate to **App content → Ads**.
+   - Select **"Yes, my app contains ads"** and save.
+
+2. **Advertising ID Declaration**:
+   - Navigate to **App content → Advertising ID**.
+   - Select **"Yes"** (declaring your app uses the advertising ID for advertising/marketing and analytics).
+
+3. **Data Safety Questionnaire**:
+   - Navigate to **App content → Data safety**.
+   - **Step 2 (Data collection and security)**:
+     - *Does your app collect or share user data?* → Select **Yes**.
+     - *Is all user data encrypted in transit?* → Select **Yes** (all AdMob/Firebase traffic uses HTTPS/TLS).
+     - *Methods of account creation?* → Select your app's method (e.g. OAuth, or "My app does not allow users to create an account").
+   - **Step 3 (Data types)**:
+     - Scroll to **Device or other IDs**, expand the dropdown, and check **Device or other IDs** (AdMob collects the Advertising ID under this category).
+   - **Step 4 (Data usage and handling)**:
+     - Click **Device or other IDs** to configure:
+       - *Collected or shared?* → Check both **Collected** and **Shared** (AdMob transfers identifiers to Google/ad partners).
+       - *Processed ephemerally?* → Select **No**.
+       - *Required or optional?* → Select **Data collection is required**.
+       - *Purposes?* → Check **Advertising or marketing** (and **Analytics** if using Firebase Analytics).
+   - **Step 5 (Preview)** → Review and **Save**.
+
+### App Store Connect (App Privacy)
+
+- Declare **Device ID** under Identifiers:
+  - Used for: **Third-Party Advertising** and **Analytics**.
+  - Linked to user / Used for tracking: Yes (if displaying personalized ads; prompt via **App Tracking Transparency** on iOS).
+
+Skipping these declarations can cause app rejection or store policy warnings.
 
 ## Validation
 
